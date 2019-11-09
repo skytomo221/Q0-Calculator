@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 
 class CalculatorForm extends JFrame {
     /**
@@ -26,23 +27,50 @@ class CalculatorForm extends JFrame {
         setLayout(gbl);
 
         JPanel buttonPanel = new JPanel();
+        JTextPane inputTextPane = new JTextPane();
+        JTextPane logTextPane = new JTextPane();
+
+        for (JButton jButton : buttons) {
+            buttonPanel.add(jButton);
+        }
+        buttonPanel.setLayout(new GridLayout(5, 10));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.gridheight = 2;
         gbc.insets = new Insets(1, 1, 1, 1);
-        gbc.weightx = 2.0;
+        gbc.weightx = 1.0;
         gbc.weighty = 2.0;
         gbl.setConstraints(buttonPanel, gbc);
         add(buttonPanel);
 
-        buttonPanel.setLayout(new GridLayout(5, 10));
-        for (JButton jButton : buttons) {
-            buttonPanel.add(jButton);
-        }
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.insets = new Insets(1, 1, 1, 1);
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbl.setConstraints(inputTextPane, gbc);
+        add(inputTextPane);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 3;
+        gbc.insets = new Insets(1, 1, 1, 1);
+        gbc.weightx = 1.0;
+        gbc.weighty = 2.0;
+        gbl.setConstraints(logTextPane, gbc);
+        add(logTextPane);
+
+        
     }
 
     private void ButtonInitialization() {
