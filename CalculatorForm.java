@@ -2,7 +2,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -15,7 +16,7 @@ class CalculatorForm extends JFrame {
      */
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<JButton> buttons = new ArrayList<JButton>();
+    private List<JButton> buttons;
 
     CalculatorForm() {
         super("FrameTest");
@@ -45,56 +46,17 @@ class CalculatorForm extends JFrame {
     }
 
     private void ButtonInitialization() {
-        buttons.add(new JButton("or"));
-        buttons.add(new JButton("xor"));
-        buttons.add(new JButton("not"));
-        buttons.add(new JButton("and"));
-        buttons.add(new JButton("mod"));
-        buttons.add(new JButton("%"));
-        buttons.add(new JButton("AC"));
-        buttons.add(new JButton("C"));
-        buttons.add(new JButton("✗"));
-        buttons.add(new JButton("÷"));
-        buttons.add(new JButton("2nd"));
-        buttons.add(new JButton("x^2"));
-        buttons.add(new JButton("x^3"));
-        buttons.add(new JButton("x^y"));
-        buttons.add(new JButton("e^x"));
-        buttons.add(new JButton("10^x"));
-        buttons.add(new JButton("7"));
-        buttons.add(new JButton("8"));
-        buttons.add(new JButton("9"));
-        buttons.add(new JButton("×"));
-        buttons.add(new JButton("1/x"));
-        buttons.add(new JButton("√x"));
-        buttons.add(new JButton("3√x"));
-        buttons.add(new JButton("y√x"));
-        buttons.add(new JButton("ln"));
-        buttons.add(new JButton("log10"));
-        buttons.add(new JButton("4"));
-        buttons.add(new JButton("5"));
-        buttons.add(new JButton("6"));
-        buttons.add(new JButton("-"));
-        buttons.add(new JButton("x!"));
-        buttons.add(new JButton("sin"));
-        buttons.add(new JButton("cos"));
-        buttons.add(new JButton("tan"));
-        buttons.add(new JButton("e"));
-        buttons.add(new JButton("π"));
-        buttons.add(new JButton("1"));
-        buttons.add(new JButton("2"));
-        buttons.add(new JButton("3"));
-        buttons.add(new JButton("+"));
-        buttons.add(new JButton("rand"));
-        buttons.add(new JButton("sinh"));
-        buttons.add(new JButton("cosh"));
-        buttons.add(new JButton("tanh"));
-        buttons.add(new JButton("("));
-        buttons.add(new JButton(")"));
-        buttons.add(new JButton("+/-"));
-        buttons.add(new JButton("0"));
-        buttons.add(new JButton("."));
-        buttons.add(new JButton("="));
+        buttons = Arrays.asList(new JButton("or"), new JButton("xor"), new JButton("not"), new JButton("and"),
+                new JButton("mod"), new JButton("%"), new JButton("AC"), new JButton("C"), new JButton("✗"),
+                new JButton("÷"), new JButton("2nd"), new JButton("x^2"), new JButton("x^3"), new JButton("x^y"),
+                new JButton("e^x"), new JButton("10^x"), new JButton("7"), new JButton("8"), new JButton("9"),
+                new JButton("×"), new JButton("1/x"), new JButton("√x"), new JButton("3√x"), new JButton("y√x"),
+                new JButton("ln"), new JButton("log10"), new JButton("4"), new JButton("5"), new JButton("6"),
+                new JButton("-"), new JButton("x!"), new JButton("sin"), new JButton("cos"), new JButton("tan"),
+                new JButton("e"), new JButton("π"), new JButton("1"), new JButton("2"), new JButton("3"),
+                new JButton("+"), new JButton("rand"), new JButton("sinh"), new JButton("cosh"), new JButton("tanh"),
+                new JButton("("), new JButton(")"), new JButton("+/-"), new JButton("0"), new JButton("."),
+                new JButton("="));
     }
 
     private int getFontSizeAdjusted(JComponent component, String str, int sideMarginSize) {
