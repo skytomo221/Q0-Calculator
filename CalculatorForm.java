@@ -68,7 +68,7 @@ class CalculatorForm extends JFrame implements ActionListener {
             jButton.addActionListener(this);
         }
         functionButtonPanel.setLayout(new GridLayout(5, 6));
-        
+
         inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 24));
         inputTextPane.setText("0");
     }
@@ -118,6 +118,20 @@ class CalculatorForm extends JFrame implements ActionListener {
                 inputTextPane.setText(inputTextPane.getText() + b.getText());
             } else {
                 inputTextPane.setText(inputTextPane.getText() + b.getText());
+            }
+            Lexer l = new Lexer();
+            l.text = inputTextPane.getText();
+            try {
+                List<Token> tokens = l.parse();
+                System.out.println("input: " + inputTextPane.getText());
+                for (Token token : tokens) {
+                    System.out.println(token.toString());
+                }
+                System.out.println("");
+            } catch (Exception ex) {
+                logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
+            } finally {
+                l = null;
             }
         }
     }
