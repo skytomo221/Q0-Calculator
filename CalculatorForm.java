@@ -116,28 +116,36 @@ class CalculatorForm extends JFrame implements ActionListener {
                     inputTextPane.setText("");
                 }
                 inputTextPane.setText(inputTextPane.getText() + b.getText());
+            } else if (b.getText().equals("=")) {
+                Lexer l = new Lexer();
+                l.text = inputTextPane.getText();
+                try {
+                    List<Token> tokens = l.parse();
+                    // for (Token token : tokens) {
+                    // System.out.println(token.toString());
+                    // }
+                    // System.out.println("");
+                    Parser p = new Parser();
+                    List<Expression> expressions = p.parse(tokens);
+                    // for (Expression expression : expressions) {
+                    // System.out.println(expression.toString());
+                    // }
+                    // System.out.println("");
+                    Calculator c = new Calculator(expressions);
+                    c.run();
+                    logTextPane.setText(logTextPane.getText() + "\nInput  => " + inputTextPane.getText());
+                    inputTextPane.setText("0");
+                    for (Object object : c.answers) {
+                        inputTextPane.setText(object.toString());
+                        logTextPane.setText(logTextPane.getText() + "\nOutput => " + object.toString());
+                    }
+                } catch (Exception ex) {
+                    logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
+                } finally {
+                    l = null;
+                }
             } else {
                 inputTextPane.setText(inputTextPane.getText() + b.getText());
-            }
-            Lexer l = new Lexer();
-            l.text = inputTextPane.getText();
-            try {
-                List<Token> tokens = l.parse();
-                System.out.println("input: " + inputTextPane.getText());
-                // for (Token token : tokens) {
-                // System.out.println(token.toString());
-                // }
-                // System.out.println("");
-                Parser p = new Parser();
-                List<Expression> expressions = p.parse(tokens);
-                for (Expression expression : expressions) {
-                    System.out.println(expression.toString());
-                }
-                System.out.println("");
-            } catch (Exception ex) {
-                logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
-            } finally {
-                l = null;
             }
         }
     }
