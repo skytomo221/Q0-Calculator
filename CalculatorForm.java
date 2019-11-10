@@ -124,8 +124,14 @@ class CalculatorForm extends JFrame implements ActionListener {
             try {
                 List<Token> tokens = l.parse();
                 System.out.println("input: " + inputTextPane.getText());
-                for (Token token : tokens) {
-                    System.out.println(token.toString());
+                // for (Token token : tokens) {
+                // System.out.println(token.toString());
+                // }
+                // System.out.println("");
+                Parser p = new Parser();
+                List<Token> tokens2 = p.parse(tokens);
+                for (Token token : tokens2) {
+                    System.out.println(token.toParentheses());
                 }
                 System.out.println("");
             } catch (Exception ex) {

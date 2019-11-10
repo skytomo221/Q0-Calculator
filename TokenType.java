@@ -65,5 +65,9 @@ public enum TokenType {
     /**
      * 割り算を表します。
      */
-    DIVISION,
+    DIVISION, 
+    /**
+     * 文字列の終わりを表します。
+     */
+    EOS
 }
