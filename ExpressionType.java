@@ -3,6 +3,10 @@
  */
 public enum ExpressionType {
     /**
+     * 単項演算子を表します。
+     */
+    UNARY_OPERATOR,
+    /**
      * 二項演算子を表します。
      */
     BINARY_OPERATOR,

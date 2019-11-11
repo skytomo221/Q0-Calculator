@@ -26,12 +26,35 @@ public class Calculator {
     }
 
     public Object expression(Expression expression) throws Exception {
+        Object left;
+        Object right;
         switch (expression.type) {
         case OPERAND:
             return expression.operator.value;
+        case UNARY_OPERATOR:
+            right = expression(expression.operands.get(0));
+            if (right instanceof Integer) {
+                switch (expression.operator.type) {
+                case PLUS:
+                    return +(int) right;
+                case MINUS:
+                    return -(int) right;
+                default:
+                    throw new Exception("Calculator が対応していない単項演算子です。");
+                }
+            } else if (right instanceof Double) {
+                switch (expression.operator.type) {
+                case PLUS:
+                    return +(double) right;
+                case MINUS:
+                    return -(double) right;
+                default:
+                    throw new Exception("Calculator が対応していない単項演算子です。");
+                }
+            }
         case BINARY_OPERATOR:
-            Object left = expression(expression.operands.get(0));
-            Object right = expression(expression.operands.get(1));
+            left = expression(expression.operands.get(0));
+            right = expression(expression.operands.get(1));
             if (left instanceof Integer && right instanceof Integer) {
                 switch (expression.operator.type) {
                 case PLUS:
@@ -68,8 +91,8 @@ public class Calculator {
                 throw new Exception("Calculator が対応していない二項演算子です。");
             }
         default:
-            throw new Exception("計算機がおかしい");
         }
+        throw new Exception("計算機がおかしい");
     }
 
 }

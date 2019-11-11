@@ -37,7 +37,7 @@ public class Parser {
         } else if (token.type == TokenType.END) {
             return new Expression(ExpressionType.END, token);
         } else {
-            throw new Exception("おかしい");
+            throw new Exception("存在しないトークンのようです。");
         }
     }
 
@@ -48,9 +48,13 @@ public class Parser {
     }
 
     private Expression lead(Expression expression) throws Exception {
-        if (expression.type == ExpressionType.OPERAND) {
+        switch (expression.type) {
+        case OPERAND:
             return expression;
-        } else {
+        case BINARY_OPERATOR:
+            return new Expression(ExpressionType.UNARY_OPERATOR, expression.operator,
+                    new ArrayList<Expression>(Arrays.asList(lead(peek()))));
+        default:
             throw new Exception(index + "語目: ここに被演算子を置くことはできません。");
         }
     }
@@ -79,11 +83,19 @@ public class Parser {
 
     public Expression expression(int leftPriority) throws Exception {
         Expression left = lead(next());
-        int rightPriority = priority(peek());
-        while (leftPriority < rightPriority) {
-            Expression operator = next();
-            left = bind(left, operator);
-            rightPriority = priority(peek());
+        switch (left.type) {
+        case UNARY_OPERATOR:
+            next();
+        case BINARY_OPERATOR:
+            int rightPriority = priority(peek());
+            while (leftPriority < rightPriority) {
+                Expression operator = next();
+                left = bind(left, operator);
+                rightPriority = priority(peek());
+            }
+            break;
+        default:
+            break;
         }
         return left;
     }
