@@ -1,8 +1,8 @@
-# Q0 Calcuator
+# Q0 Calculator
 
 <img src="https://github.com/skytomo221/Q0-Calculator/blob/master/images/icon.png?raw=true" width="200px">
 
-**Q0 Calcuator** は Java の課題のために作られた電卓プログラムです。  
+**Q0 Calculator** は Java の課題のために作られた電卓プログラムです。  
 そのため、単位が確定するまでは、このソースコードの利用をお控えください。
 
 ## 現在対応済みの型
