@@ -9,9 +9,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -61,7 +64,13 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         setBackground(new Color(17, 17, 17));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(this);
-
+        
+        try {
+            setIconImage(ImageIO.read(new File("images/icon.png")));
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
+        
         UIManager.put("TabbedPane.borderHightlightColor", new Color(17, 17, 17));
         UIManager.put("TabbedPane.darkShadow", new Color(17, 17, 17));
         UIManager.put("TabbedPane.focus", commentColor);
