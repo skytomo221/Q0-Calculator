@@ -1,22 +1,35 @@
-import java.awt.Component;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
-class CalculatorForm extends JFrame implements ActionListener {
+class CalculatorForm extends JFrame implements ActionListener, ComponentListener, DocumentListener, KeyListener {
     /**
      *
      */
@@ -25,25 +38,56 @@ class CalculatorForm extends JFrame implements ActionListener {
     private List<JButton> buttons;
     private List<JButton> functionButtons;
 
-    GridBagLayout gbl = new GridBagLayout();
-    JTabbedPane tabbedPane = new JTabbedPane();
-    JPanel buttonPanel = new JPanel();
-    JPanel functionButtonPanel = new JPanel();
-    JTextPane inputTextPane = new JTextPane();
-    JTextPane logTextPane = new JTextPane();
+    protected JTabbedPane tabbedPane;
+    protected JPanel buttonPanel = new JPanel();
+    protected JPanel functionButtonPanel = new JPanel();
+    protected JTextPane inputTextPane = new JTextPane();
+    protected JTextPane logTextPane = new JTextPane();
+    protected StyledDocument inputStyledDocument;
+
+    final static Color tagNameColor = new Color(204, 34, 34);
+    final static Color functionArgumentColor = new Color(166, 226, 46);
+    final static Color tagAttributeColor = new Color(253, 151, 31);
+    final static Color storageTypeColor = new Color(102, 217, 239);
+    final static Color userDefinedConstantColor = new Color(174, 129, 255);
+    final static Color stringColor = new Color(230, 219, 116);
+    final static Color commentColor = new Color(117, 113, 94);
+    final static Color backgroundColor = new Color(39, 40, 34);
+    final static Color foregroundColor = new Color(204, 204, 204);
 
     CalculatorForm() {
-        super("FrameTest");
-        setSize(600, 400);
-        setLayout(gbl);
+        super("Q0 Calculator");
+        setSize(800, 500);
+        setBackground(new Color(17, 17, 17));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(this);
 
-        addComportnent(inputTextPane, 0, 0, 2, 1, 2, 1);
-        addComportnent(tabbedPane, 0, 1, 2, 2, 2, 2);
-        addComportnent(logTextPane, 2, 0, 1, 3, 1, 3);
+        UIManager.put("TabbedPane.borderHightlightColor", new Color(17, 17, 17));
+        UIManager.put("TabbedPane.darkShadow", new Color(17, 17, 17));
+        UIManager.put("TabbedPane.focus", commentColor);
+        UIManager.put("TabbedPane.selected", commentColor);
+        UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
+        UIManager.put("Button.select", commentColor);
 
+        tabbedPane = new JTabbedPane();
         tabbedPane.add("標準", buttonPanel);
         tabbedPane.add("関数", functionButtonPanel);
+        buttonPanel.setBorder(new LineBorder(commentColor, 3));
+        functionButtonPanel.setBorder(new LineBorder(commentColor, 3));
+
+        JPanel p1 = new JPanel();
+        JPanel p2 = new JPanel();
+        p1.setBackground(new Color(17, 17, 17));
+        p2.setBackground(new Color(17, 17, 17));
+        p1.setLayout(new GridLayout(1, 2, 5, 0));
+        p2.setLayout(new GridLayout(2, 1, 5, 0));
+        p1.setBorder(null);
+        p2.setBorder(null);
+        p1.add(p2);
+        p1.add(logTextPane);
+        p2.add(inputTextPane);
+        p2.add(tabbedPane);
+        getContentPane().add(p1, BorderLayout.CENTER);
 
         buttons = Arrays.asList(new JButton("AC"), new JButton("C"), new JButton("BS"), new JButton("÷"),
                 new JButton("7"), new JButton("8"), new JButton("9"), new JButton("×"), new JButton("4"),
@@ -52,8 +96,8 @@ class CalculatorForm extends JFrame implements ActionListener {
                 new JButton("="));
         functionButtons = Arrays.asList(new JButton("or"), new JButton("xor"), new JButton("not"), new JButton("and"),
                 new JButton("mod"), new JButton("%"), new JButton("2nd"), new JButton("n²"), new JButton("n³"),
-                new JButton("xⁿ"), new JButton("eⁿ"), new JButton("10ⁿ"), new JButton("⅟x"), new JButton("√x"),
-                new JButton("∛x"), new JButton("ⁿ√x"), new JButton("ln"), new JButton("log10"), new JButton("x!"),
+                new JButton("xⁿ"), new JButton("eⁿ"), new JButton("10ⁿ"), new JButton("1/x"), new JButton("√x"),
+                new JButton("³√x"), new JButton("ⁿ√x"), new JButton("ln"), new JButton("log10"), new JButton("x!"),
                 new JButton("sin"), new JButton("cos"), new JButton("tan"), new JButton("e"), new JButton("π"),
                 new JButton("rand"), new JButton("sinh"), new JButton("cosh"), new JButton("tanh"), new JButton("("),
                 new JButton(")"));
@@ -61,26 +105,47 @@ class CalculatorForm extends JFrame implements ActionListener {
         for (JButton jButton : buttons) {
             buttonPanel.add(jButton);
             jButton.addActionListener(this);
+            jButton.setBackground(backgroundColor);
+            jButton.setBorder(null);
+            if (jButton.getText().equals("AC") || jButton.getText().equals("C")) {
+                jButton.setForeground(tagNameColor);
+            } else {
+                jButton.setForeground(foregroundColor);
+            }
         }
         buttonPanel.setLayout(new GridLayout(5, 4));
         for (JButton jButton : functionButtons) {
             functionButtonPanel.add(jButton);
             jButton.addActionListener(this);
+            jButton.setBackground(backgroundColor);
+            jButton.setForeground(foregroundColor);
+            jButton.setBorder(null);
         }
         functionButtonPanel.setLayout(new GridLayout(5, 6));
-
-        inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 24));
+        tabbedPane.setBackground(backgroundColor);
+        inputTextPane.setBackground(backgroundColor);
+        logTextPane.setBackground(backgroundColor);
+        tabbedPane.setForeground(foregroundColor);
+        inputTextPane.setForeground(foregroundColor);
+        logTextPane.setForeground(foregroundColor);
+        inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 36));
+        logTextPane.setFont(new Font("Consolas", Font.PLAIN, 18));
         inputTextPane.setText("0");
+        inputStyledDocument = inputTextPane.getStyledDocument();
+        inputStyledDocument.addDocumentListener(this);
+        inputTextPane.addKeyListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        highlighted = false;
         if (e.getSource() instanceof JButton) {
             JButton b = (JButton) e.getSource();
             if (b.getText().equals("C")) {
-                inputTextPane.setText("");
+                inputTextPane.setText("0");
             } else if (b.getText().equals("AC")) {
-                inputTextPane.setText("");
+                inputTextPane.setText("0");
+                logTextPane.setText("");
             } else if (b.getText().equals("%")) {
                 inputTextPane.setText(inputTextPane.getText() + "% of ");
             } else if (b.getText().equals("n²")) {
@@ -93,11 +158,11 @@ class CalculatorForm extends JFrame implements ActionListener {
                 inputTextPane.setText(inputTextPane.getText() + "e^");
             } else if (b.getText().equals("10ⁿ")) {
                 inputTextPane.setText(inputTextPane.getText() + "10^");
-            } else if (b.getText().equals("⅟x")) {
+            } else if (b.getText().equals("1/x")) {
                 inputTextPane.setText("1/(" + inputTextPane.getText() + ")");
             } else if (b.getText().equals("√x")) {
                 inputTextPane.setText(inputTextPane.getText() + "√");
-            } else if (b.getText().equals("∛x")) {
+            } else if (b.getText().equals("³√x")) {
                 inputTextPane.setText(inputTextPane.getText() + "∛");
             } else if (b.getText().equals("ⁿ√x")) {
                 inputTextPane.setText(inputTextPane.getText() + "sqrt ");
@@ -120,7 +185,7 @@ class CalculatorForm extends JFrame implements ActionListener {
                 Lexer l = new Lexer();
                 l.text = inputTextPane.getText();
                 try {
-                    List<Token> tokens = l.parse();
+                    List<Token> tokens = l.parse(inputTextPane.getText());
                     // for (Token token : tokens) {
                     // System.out.println(token.toString());
                     // }
@@ -133,46 +198,158 @@ class CalculatorForm extends JFrame implements ActionListener {
                     // System.out.println("");
                     Calculator c = new Calculator(expressions);
                     c.run();
-                    logTextPane.setText(logTextPane.getText() + "\nInput  => " + inputTextPane.getText());
-                    inputTextPane.setText("0");
+                    insertColorText(logTextPane, "Input  => ", foregroundColor);
+                    insertHighlight(logTextPane, inputTextPane.getText());
+                    insertColorText(logTextPane, "\n", foregroundColor);
                     for (Object object : c.answers) {
+                        insertColorText(logTextPane, "Output => ", foregroundColor);
+                        insertHighlight(logTextPane, object.toString());
+                        insertColorText(logTextPane, "\n\n", foregroundColor);
                         inputTextPane.setText(object.toString());
-                        logTextPane.setText(logTextPane.getText() + "\nOutput => " + object.toString());
                     }
                 } catch (Exception ex) {
                     logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
                 } finally {
                     l = null;
                 }
+            } else if (b.getText().equals("+") || b.getText().equals("-") || b.getText().equals("×")
+                    || b.getText().equals("÷")) {
+                inputTextPane.setText(inputTextPane.getText() + " " + b.getText() + " ");
             } else {
                 inputTextPane.setText(inputTextPane.getText() + b.getText());
             }
         }
     }
 
-    void addComportnent(Component c, int x, int y, int w, int h, double wx, double wy) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.gridwidth = w;
-        gbc.gridheight = h;
-        gbc.weightx = wx;
-        gbc.weighty = wy;
-        gbl.setConstraints(c, gbc);
-        add(c);
+    @Override
+    public void componentResized(ComponentEvent e) {
+        if (e.getSource() == this) {
+            for (JButton jButton : buttons) {
+                jButton.setFont(new Font("Arial", Font.BOLD,
+                        (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
+            }
+
+            for (JButton jButton : functionButtons) {
+                jButton.setFont(new Font("Arial", Font.BOLD,
+                        (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
+            }
+        }
     }
 
-    private int getFontSizeAdjusted(JComponent component, String str, int sideMarginSize) {
-        Font font = component.getFont();
-        int fontSize = font.getSize();
-        int componentWidth = component.getPreferredSize().width - sideMarginSize * 2;
-        // 「文字列の横の表示サイズ > コンポーネントの横の表示サイズ」である場合、フォントサイズを -1point する。
-        while (stringWidth > componentWidth - 8) {
-            fontSize--;
-            font = new Font(font.getFamily(), font.getStyle().fontSize);
-            stringWidth = component.getFontMetrics(font).stringWidth(str);
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        highlightInputTextPane();
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+    }
+
+    Boolean highlighted = false;
+
+    public void highlightInputTextPane() {
+        Runnable doHighlight = new Runnable() {
+            @Override
+            public void run() {
+                if (highlighted) {
+                    return;
+                }
+                highlighted = true;
+                String s = inputTextPane.getText();
+                inputTextPane.setText("");
+                try {
+                    insertHighlight(inputTextPane, s);
+                } catch (Exception e) {
+                    inputTextPane.setText(s);
+                }
+            }
+        };
+        SwingUtilities.invokeLater(doHighlight);
+    }
+
+    /**
+     * JTextPaneにハイライトされた文字列を追加する
+     * 
+     * @param j 追加するコンポーネント
+     * @param s 追加する文字列
+     */
+    public void insertHighlight(JTextPane j, String s) throws Exception {
+        Lexer l = new Lexer();
+        List<Token> tokens = l.parse(s);
+        for (Token token : tokens) {
+            switch (token.type) {
+            case INTEGER:
+            case DOUBLE:
+                insertColorText(j, token.name, userDefinedConstantColor);
+                break;
+            case PLUS:
+            case MINUS:
+            case MULTIPLICATION:
+            case DIVISION:
+                insertColorText(j, token.name, tagNameColor);
+                break;
+            default:
+                break;
+            }
         }
-        return fontSize;
+    }
+
+    /**
+     * JTextPaneに色付き文字列を追加する。
+     *
+     * @param j 追加するコンポーネント
+     * @param s 追加する文字列
+     * @param c 文字列の色
+     */
+    public void insertColorText(JTextPane j, String s, Color c) {
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        StyleConstants.setForeground(attr, c);
+
+        Document doc = j.getDocument();
+        if (doc != null) {
+            try {
+                doc.insertString(doc.getLength(), s, attr);
+            } catch (BadLocationException e) {
+            }
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        highlighted = false;
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -47,8 +47,7 @@ public class Lexer {
                 b.append(next());
                 if (isEndOfString()) {
                     return new Token(TokenType.INTEGER, b.toString(), Integer.parseInt(b.toString()));
-                }
-                else if (Character.isDigit(peek()) || peek() == '.') {
+                } else if (Character.isDigit(peek()) || peek() == '.') {
                     while (!isEndOfString() && (Character.isDigit(peek()) || peek() == '.')) {
                         if (peek() == '.') {
                             isDouble = true;
@@ -114,9 +113,10 @@ public class Lexer {
         }
     }
 
-    public List<Token> parse() throws Exception {
+    public List<Token> parse(String text) throws Exception {
         List<Token> tokens = new ArrayList<>();
         index = 0;
+        this.text = text;
         Token t = nextToken();
         while (t != null) {
             tokens.add(t);
