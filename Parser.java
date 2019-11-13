@@ -34,7 +34,7 @@ public class Parser {
             return new Expression(ExpressionType.OPERAND, token);
         } else if (operators.contains(token.type)) {
             return new Expression(ExpressionType.BINARY_OPERATOR, token);
-        } else if (token.type == TokenType.END) {
+        } else if (token.type == TokenType.END_OF_STRING) {
             return new Expression(ExpressionType.END, token);
         } else {
             throw new Exception("存在しないトークンのようです。");
@@ -104,7 +104,7 @@ public class Parser {
         index = 0;
         this.tokens = tokens;
         List<Expression> expressions = new ArrayList<Expression>();
-        tokens.add(new Token(TokenType.END, "(END)"));
+        tokens.add(new Token(TokenType.END_OF_STRING, "(END)"));
         while (peek().type != ExpressionType.END) {
             expressions.add(expression(0));
         }

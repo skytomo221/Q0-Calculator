@@ -40,23 +40,25 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
 
     private List<JButton> buttons;
     private List<JButton> functionButtons;
+    private List<JButton> fuButtons;
 
     protected JTabbedPane tabbedPane;
     protected JPanel buttonPanel = new JPanel();
     protected JPanel functionButtonPanel = new JPanel();
+    protected JPanel fuButtonPanel = new JPanel();
     protected JTextPane inputTextPane = new JTextPane();
     protected JTextPane logTextPane = new JTextPane();
     protected StyledDocument inputStyledDocument;
 
-    final static Color tagNameColor = new Color(204, 34, 34);
-    final static Color functionArgumentColor = new Color(166, 226, 46);
-    final static Color tagAttributeColor = new Color(253, 151, 31);
-    final static Color storageTypeColor = new Color(102, 217, 239);
-    final static Color userDefinedConstantColor = new Color(174, 129, 255);
-    final static Color stringColor = new Color(230, 219, 116);
-    final static Color commentColor = new Color(117, 113, 94);
     final static Color backgroundColor = new Color(39, 40, 34);
+    final static Color commentColor = new Color(117, 114, 94);
+    final static Color constantColor = new Color(171, 157, 242);
     final static Color foregroundColor = new Color(204, 204, 204);
+    final static Color functionColor = new Color(169, 220, 118);
+    final static Color storageTypeColor = new Color(102, 217, 239);
+    final static Color stringColor = new Color(230, 219, 116);
+    final static Color tagAttributeColor = new Color(253, 151, 31);
+    final static Color tagNameColor = new Color(249, 38, 114);
 
     CalculatorForm() {
         super("Q0 Calculator");
@@ -64,13 +66,13 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         setBackground(new Color(17, 17, 17));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(this);
-        
+
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
         } catch (IOException exc) {
             exc.printStackTrace();
         }
-        
+
         UIManager.put("TabbedPane.borderHightlightColor", new Color(17, 17, 17));
         UIManager.put("TabbedPane.darkShadow", new Color(17, 17, 17));
         UIManager.put("TabbedPane.focus", commentColor);
@@ -81,8 +83,10 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         tabbedPane = new JTabbedPane();
         tabbedPane.add("標準", buttonPanel);
         tabbedPane.add("関数", functionButtonPanel);
+        tabbedPane.add("フ界", fuButtonPanel);
         buttonPanel.setBorder(new LineBorder(commentColor, 3));
         functionButtonPanel.setBorder(new LineBorder(commentColor, 3));
+        fuButtonPanel.setBorder(new LineBorder(commentColor, 3));
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
@@ -110,6 +114,11 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 new JButton("sin"), new JButton("cos"), new JButton("tan"), new JButton("e"), new JButton("π"),
                 new JButton("rand"), new JButton("sinh"), new JButton("cosh"), new JButton("tanh"), new JButton("("),
                 new JButton(")"));
+        fuButtons = Arrays.asList(new JButton("AC"), new JButton("C"), new JButton("BS"), new JButton("÷"),
+                new JButton("7"), new JButton("8"), new JButton("¬"), new JButton("×"), new JButton("4"),
+                new JButton("5"), new JButton("6"), new JButton("-"), new JButton("1"), new JButton("2"),
+                new JButton("3"), new JButton("+"), new JButton("+/-"), new JButton("0"), new JButton("."),
+                new JButton("="));
 
         for (JButton jButton : buttons) {
             buttonPanel.add(jButton);
@@ -131,6 +140,18 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             jButton.setBorder(null);
         }
         functionButtonPanel.setLayout(new GridLayout(5, 6));
+        for (JButton jButton : fuButtons) {
+            fuButtonPanel.add(jButton);
+            jButton.addActionListener(this);
+            jButton.setBackground(backgroundColor);
+            jButton.setBorder(null);
+            if (jButton.getText().equals("AC") || jButton.getText().equals("C")) {
+                jButton.setForeground(tagNameColor);
+            } else {
+                jButton.setForeground(foregroundColor);
+            }
+        }
+        fuButtonPanel.setLayout(new GridLayout(5, 4));
         tabbedPane.setBackground(backgroundColor);
         inputTextPane.setBackground(backgroundColor);
         logTextPane.setBackground(backgroundColor);
@@ -237,8 +258,11 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 jButton.setFont(new Font("Arial", Font.BOLD,
                         (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
             }
-
             for (JButton jButton : functionButtons) {
+                jButton.setFont(new Font("Arial", Font.BOLD,
+                        (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
+            }
+            for (JButton jButton : fuButtons) {
                 jButton.setFont(new Font("Arial", Font.BOLD,
                         (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
             }
@@ -311,15 +335,83 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             switch (token.type) {
             case INTEGER:
             case DOUBLE:
-                insertColorText(j, token.name, userDefinedConstantColor);
+            case BOOLEAN:
+                insertColorText(j, token.name, constantColor);
                 break;
+            case CHARACTER:
+                if (token.name.length() == 3) {
+                    insertColorText(j, "\'", commentColor);
+                    insertColorText(j, token.value.toString(), stringColor);
+                    insertColorText(j, "\'", commentColor);
+                } else {
+                    insertColorText(j, "\'", commentColor);
+                    insertColorText(j, "\\" + token.value.toString(), constantColor);
+                    insertColorText(j, "\'", commentColor);
+                }
+                break;
+            case STRING:
+                insertColorText(j, "\"", commentColor);
+                String s2 = token.value.toString();
+                for (int i = 0; i < s2.length(); i++) {
+                    if (s2.charAt(i) == '\\') {
+                        insertColorText(j, "\\", constantColor);
+                        i++;
+                        insertColorText(j, Character.toString(s2.charAt(i)), constantColor);
+                    } else {
+                        insertColorText(j, Character.toString(s2.charAt(i)), stringColor);
+                    }
+                }
+                insertColorText(j, "\"", commentColor);
+                break;
+            case ID:
+                insertColorText(j, token.name, tagAttributeColor);
+                break;
+            case AND:
+            case OR:
+            case NOT:
+            case XOR:
+            case BIT_AND:
+            case BIT_OR:
+            case BIT_NOT:
             case PLUS:
             case MINUS:
             case MULTIPLICATION:
             case DIVISION:
+            case BAREMODULE:
+            case BEGIN:
+            case BREAK:
+            case CATCH:
+            case CONST:
+            case CONTINUE:
+            case DO:
+            case ELSE:
+            case ELSEIF:
+            case END:
+            case EXPORT:
+            case FINALLY:
+            case FOR:
+            case FUNCTION:
+            case GLOBAL:
+            case IF:
+            case IMPORT:
+            case LET:
+            case LOCAL:
+            case MACRO:
+            case MODULE:
+            case QUOTE:
+            case RETURN:
+            case STRUCT:
+            case TRY:
+            case USING:
+            case WHILE:
                 insertColorText(j, token.name, tagNameColor);
                 break;
+            case LPAR:
+            case RPAR:
+                insertColorText(j, token.name, commentColor);
+                break;
             default:
+                insertColorText(j, token.name, foregroundColor);
                 break;
             }
         }

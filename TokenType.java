@@ -15,9 +15,25 @@ public enum TokenType {
      */
     DOUBLE,
     /**
+     * 真理値を表します。
+     */
+    BOOLEAN,
+    /**
      * カンマを表します。
      */
+    CHARACTER,
+    /**
+     * 文字を表します。
+     */
+    STRING,
+    /**
+     * 文字列を表します。
+     */
     COMMA,
+    /**
+     * 代入を表します。
+     */
+    ASSAIGNMENT,
     /**
      * 等号を表します。
      */
@@ -51,6 +67,34 @@ public enum TokenType {
      */
     RPAR,
     /**
+     * & を表します。
+     */
+    BIT_AND,
+    /**
+     * | を表します。
+     */
+    BIT_OR,
+    /**
+     * ~ を表します。
+     */
+    BIT_NOT,
+    /**
+     * && を表します。
+     */
+    AND,
+    /**
+     * || を表します。
+     */
+    OR,
+    /**
+     * ! を表します。
+     */
+    NOT,
+    /**
+     * ^ を表します。
+     */
+    XOR,
+    /**
      * + を表します。
      */
     PLUS,
@@ -67,7 +111,127 @@ public enum TokenType {
      */
     DIVISION,
     /**
+     * {@code baremodule}を表します。
+     */
+    BAREMODULE,
+    /**
+     * 複文の開始を表します。
+     */
+    BEGIN,
+    /**
+     * {@code break}を表します。
+     */
+    BREAK,
+    /**
+     * {@code catch}を表します。
+     */
+    CATCH,
+    /**
+     * 定数を表します。
+     */
+    CONST,
+    /**
+     * {@code continue}を表します。
+     */
+    CONTINUE,
+    /**
+     * {@code do}を表します。
+     */
+    DO,
+    /**
+     * {@code else}を表します。
+     */
+    ELSE,
+    /**
+     * {@code elseif}を表します。
+     */
+    ELSEIF,
+    /**
+     * {@code end}を表します。
+     */
+    END,
+    /**
+     * {@code export}を表します。
+     */
+    EXPORT,
+    /**
+     * {@code finally}を表します。
+     */
+    FINALLY,
+    /**
+     * {@code for}を表します。
+     */
+    FOR,
+    /**
+     * {@code function}を表します。
+     */
+    FUNCTION,
+    /**
+     * {@code global}を表します。
+     */
+    GLOBAL,
+    /**
+     * {@code if}を表します。
+     */
+    IF,
+    /**
+     * {@code import}を表します。
+     */
+    IMPORT,
+    /**
+     * {@code let}を表します。
+     */
+    LET,
+    /**
+     * {@code local}を表します。
+     */
+    LOCAL,
+    /**
+     * {@code macro}を表します。
+     */
+    MACRO,
+    /**
+     * {@code module}を表します。
+     */
+    MODULE,
+    /**
+     * {@code quote}を表します。
+     */
+    QUOTE,
+    /**
+     * {@code return}を表します。
+     */
+    RETURN,
+    /**
+     * {@code struct}を表します。
+     */
+    STRUCT,
+    /**
+     * {@code try}を表します。
+     */
+    TRY,
+    /**
+     * {@code using}を表します。
+     */
+    USING,
+    /**
+     * {@code while}を表します。
+     */
+    WHILE,
+    /**
+     * ホワイトスペースを表します。
+     */
+    WHITESPACE,
+    /**
+     * 未定義のトークンを表します。
+     */
+    UNDEFINED,
+    /**
+     * 改行コードを表します。
+     */
+    NEW_LINE,
+    /**
      * 終わりを表します。
      */
-    END
+    END_OF_STRING,
 }
