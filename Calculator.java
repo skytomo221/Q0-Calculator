@@ -65,6 +65,10 @@ public class Calculator {
                     return (int) left * (int) right;
                 case DIVISION:
                     return (double) (int) left / (double) (int) right;
+                case BIT_AND:
+                    return (int) left & (int) right;
+                case BIT_OR:
+                    return (int) left | (int) right;
                 default:
                     throw new Exception("計算機がおかしい");
                 }
@@ -84,6 +88,68 @@ public class Calculator {
                     return (double) left * (double) right;
                 case DIVISION:
                     return (double) left / (double) right;
+                default:
+                    throw new Exception("計算機がおかしい");
+                }
+            } else if (left instanceof Boolean && right instanceof Boolean) {
+                switch (expression.operator.type) {
+                case AND:
+                    return (boolean) left && (boolean) right;
+                case OR:
+                    return (boolean) left || (boolean) right;
+                case BIT_AND:
+                    return (boolean) left & (boolean) right;
+                case BIT_OR:
+                    return (boolean) left | (boolean) right;
+                default:
+                    throw new Exception("計算機がおかしい");
+                }
+            } else {
+                throw new Exception("Calculator が対応していない二項演算子です。");
+            }
+        case COMPARSION_OPERATOR:
+            left = expression(expression.operands.get(0));
+            right = expression(expression.operands.get(1));
+            if (left instanceof Integer && right instanceof Integer) {
+                switch (expression.operator.type) {
+                case EQ:
+                    return new ComparisonResult(right, (int) left == (int) right);
+                case NE:
+                    return new ComparisonResult(right, (int) left != (int) right);
+                case LE:
+                    return new ComparisonResult(right, (int) left <= (int) right);
+                case LT:
+                    return new ComparisonResult(right, (int) left < (int) right);
+                case GE:
+                    return new ComparisonResult(right, (int) left >= (int) right);
+                case GT:
+                    return new ComparisonResult(right, (int) left > (int) right);
+                default:
+                    throw new Exception("計算機がおかしい");
+                }
+            } else if (left instanceof Boolean && right instanceof Boolean) {
+                switch (expression.operator.type) {
+                case EQ:
+                    return new ComparisonResult(right, (int) left == (int) right);
+                case NE:
+                    return new ComparisonResult(right, (int) left != (int) right);
+                default:
+                    throw new Exception("計算機がおかしい");
+                }
+            } else if (left instanceof ComparisonResult && right instanceof Integer) {
+                switch (expression.operator.type) {
+                case EQ:
+                    return new ComparisonResult(right, (int) ((ComparisonResult) left).comparison == (int) right);
+                case NE:
+                    return new ComparisonResult(right, (int) ((ComparisonResult) left).comparison != (int) right);
+                case LE:
+                    return new ComparisonResult(right, (int) ((ComparisonResult) left).comparison <= (int) right);
+                case LT:
+                    return new ComparisonResult(right, (int) ((ComparisonResult) left).comparison < (int) right);
+                case GE:
+                    return new ComparisonResult(right, (int) ((ComparisonResult) left).comparison >= (int) right);
+                case GT:
+                    return new ComparisonResult(right, (int) ((ComparisonResult) left).comparison > (int) right);
                 default:
                     throw new Exception("計算機がおかしい");
                 }
