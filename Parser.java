@@ -79,28 +79,15 @@ public class Parser {
 
     private Expression parseComparsionExpression() throws Exception {
         Expression left = parsePlus();
-        if (peek().type == TokenType.EQ || peek().type == TokenType.NE || peek().type == TokenType.LE
+        while (peek().type == TokenType.EQ || peek().type == TokenType.NE || peek().type == TokenType.LE
                 || peek().type == TokenType.LT || peek().type == TokenType.GE || peek().type == TokenType.GT) {
             Token operator = next();
-            Expression right = parseComparsionExpression();
-            if (right.type == ExpressionType.COMPARSION_OPERATOR) {
-                // (left operator (child_left child_operator child_right)))
-                // -> ((left operator child_left) child_operator child_right)
-                // -> (new_left child_operator child_right)
-                Expression child_left = right.operands.get(0);
-                Token child_operator = right.operator;
-                Expression child_right = right.operands.get(1);
-                Expression new_left = new Expression(ExpressionType.COMPARSION_OPERATOR, operator,
-                        new ArrayList<Expression>(Arrays.asList(left, child_left)));
-                return new Expression(ExpressionType.COMPARSION_OPERATOR, child_operator,
-                        new ArrayList<Expression>(Arrays.asList(new_left, child_right)));
-            } else {
-                return new Expression(ExpressionType.COMPARSION_OPERATOR, operator,
-                        new ArrayList<Expression>(Arrays.asList(left, right)));
-            }
-        } else {
-            return left;
+            Expression right = parsePlus();
+            Expression parent = new Expression(ExpressionType.COMPARSION_OPERATOR, operator,
+                    new ArrayList<Expression>(Arrays.asList(left, right)));
+            left = parent;
         }
+        return left;
     }
 
     private Expression parseAnd() throws Exception {

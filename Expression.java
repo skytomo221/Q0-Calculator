@@ -46,10 +46,15 @@ public class Expression {
         switch (type) {
         case OPERAND:
             return operator.value.toString();
-        case BINARY_OPERATOR:
+        case UNARY_OPERATOR:
             return "(" + operands.get(0) + " " + operator.name + " " + operands.get(1) + ")";
+        case BINARY_OPERATOR:
+        case COMPARSION_OPERATOR:
+            return "(" + operands.get(0) + " " + operator.name + " " + operands.get(1) + ")";
+        case END:
+            return "(end)";
         default:
-            return "";
+            return "(未設定)";
         }
     }
 }

@@ -127,16 +127,43 @@ public class Calculator {
                 default:
                     throw new Exception("計算機がおかしい");
                 }
-            } else if (left instanceof Boolean && right instanceof Boolean) {
+            } else if (!(left instanceof ComparisonResult) && (left instanceof Double || right instanceof Double)) {
+                if (left instanceof Integer) {
+                    left = (double) (int) left;
+                }
+                if (right instanceof Integer) {
+                    right = (double) (int) right;
+                }
                 switch (expression.operator.type) {
                 case EQ:
-                    return new ComparisonResult(right, (int) left == (int) right);
+                    return new ComparisonResult(right, (double) left == (double) right);
                 case NE:
-                    return new ComparisonResult(right, (int) left != (int) right);
+                    return new ComparisonResult(right, (double) left != (double) right);
+                case LE:
+                    return new ComparisonResult(right, (double) left <= (double) right);
+                case LT:
+                    return new ComparisonResult(right, (double) left < (double) right);
+                case GE:
+                    return new ComparisonResult(right, (double) left >= (double) right);
+                case GT:
+                    return new ComparisonResult(right, (double) left > (double) right);
                 default:
                     throw new Exception("計算機がおかしい");
                 }
-            } else if (left instanceof ComparisonResult && right instanceof Integer) {
+            } else if (left instanceof Boolean && right instanceof Boolean) {
+                switch (expression.operator.type) {
+                case EQ:
+                    return new ComparisonResult(right, (boolean) left == (boolean) right);
+                case NE:
+                    return new ComparisonResult(right, (boolean) left != (boolean) right);
+                default:
+                    throw new Exception("計算機がおかしい");
+                }
+            } else if (left instanceof ComparisonResult && ((ComparisonResult) left).comparison instanceof Integer
+                    && right instanceof Integer) {
+                if (!((ComparisonResult) left).result) {
+                    return new ComparisonResult(right, false);
+                }
                 switch (expression.operator.type) {
                 case EQ:
                     return new ComparisonResult(right, (int) ((ComparisonResult) left).comparison == (int) right);
@@ -153,8 +180,32 @@ public class Calculator {
                 default:
                     throw new Exception("計算機がおかしい");
                 }
+            } else if (left instanceof ComparisonResult && (right instanceof Double || right instanceof Integer)) {
+                if (right instanceof Integer) {
+                    right = (double) (int) right;
+                }
+                if (!((ComparisonResult) left).result) {
+                    return new ComparisonResult(right, false);
+                }
+                switch (expression.operator.type) {
+                case EQ:
+                    return new ComparisonResult(right, (double) ((ComparisonResult) left).comparison == (double) right);
+                case NE:
+                    return new ComparisonResult(right, (double) ((ComparisonResult) left).comparison != (double) right);
+                case LE:
+                    return new ComparisonResult(right, (double) ((ComparisonResult) left).comparison <= (double) right);
+                case LT:
+                    return new ComparisonResult(right, (double) ((ComparisonResult) left).comparison < (double) right);
+                case GE:
+                    return new ComparisonResult(right, (double) ((ComparisonResult) left).comparison >= (double) right);
+                case GT:
+                    return new ComparisonResult(right, (double) ((ComparisonResult) left).comparison > (double) right);
+                default:
+                    throw new Exception("計算機がおかしい");
+                }
             } else {
-                throw new Exception("Calculator が対応していない二項演算子です。");
+                throw new Exception(left.getClass().getSimpleName() + " と " + right.getClass().getSimpleName()
+                        + "の比較演算子は Calculator が対応していません。");
             }
         default:
         }
