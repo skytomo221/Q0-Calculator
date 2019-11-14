@@ -7,7 +7,7 @@ public class Parser {
     private int index;
     private List<Token> tokens;
 
-    public Parser() {        
+    public Parser() {
     }
 
     private Token peek() throws Exception {
@@ -24,7 +24,8 @@ public class Parser {
     }
 
     private Expression parseFactor() throws Exception {
-        if (peek().type == TokenType.ID || peek().type == TokenType.INTEGER || peek().type == TokenType.DOUBLE) {
+        if (peek().type == TokenType.ID || peek().type == TokenType.INTEGER || peek().type == TokenType.DOUBLE
+                || peek().type == TokenType.BOOLEAN) {
             return new Expression(ExpressionType.OPERAND, next());
         } else if (peek().type == TokenType.LPAR) {
             next();
@@ -44,7 +45,8 @@ public class Parser {
         if (peek().type == TokenType.MINUS || peek().type == TokenType.PLUS) {
             Token operator = next();
             Expression right = parseFactor();
-            return new Expression(ExpressionType.OPERAND, operator, new ArrayList<Expression>(Arrays.asList(right)));
+            return new Expression(ExpressionType.UNARY_OPERATOR, operator,
+                    new ArrayList<Expression>(Arrays.asList(right)));
         } else {
             return parseFactor();
         }
@@ -146,7 +148,7 @@ public class Parser {
         tokens = Lexer.removeWhitespace(tokens);
         this.tokens = tokens;
         List<Expression> expressions = new ArrayList<Expression>();
-        tokens.add(new Token(TokenType.END_OF_STRING, "(END)"));        
+        tokens.add(new Token(TokenType.END_OF_STRING, "(END)"));
         while (peek().type != TokenType.END_OF_STRING) {
             expressions.add(parseExpression());
         }
