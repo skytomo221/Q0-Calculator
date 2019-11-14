@@ -35,6 +35,34 @@ public enum TokenType {
      */
     ASSAIGNMENT,
     /**
+     * += を表します。
+     */
+    PLUS_ASSAIGNMENT,
+    /**
+     * -= を表します。
+     */
+    MINUS_ASSAIGNMENT,
+    /**
+     * *= を表します。
+     */
+    MULTIPLICATION_ASSAIGNMENT,
+    /**
+     * /= を表します。
+     */
+    DIVISION_ASSAIGNMENT,
+    /**
+     * %= を表します。
+     */
+    MOD_ASSAIGNMENT,
+    /**
+     * <| を表します。
+     */
+    PIPE_TO_LEFT,
+    /**
+     * |> を表します。
+     */
+    PIPE_TO_RIGHT,
+    /**
      * 等号を表します。
      */
     EQ,
@@ -110,6 +138,10 @@ public enum TokenType {
      * 割り算を表します。
      */
     DIVISION,
+    /**
+     * 剰余 を表します。
+     */
+    MOD,
     /**
      * {@code baremodule}を表します。
      */
