@@ -298,6 +298,8 @@ public class Lexer {
             } else { // |
                 return new Token(TokenType.BIT_OR, "|");
             }
+        } else if (peek() == '≠') {
+        	return new Token(TokenType.NE, Character.toString(next()));
         } else if (peek() == '~') {
             return new Token(TokenType.BIT_NOT, Character.toString(next()));
         } else if (peek() == '^') {
@@ -345,5 +347,20 @@ public class Lexer {
             t = nextToken();
         }
         return tokens;
+    }
+
+    /**
+     * 字句解析した結果からホワイトスペースのトークンを取り除きます。
+     * @param list 対象のリスト
+     * @return ホワイトスペースのトークンを取り除いたリスト
+     */
+    public static List<Token> removeWhitespace(List<Token> list) {
+    	List<Token> new_list = new ArrayList<>();
+    	for(Token token : list ) {
+    		if (token.type != TokenType.WHITESPACE) {
+    			new_list.add(token);
+    		}
+    	}
+    	return new_list;
     }
 }
