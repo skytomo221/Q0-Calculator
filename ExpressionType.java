@@ -15,6 +15,10 @@ public enum ExpressionType {
      */
     OPERAND,
     /**
+     * 比較演算子を表します。
+     */
+    COMPARSION_OPERATOR,
+    /**
      * 終わりを表します。
      */
     END
