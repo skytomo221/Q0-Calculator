@@ -298,6 +298,22 @@ public class Lexer {
             } else { // |
                 return new Token(TokenType.BIT_OR, "|");
             }
+        } else if (peek() == '<') {
+            next();
+            if (!isEndOfString() && peek() == '=') {
+                next();
+                return new Token(TokenType.LE, "<=");
+            } else {
+                return new Token(TokenType.LT, "<");
+            }
+        } else if (peek() == '>') {
+            next();
+            if (!isEndOfString() && peek() == '=') {
+                next();
+                return new Token(TokenType.GE, ">=");
+            } else {
+                return new Token(TokenType.GT, ">");
+            }
         } else if (peek() == '≠') {
         	return new Token(TokenType.NE, Character.toString(next()));
         } else if (peek() == '~') {
