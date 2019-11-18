@@ -156,61 +156,60 @@ public class Calculator {
             Expression operand = expression(expression.operands.get(0));
             Object oov = operand.operator.value;
             Expression answer = new Expression(ExpressionType.OPERAND, null);
-            Object aov = answer.operator.value;
             if (oov instanceof BigDecimal) {
                 switch (expression.operator.type) {
                 case PLUS:
-                    aov = ((BigDecimal) oov).plus();
+                    answer.operator.value = ((BigDecimal) oov).plus();
                 case MINUS:
-                    aov = ((BigDecimal) oov).negate();
+                    answer.operator.value = ((BigDecimal) oov).negate();
                 default:
                 }
             } else if (oov instanceof Double) {
                 switch (expression.operator.type) {
                 case PLUS:
-                    aov = +(double) oov;
+                    answer.operator.value = +(double) oov;
                 case MINUS:
-                    aov = -(double) oov;
+                    answer.operator.value = -(double) oov;
                 default:
                 }
             } else if (oov instanceof Float) {
                 switch (expression.operator.type) {
                 case PLUS:
-                    aov = +(float) oov;
+                    answer.operator.value = +(float) oov;
                 case MINUS:
-                    aov = -(float) oov;
+                    answer.operator.value = -(float) oov;
                 default:
                 }
             } else if (oov instanceof Long) {
                 switch (expression.operator.type) {
                 case PLUS:
-                    aov = +(long) oov;
+                    answer.operator.value = +(long) oov;
                 case MINUS:
-                    aov = -(long) oov;
+                    answer.operator.value = -(long) oov;
                 default:
                 }
             } else if (oov instanceof Integer) {
                 switch (expression.operator.type) {
                 case PLUS:
-                    aov = +(int) oov;
+                    answer.operator.value = +(int) oov;
                 case MINUS:
-                    aov = -(int) oov;
+                    answer.operator.value = -(int) oov;
                 default:
                 }
             } else if (oov instanceof Short) {
                 switch (expression.operator.type) {
                 case PLUS:
-                    aov = +(short) oov;
+                    answer.operator.value = +(short) oov;
                 case MINUS:
-                    aov = -(short) oov;
+                    answer.operator.value = -(short) oov;
                 default:
                 }
             } else if (oov instanceof Byte) {
                 switch (expression.operator.type) {
                 case PLUS:
-                    aov = +(byte) oov;
+                    answer.operator.value = +(byte) oov;
                 case MINUS:
-                    aov = -(byte) oov;
+                    answer.operator.value = -(byte) oov;
                 default:
                 }
             } else {
@@ -225,72 +224,69 @@ public class Calculator {
             answer = new Expression(ExpressionType.OPERAND, null);
             if (left.operator.type == TokenType.BIG_FLOAT || right.operator.type == TokenType.BIG_FLOAT) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_FLOAT, null));
-                aov = answer.operator.value;
                 promoteToBigFloat(left);
                 promoteToBigFloat(right);
                 switch (expression.operator.type) {
                 case MULTIPLICATION:
-                    aov = ((BigDecimal) lov).multiply((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).multiply((BigDecimal) rov);
                     break;
                 case DIVISION:
-                    aov = ((BigDecimal) lov).divide((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).divide((BigDecimal) rov);
                     break;
                 case MOD:
-                    aov = ((BigDecimal) lov).remainder((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).remainder((BigDecimal) rov);
                     break;
                 case PLUS:
-                    aov = ((BigDecimal) lov).add((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).add((BigDecimal) rov);
                     break;
                 case MINUS:
-                    aov = ((BigDecimal) lov).subtract((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).subtract((BigDecimal) rov);
                     break;
                 default:
                     throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
                 }
             } else if (left.operator.type == TokenType.BIG_INT || right.operator.type == TokenType.BIG_INT) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_INT, null));
-                aov = answer.operator.value;
                 promoteToBigInt(left);
                 promoteToBigInt(right);
                 switch (expression.operator.type) {
                 case MULTIPLICATION:
-                    aov = ((BigDecimal) lov).multiply((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).multiply((BigDecimal) rov);
                     break;
                 case DIVISION:
-                    aov = ((BigDecimal) lov).divide((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).divide((BigDecimal) rov);
                     break;
                 case MOD:
-                    aov = ((BigDecimal) lov).remainder((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).remainder((BigDecimal) rov);
                     break;
                 case PLUS:
-                    aov = ((BigDecimal) lov).add((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).add((BigDecimal) rov);
                     break;
                 case MINUS:
-                    aov = ((BigDecimal) lov).subtract((BigDecimal) rov);
+                    answer.operator.value = ((BigDecimal) lov).subtract((BigDecimal) rov);
                     break;
                 default:
                     throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
                 }
             } else if (left.operator.type == TokenType.FLOAT64 || right.operator.type == TokenType.FLOAT64) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT64, null));
-                aov = answer.operator.value;
                 promoteToFloat64(left);
                 promoteToFloat64(right);
                 switch (expression.operator.type) {
                 case MULTIPLICATION:
-                    aov = (double) lov * (double) rov;
+                    answer.operator.value = (double) lov * (double) rov;
                     break;
                 case DIVISION:
-                    aov = (double) lov / (double) rov;
+                    answer.operator.value = (double) lov / (double) rov;
                     break;
                 case MOD:
-                    aov = (double) lov % (double) rov;
+                    answer.operator.value = (double) lov % (double) rov;
                     break;
                 case PLUS:
-                    aov = (double) lov + (double) rov;
+                    answer.operator.value = (double) lov + (double) rov;
                     break;
                 case MINUS:
-                    aov = (double) lov - (double) rov;
+                    answer.operator.value = (double) lov - (double) rov;
                     break;
                 default:
                     throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
