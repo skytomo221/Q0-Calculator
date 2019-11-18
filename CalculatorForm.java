@@ -216,16 +216,16 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 l.text = inputTextPane.getText();
                 try {
                     List<Token> tokens = l.parse(inputTextPane.getText());
-                     for (Token token : tokens) {
-                     System.out.println(token.toString());
-                     }
-                     System.out.println("");
+                    //  for (Token token : tokens) {
+                    //  System.out.println(token.toString());
+                    //  }
+                    //  System.out.println("");
                     Parser p = new Parser();
                     List<Expression> expressions = p.parse(tokens);
-                     for (Expression expression : expressions) {
-                     System.out.println(expression.toString());
-                     }
-                     System.out.println("");
+                    //  for (Expression expression : expressions) {
+                    //  System.out.println(expression.toString());
+                    //  }
+                    //  System.out.println("");
                     Calculator c = new Calculator(expressions);
                     c.run();
                     insertColorText(logTextPane, "Input  => ", foregroundColor);

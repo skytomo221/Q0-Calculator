@@ -154,6 +154,7 @@ public class Calculator {
     public Expression expression(Expression expression) throws Exception {
         switch (expression.type) {
         case OPERAND:
+            expression.operator.name = expression.operator.value.toString();
             return expression;
         case UNARY_OPERATOR:
             Expression operand = expression(expression.operands.get(0));

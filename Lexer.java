@@ -110,24 +110,16 @@ public class Lexer {
 
         char first = str.charAt(0);
         int i = (first == '+' || first == '-') ? 1 : 0;
-        long sign = (first == '-') ? -1 : 1;
         long len = str.length();
-        long int64 = 0;
 
-        if (len - i >= 20) {
+        if (len - i >= 19) {
             return false;
         }
         while (i < len) {
             char c = str.charAt(i++);
-            if (Character.isDigit(c) && c != '9') {
-                int64 *= 10 * sign;
-                int64 += Long.parseLong(Character.toString(c)) * sign;
-            } else if (c == '¬') {
-                int64 -= 1 * sign;
+            if ((Character.isDigit(c) || c == '¬') && c != '9') {
+                continue;
             } else {
-                return false;
-            }
-            if (!(sign == -1 && int64 == Long.MIN_VALUE) && int64 * sign < 0) {
                 return false;
             }
         }
@@ -189,14 +181,14 @@ public class Lexer {
     }
 
     private BigDecimal parseFuToBigInt(String s) throws Exception {
-        BigDecimal ans = new BigDecimal(0);
+        BigDecimal ans = BigDecimal.ZERO;
         for (int i = 0; i < s.length(); i++) {
             Character c = s.charAt(i);
-            ans.multiply(new BigDecimal(10));
+            ans = ans.multiply(BigDecimal.TEN);
             if (Character.isDigit(c) && c != '9') {
-                ans.add(new BigDecimal(c.toString()));
+                ans = ans.add(new BigDecimal(c.toString()));
             } else if (c == '¬') {
-                ans.subtract(new BigDecimal(-1));
+                ans = ans.subtract(BigDecimal.ONE);
             } else if (c == '9') {
                 throw new Exception("フ界には 9 がありません。");
             } else {
