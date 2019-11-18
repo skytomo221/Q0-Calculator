@@ -305,5 +305,9 @@ public enum TokenType {
     /**
      * 終わりを表します。
      */
-    END_OF_STRING,
+    END_OF_STRING;
+
+    public static boolean isInt(TokenType t) {
+        return t == INT8 || t == INT16 || t == INT32 || t == INT64;
+    }
 }
