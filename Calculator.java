@@ -223,7 +223,6 @@ public class Calculator {
             Expression right = expression(expression.operands.get(1));
             Object lov = left.operator.value;
             Object rov = right.operator.value;
-            answer = new Expression(ExpressionType.OPERAND, null);
             if (left.operator.type == TokenType.BIG_FLOAT || right.operator.type == TokenType.BIG_FLOAT) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_FLOAT, null));
                 ansop = answer.operator;

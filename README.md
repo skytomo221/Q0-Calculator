@@ -9,8 +9,20 @@
 
 |型名|説明|
 |:-:|:-:|
-|`Integer`|整数型|
+|`INT32`|整数型|
 |`Double`|浮動小数点型|
+|`Boolean`|真理値|
+
+## 演算子の優先順位
+
+|優先順位|演算子|
+|:-:|:-:|
+|6|`()`|
+|5|`*` `/` `&` `%`|
+|4|`==` `!=` `<=` `<` `>` `>=`|
+|3|`&&`|
+|2|`||`|
+|1|`=`|
 
 ## 現在対応済みの演算子
 
@@ -30,15 +42,15 @@
 |`Double`|`×`|`Double`|`Double`|乗算|
 |`Double`|`/`|`Double`|`Double`|除算|
 |`Double`|`÷`|`Double`|`Double`|除算|
-|`Integer`|`÷`|`Integer`|`Double`|除算|
-|`Integer`|`+`|`Double`|`Double`|加算|
-|`Integer`|`-`|`Double`|`Double`|減算|
-|`Integer`|`*`|`Double`|`Double`|乗算|
-|`Integer`|`×`|`Double`|`Double`|乗算|
-|`Integer`|`/`|`Double`|`Double`|除算|
-|`Integer`|`÷`|`Double`|`Double`|除算|
-|`Integer`|`+`|`Integer`|`Integer`|加算|
-|`Integer`|`-`|`Integer`|`Integer`|減算|
-|`Integer`|`*`|`Integer`|`Integer`|乗算|
-|`Integer`|`×`|`Integer`|`Integer`|乗算|
-|`Integer`|`/`|`Integer`|`Double`|除算|
+|`INT32`|`÷`|`INT32`|`Double`|除算|
+|`INT32`|`+`|`Double`|`Double`|加算|
+|`INT32`|`-`|`Double`|`Double`|減算|
+|`INT32`|`*`|`Double`|`Double`|乗算|
+|`INT32`|`×`|`Double`|`Double`|乗算|
+|`INT32`|`/`|`Double`|`Double`|除算|
+|`INT32`|`÷`|`Double`|`Double`|除算|
+|`INT32`|`+`|`INT32`|`INT32`|加算|
+|`INT32`|`-`|`INT32`|`INT32`|減算|
+|`INT32`|`*`|`INT32`|`INT32`|乗算|
+|`INT32`|`×`|`INT32`|`INT32`|乗算|
+|`INT32`|`/`|`INT32`|`Double`|除算|
