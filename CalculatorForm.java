@@ -60,6 +60,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     final static Color tagAttributeColor = new Color(253, 151, 31);
     final static Color tagNameColor = new Color(249, 38, 114);
 
+    public boolean displayLexerResult = true;
+    public boolean displayPerserResult = true;
+
     CalculatorForm() {
         super("Q0 Calculator");
         setSize(800, 500);
@@ -216,16 +219,20 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 l.text = inputTextPane.getText();
                 try {
                     List<Token> tokens = l.parse(inputTextPane.getText());
-                    //  for (Token token : tokens) {
-                    //  System.out.println(token.toString());
-                    //  }
-                    //  System.out.println("");
+                    if (displayLexerResult) {
+                        for (Token token : tokens) {
+                            System.out.println(token.toString());
+                        }
+                        System.out.println("");
+                    }
                     Parser p = new Parser();
                     List<Expression> expressions = p.parse(tokens);
-                    //  for (Expression expression : expressions) {
-                    //  System.out.println(expression.toString());
-                    //  }
-                    //  System.out.println("");
+                    if (displayPerserResult) {
+                        for (Expression expression : expressions) {
+                            System.out.println(expression.toString());
+                        }
+                        System.out.println("");
+                    }
                     Calculator c = new Calculator(expressions);
                     c.run();
                     insertColorText(logTextPane, "Input  => ", foregroundColor);
