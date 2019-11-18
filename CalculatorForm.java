@@ -232,9 +232,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     insertHighlight(logTextPane, inputTextPane.getText());
                     insertColorText(logTextPane, "\n", foregroundColor);
                     insertColorText(logTextPane, "Output => ", foregroundColor);
-                    insertHighlight(logTextPane, c.getAnswerValue().toString());
+                    insertHighlight(logTextPane, c.getAnswerToString());
                     insertColorText(logTextPane, "\n\n", foregroundColor);
-                    inputTextPane.setText(c.answer.toString());
+                    inputTextPane.setText(c.getAnswerToString());
                 } catch (Exception ex) {
                     logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
                 } finally {

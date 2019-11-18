@@ -14,8 +14,8 @@ public class Calculator {
         this.body = body;
     }
 
-    public Object getAnswerValue() {
-        return answer.operator.value;
+    public String getAnswerToString() {
+        return answer.operator.name;
     }
 
     public static void promoteToInt8(Expression expression) {
@@ -216,6 +216,7 @@ public class Calculator {
             } else {
                 throw new Exception("Calculator が対応していない単項演算子です。");
             }
+            ansop.name = ansop.value.toString();
             return answer;
         case BINARY_OPERATOR:
             Expression left = expression(expression.operands.get(0));
@@ -247,6 +248,7 @@ public class Calculator {
                 default:
                     throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
                 }
+                ansop.name = ansop.value.toString();
             } else if (left.operator.type == TokenType.BIG_INT || right.operator.type == TokenType.BIG_INT) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_INT, null));
                 ansop = answer.operator;
@@ -271,6 +273,7 @@ public class Calculator {
                 default:
                     throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
                 }
+                ansop.name = ansop.value.toString();
             } else if (left.operator.type == TokenType.FLOAT64 || right.operator.type == TokenType.FLOAT64) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT64, null));
                 ansop = answer.operator;
@@ -293,11 +296,46 @@ public class Calculator {
                     ansop.value = (double) lov - (double) rov;
                     break;
                 default:
-                    throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
+                    throw new Exception("FLOAT64 が対応していない二項演算子です。");
                 }
+                ansop.name = ansop.value.toString();
             } else if (left.operator.type == TokenType.FLOAT32 || right.operator.type == TokenType.FLOAT32) {
-            } else if (left.operator.type == TokenType.CHAR || right.operator.type == TokenType.CHAR) {
-            } else if (left.operator.type == TokenType.STRING || right.operator.type == TokenType.STRING) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT32, null));
+                ansop = answer.operator;
+                promoteToFloat32(left);
+                promoteToFloat32(right);
+                switch (expression.operator.type) {
+                case MULTIPLICATION:
+                    ansop.value = (float) lov * (float) rov;
+                    break;
+                case DIVISION:
+                    ansop.value = (float) lov / (float) rov;
+                    break;
+                case MOD:
+                    ansop.value = (float) lov % (float) rov;
+                    break;
+                case PLUS:
+                    ansop.value = (float) lov + (float) rov;
+                    break;
+                case MINUS:
+                    ansop.value = (float) lov - (float) rov;
+                    break;
+                default:
+                    throw new Exception("FLOAT32 が対応していない二項演算子です。");
+                }
+                ansop.name = ansop.value.toString();
+            } else if (left.operator.type == TokenType.CHAR && right.operator.type == TokenType.INT64) {
+            } else if (left.operator.type == TokenType.STRING && right.operator.type == TokenType.STRING) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
+                ansop = answer.operator;
+                switch (expression.operator.type) {
+                case PLUS:
+                    ansop.value = (String) lov + (String) rov;
+                    break;
+                default:
+                    throw new Exception("STRING が対応していない二項演算子です。");
+                }
+                ansop.name = "\"" + ansop.value.toString() + "\"";
             } else if (left.operator.type == TokenType.INT64 || right.operator.type == TokenType.INT64) {
             } else if (left.operator.type == TokenType.INT32 || right.operator.type == TokenType.INT32) {
             } else if (left.operator.type == TokenType.INT16 || right.operator.type == TokenType.INT16) {
