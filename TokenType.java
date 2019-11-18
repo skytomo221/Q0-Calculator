@@ -7,27 +7,67 @@ public enum TokenType {
      */
     ID,
     /**
-     * 整数型を表します。
+     * Int16 (byte) を表します。
      */
-    INTEGER,
+    INT8,
     /**
-     * 浮動小数点型を表します。
+     * UInt16 (byte) を表します。
      */
-    DOUBLE,
+    UINT8,
     /**
-     * 真理値を表します。
+     * Int16 (short) を表します。
      */
-    BOOLEAN,
+    INT16,
     /**
-     * カンマを表します。
+     * UInt16 (short) を表します。
      */
-    CHARACTER,
+    UINT16,
     /**
-     * 文字を表します。
+     * Int32 (int) を表します。
+     */
+    INT32,
+    /**
+     * UInt32 (int) を表します。
+     */
+    UINT32,
+    /**
+     * Int64 (long) を表します。
+     */
+    INT64,
+    /**
+     * UInt64 (long) を表します。
+     */
+    UINT64,
+    /**
+     * Float32 (float) を表します。
+     */
+    FLOAT32,
+    /**
+     * Float64 (double) を表します。
+     */
+    FLOAT64,
+    /**
+     * BigInt (BigInteger) を表します。
+     */
+    BIG_INT,
+    /**
+     * BigFloat (BigInteger) を表します。
+     */
+    BIG_FLOAT,
+    /**
+     * Bool (bool) を表します。
+     */
+    BOOL,
+    /**
+     * Char (char) （文字型）を表します。
+     */
+    CHAR,
+    /**
+     * String （文字列型）を表します。
      */
     STRING,
     /**
-     * 文字列を表します。
+     * カンマを表します。
      */
     COMMA,
     /**

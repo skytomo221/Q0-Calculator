@@ -231,12 +231,10 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     insertColorText(logTextPane, "Input  => ", foregroundColor);
                     insertHighlight(logTextPane, inputTextPane.getText());
                     insertColorText(logTextPane, "\n", foregroundColor);
-                    for (Object object : c.answers) {
-                        insertColorText(logTextPane, "Output => ", foregroundColor);
-                        insertHighlight(logTextPane, object.toString());
-                        insertColorText(logTextPane, "\n\n", foregroundColor);
-                        inputTextPane.setText(object.toString());
-                    }
+                    insertColorText(logTextPane, "Output => ", foregroundColor);
+                    insertHighlight(logTextPane, c.getAnswerValue().toString());
+                    insertColorText(logTextPane, "\n\n", foregroundColor);
+                    inputTextPane.setText(c.answer.toString());
                 } catch (Exception ex) {
                     logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
                 } finally {
@@ -333,12 +331,22 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         List<Token> tokens = l.parse(s);
         for (Token token : tokens) {
             switch (token.type) {
-            case INTEGER:
-            case DOUBLE:
-            case BOOLEAN:
+            case INT8:
+            case UINT8:
+            case INT16:
+            case UINT16:
+            case INT32:
+            case UINT32:
+            case INT64:
+            case UINT64:
+            case FLOAT32:
+            case FLOAT64:
+            case BIG_INT:
+            case BIG_FLOAT:
+            case BOOL:
                 insertColorText(j, token.name, constantColor);
                 break;
-            case CHARACTER:
+            case CHAR:
                 if (token.name.length() == 3) {
                     insertColorText(j, "\'", commentColor);
                     insertColorText(j, token.value.toString(), stringColor);

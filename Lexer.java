@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,13 +68,79 @@ public class Lexer {
         return null;
     }
 
-    private int parseFuToIntger(String s) throws Exception {
-        int ans = 0;
+    /**
+     * 文字列が10進数の整数であり、かつ Int64 の範疇に収まるかどうかを判定する。
+     * 
+     * @param str 判定対象の文字列。
+     * @return 文字列が10進数の整数であり、かつintの範疇に収まる場合はTrue.
+     */
+    public static final boolean isInt64(String str) {
+        if (str == null || str.matches("|\\+|-")) {
+            return false;
+        }
+
+        char first = str.charAt(0);
+        int i = (first == '+' || first == '-') ? 1 : 0;
+        long sign = (first == '-') ? -1 : 1;
+        long len = str.length();
+        long int64 = 0;
+
+        if (len - i >= 20) {
+            return false;
+        }
+        while (i < len) {
+            char c = str.charAt(i++);
+            long digit = Character.digit(c, 10);
+            if (digit == -1) {
+                return false;
+            }
+
+            int64 = int64 * 10 + sign * digit;
+            if (!(sign == -1 && int64 == Long.MIN_VALUE) && int64 * sign < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static final boolean isInt64Fu(String str) {
+        if (str == null || str.matches("|\\+|-")) {
+            return false;
+        }
+
+        char first = str.charAt(0);
+        int i = (first == '+' || first == '-') ? 1 : 0;
+        long sign = (first == '-') ? -1 : 1;
+        long len = str.length();
+        long int64 = 0;
+
+        if (len - i >= 20) {
+            return false;
+        }
+        while (i < len) {
+            char c = str.charAt(i++);
+            if (Character.isDigit(c) && c != '9') {
+                int64 *= 10 * sign;
+                int64 += Long.parseLong(Character.toString(c)) * sign;
+            } else if (c == '¬') {
+                int64 -= 1 * sign;
+            } else {
+                return false;
+            }
+            if (!(sign == -1 && int64 == Long.MIN_VALUE) && int64 * sign < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private long parseFuToInt64(String s) throws Exception {
+        long ans = 0;
         for (int i = 0; i < s.length(); i++) {
             Character c = s.charAt(i);
             ans *= 10;
             if (Character.isDigit(c) && c != '9') {
-                ans += Integer.parseInt(c.toString());
+                ans += Long.parseLong(c.toString());
             } else if (c == '¬') {
                 ans -= 1;
             } else if (c == '9') {
@@ -85,7 +152,7 @@ public class Lexer {
         return ans;
     }
 
-    private double parseFuToDouble(String s) throws Exception {
+    private double parseFuToFloat64(String s) throws Exception {
         double ans = 0;
         double weight = 1;
         boolean isLess1 = false;
@@ -94,7 +161,7 @@ public class Lexer {
             if (isLess1) {
                 weight /= 10;
                 if (Character.isDigit(c) && c != '9') {
-                    ans += Integer.parseInt(c.toString()) * weight;
+                    ans += Long.parseLong(c.toString()) * weight;
                 } else if (c == '¬') {
                     ans -= 1 * weight;
                 } else if (c == '9') {
@@ -105,7 +172,7 @@ public class Lexer {
             } else {
                 ans *= 10;
                 if (Character.isDigit(c) && c != '9') {
-                    ans += Integer.parseInt(c.toString());
+                    ans += Long.parseLong(c.toString());
                 } else if (c == '¬') {
                     ans -= 1;
                 } else if (c == '.') {
@@ -116,6 +183,24 @@ public class Lexer {
                 } else {
                     throw new Exception("フ界にて未知のトークンが発見されました。");
                 }
+            }
+        }
+        return ans;
+    }
+
+    private BigDecimal parseFuToBigInt(String s) throws Exception {
+        BigDecimal ans = new BigDecimal(0);
+        for (int i = 0; i < s.length(); i++) {
+            Character c = s.charAt(i);
+            ans.multiply(new BigDecimal(10));
+            if (Character.isDigit(c) && c != '9') {
+                ans.add(new BigDecimal(c.toString()));
+            } else if (c == '¬') {
+                ans.subtract(new BigDecimal(-1));
+            } else if (c == '9') {
+                throw new Exception("フ界には 9 がありません。");
+            } else {
+                throw new Exception("フ界にて未知のトークンが発見されました。");
             }
         }
         return ans;
@@ -135,7 +220,7 @@ public class Lexer {
             Boolean isFu = false;
             b.append(next());
             if (isEndOfString()) {
-                return new Token(TokenType.INTEGER, "0", 0);
+                return new Token(TokenType.INT32, "0", 0);
             } else if (peek() == '.') { // 0.
                 isDouble = true;
             } else if (peek() == '¬') { // 0¬
@@ -148,7 +233,7 @@ public class Lexer {
                     }
                     b.append(next());
                 }
-                return new Token(TokenType.INTEGER, b.toString(), Integer.parseInt(b.toString().substring(2), 2));
+                return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString().substring(2), 2));
             } else if (peek() == 'o') { // 0o
                 b.append(next());
                 while (!isEndOfString() && Character.isDigit(peek())) {
@@ -157,7 +242,7 @@ public class Lexer {
                     }
                     b.append(next());
                 }
-                return new Token(TokenType.INTEGER, b.toString(), Integer.parseInt(b.toString().substring(2), 8));
+                return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString().substring(2), 8));
             } else if (peek() == 'x') { // 0x
                 b.append(next());
                 while (!isEndOfString() && (Character.isDigit(peek()) || peek() == 'a' || peek() == 'b' || peek() == 'c'
@@ -165,8 +250,8 @@ public class Lexer {
                         || peek() == 'C' || peek() == 'D' || peek() == 'E' || peek() == 'F')) {
                     b.append(next());
                 }
-                return new Token(TokenType.INTEGER, b.toString(), Integer.parseInt(b.toString().substring(2), 16));
-            } else if (peek() == 'e' || peek() == 'f') { // 0e || 0f
+                return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString().substring(2), 16));
+            } else if (peek() == 'e') { // 0e
                 Character prefix = peek();
                 StringBuilder b2 = new StringBuilder();
                 next();
@@ -174,7 +259,17 @@ public class Lexer {
                 while (!isEndOfString() && Character.isDigit(peek())) {
                     b2.append(next());
                 }
-                return new Token(TokenType.DOUBLE, b.toString() + Character.toString(prefix) + b2.toString(),
+                return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
+                        Float.parseFloat(b.toString()) * Math.pow(10, Float.parseFloat(b2.toString())));
+            } else if (peek() == 'f') { // 0f
+                Character prefix = peek();
+                StringBuilder b2 = new StringBuilder();
+                next();
+                b2.append(next());
+                while (!isEndOfString() && Character.isDigit(peek())) {
+                    b2.append(next());
+                }
+                return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
                         Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
             }
             while (!isEndOfString() && (Character.isDigit(peek()) || peek() == '.' || peek() == '¬')) {
@@ -187,15 +282,23 @@ public class Lexer {
             }
             if (isDouble) {
                 if (isFu) {
-                    return new Token(TokenType.DOUBLE, b.toString(), parseFuToDouble(b.toString()));
+                    return new Token(TokenType.FLOAT64, b.toString(), parseFuToFloat64(b.toString()));
                 } else {
-                    return new Token(TokenType.DOUBLE, b.toString(), Double.parseDouble(b.toString()));
+                    return new Token(TokenType.FLOAT64, b.toString(), Double.parseDouble(b.toString()));
                 }
             } else {
                 if (isFu) {
-                    return new Token(TokenType.INTEGER, b.toString(), parseFuToIntger(b.toString()));
+                    if (isInt64Fu(b.toString())) {
+                        return new Token(TokenType.INT64, b.toString(), parseFuToInt64(b.toString()));
+                    } else {
+                        return new Token(TokenType.INT64, b.toString(), parseFuToBigInt(b.toString()));
+                    }
                 } else {
-                    return new Token(TokenType.INTEGER, b.toString(), Integer.parseInt(b.toString()));
+                    if (isInt64(b.toString())) {
+                        return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString()));
+                    } else {
+                        return new Token(TokenType.INT64, b.toString(), new BigDecimal(b.toString()));
+                    }
                 }
             }
         } else if (Character.isDigit(peek()) || peek() == '.' || peek() == '¬') { // 0 以外から始まるトークン
@@ -207,7 +310,7 @@ public class Lexer {
                     isDouble = true;
                 } else if (peek() == '¬') {
                     isFu = true;
-                } else if (peek() == 'e' || peek() == 'f') {
+                } else if (peek() == 'e') {
                     Character prefix = peek();
                     StringBuilder b2 = new StringBuilder();
                     next();
@@ -215,22 +318,40 @@ public class Lexer {
                     while (!isEndOfString() && Character.isDigit(peek())) {
                         b2.append(next());
                     }
-                    return new Token(TokenType.DOUBLE, b.toString() + Character.toString(prefix) + b2.toString(),
+                    return new Token(TokenType.FLOAT32, b.toString() + Character.toString(prefix) + b2.toString(),
+                            Float.parseFloat(b.toString()) * Math.pow(10, Float.parseFloat(b2.toString())));
+                } else if (peek() == 'f') {
+                    Character prefix = peek();
+                    StringBuilder b2 = new StringBuilder();
+                    next();
+                    b2.append(next());
+                    while (!isEndOfString() && Character.isDigit(peek())) {
+                        b2.append(next());
+                    }
+                    return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
                             Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
                 }
                 b.append(next());
             }
             if (isDouble) {
                 if (isFu) {
-                    return new Token(TokenType.DOUBLE, b.toString(), parseFuToDouble(b.toString()));
+                    return new Token(TokenType.FLOAT64, b.toString(), parseFuToFloat64(b.toString()));
                 } else {
-                    return new Token(TokenType.DOUBLE, b.toString(), Double.parseDouble(b.toString()));
+                    return new Token(TokenType.FLOAT64, b.toString(), Double.parseDouble(b.toString()));
                 }
             } else {
                 if (isFu) {
-                    return new Token(TokenType.INTEGER, b.toString(), parseFuToIntger(b.toString()));
+                    if (isInt64Fu(b.toString())) {
+                        return new Token(TokenType.INT64, b.toString(), parseFuToInt64(b.toString()));
+                    } else {
+                        return new Token(TokenType.INT64, b.toString(), parseFuToBigInt(b.toString()));
+                    }
                 } else {
-                    return new Token(TokenType.INTEGER, b.toString(), Integer.parseInt(b.toString()));
+                    if (isInt64(b.toString())) {
+                        return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString()));
+                    } else {
+                        return new Token(TokenType.INT64, b.toString(), new BigDecimal(b.toString()));
+                    }
                 }
             }
         } else if (peek() == '\'') { // '...'
@@ -240,7 +361,7 @@ public class Lexer {
                 b.append(next());
                 if (peek() == '\'') {
                     b.append(next());
-                    return new Token(TokenType.CHARACTER, b.toString(), b.toString().charAt(2));
+                    return new Token(TokenType.CHAR, b.toString(), b.toString().charAt(2));
                 } else {
                     throw new Exception("不正な文字です。");
                 }
@@ -248,7 +369,7 @@ public class Lexer {
             b.append(next());
             if (peek() == '\'') {
                 b.append(next());
-                return new Token(TokenType.CHARACTER, b.toString(), b.toString().charAt(1));
+                return new Token(TokenType.CHAR, b.toString(), b.toString().charAt(1));
             } else {
                 throw new Exception("不正な文字です。");
             }
@@ -315,7 +436,7 @@ public class Lexer {
                 return new Token(TokenType.GT, ">");
             }
         } else if (peek() == '≠') {
-        	return new Token(TokenType.NE, Character.toString(next()));
+            return new Token(TokenType.NE, Character.toString(next()));
         } else if (peek() == '~') {
             return new Token(TokenType.BIT_NOT, Character.toString(next()));
         } else if (peek() == '^') {
@@ -340,10 +461,10 @@ public class Lexer {
                 return (Token) obj;
             } else if (text.substring(index).matches("^(true)(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
                 index += "true".length();
-                return new Token(TokenType.BOOLEAN, "true", true);
+                return new Token(TokenType.BOOL, "true", true);
             } else if (text.substring(index).matches("^(false)(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
                 index += "false".length();
-                return new Token(TokenType.BOOLEAN, "false", false);
+                return new Token(TokenType.BOOL, "false", false);
             }
             b.append(next());
             while (!isEndOfString() && !Character.toString(peek()).matches("(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
@@ -367,16 +488,17 @@ public class Lexer {
 
     /**
      * 字句解析した結果からホワイトスペースのトークンを取り除きます。
+     * 
      * @param list 対象のリスト
      * @return ホワイトスペースのトークンを取り除いたリスト
      */
     public static List<Token> removeWhitespace(List<Token> list) {
-    	List<Token> new_list = new ArrayList<>();
-    	for(Token token : list ) {
-    		if (token.type != TokenType.WHITESPACE) {
-    			new_list.add(token);
-    		}
-    	}
-    	return new_list;
+        List<Token> new_list = new ArrayList<>();
+        for (Token token : list) {
+            if (token.type != TokenType.WHITESPACE) {
+                new_list.add(token);
+            }
+        }
+        return new_list;
     }
 }

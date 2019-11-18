@@ -24,8 +24,11 @@ public class Parser {
     }
 
     private Expression parseFactor() throws Exception {
-        if (peek().type == TokenType.ID || peek().type == TokenType.INTEGER || peek().type == TokenType.DOUBLE
-                || peek().type == TokenType.BOOLEAN) {
+        if (peek().type == TokenType.ID || peek().type == TokenType.INT8 || peek().type == TokenType.INT16
+                || peek().type == TokenType.INT32 || peek().type == TokenType.INT64 | peek().type == TokenType.UINT8
+                || peek().type == TokenType.UINT16 || peek().type == TokenType.UINT32 || peek().type == TokenType.UINT64
+                || peek().type == TokenType.FLOAT32 || peek().type == TokenType.FLOAT64 || peek().type == TokenType.BOOL
+                || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
             return new Expression(ExpressionType.OPERAND, next());
         } else if (peek().type == TokenType.LPAR) {
             next();
