@@ -381,6 +381,12 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             case ID:
                 insertColorText(j, token.name, tagAttributeColor);
                 break;
+            case EQ:
+            case NE:
+            case LE:
+            case LT:
+            case GE:
+            case GT:
             case AND:
             case OR:
             case NOT:
