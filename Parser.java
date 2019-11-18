@@ -49,7 +49,7 @@ public class Parser {
         Expression left = parseFactor();
         if (peek().type == TokenType.POWER) {
             Token operator = next();
-            Expression right = parseFactor();
+            Expression right = parsePower();
             return new Expression(ExpressionType.BINARY_OPERATOR, operator,
                     new ArrayList<Expression>(Arrays.asList(left, right)));
         } else {
@@ -70,27 +70,27 @@ public class Parser {
 
     private Expression parseTimes() throws Exception {
         Expression left = parseSign();
-        if (peek().type == TokenType.MULTIPLICATION || peek().type == TokenType.DIVISION
+        while (peek().type == TokenType.MULTIPLICATION || peek().type == TokenType.DIVISION
                 || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD) {
             Token operator = next();
             Expression right = parseSign();
-            return new Expression(ExpressionType.BINARY_OPERATOR, operator,
+            Expression parent = new Expression(ExpressionType.BINARY_OPERATOR, operator,
                     new ArrayList<Expression>(Arrays.asList(left, right)));
-        } else {
-            return left;
+            left = parent;
         }
+        return left;
     }
 
     private Expression parsePlus() throws Exception {
         Expression left = parseTimes();
-        if (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR) {
+        while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR) {
             Token operator = next();
             Expression right = parseTimes();
-            return new Expression(ExpressionType.BINARY_OPERATOR, operator,
+            Expression parent = new Expression(ExpressionType.BINARY_OPERATOR, operator,
                     new ArrayList<Expression>(Arrays.asList(left, right)));
-        } else {
-            return left;
+            left = parent;
         }
+        return left;
     }
 
     private Expression parseComparsionExpression() throws Exception {
