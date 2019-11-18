@@ -47,7 +47,7 @@ public class Expression {
         case OPERAND:
             return operator.value.toString();
         case UNARY_OPERATOR:
-            return "(" + operands.get(0) + " " + operator.name + " " + operands.get(1) + ")";
+            return "(" + operator.name + " " + operands.get(0) + ")";
         case BINARY_OPERATOR:
         case COMPARSION_OPERATOR:
             return "(" + operands.get(0) + " " + operator.name + " " + operands.get(1) + ")";

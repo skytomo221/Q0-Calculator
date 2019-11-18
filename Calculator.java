@@ -159,10 +159,10 @@ public class Calculator {
         case UNARY_OPERATOR:
             Expression operand = expression(expression.operands.get(0));
             Object oov = operand.operator.value;
-            Expression answer = new Expression(ExpressionType.OPERAND, null);
+            Expression answer = new Expression(ExpressionType.OPERAND, new Token(operand.operator.type, null));
             Token ansop = answer.operator;
             if (oov instanceof BigDecimal) {
-                switch (expression.operator.type) {
+            switch (expression.operator.type) {
                 case PLUS:
                     ansop.value = ((BigDecimal) oov).plus();
                 case MINUS:
