@@ -27,8 +27,9 @@ public class Parser {
         if (peek().type == TokenType.ID || peek().type == TokenType.INT8 || peek().type == TokenType.INT16
                 || peek().type == TokenType.INT32 || peek().type == TokenType.INT64 | peek().type == TokenType.UINT8
                 || peek().type == TokenType.UINT16 || peek().type == TokenType.UINT32 || peek().type == TokenType.UINT64
-                || peek().type == TokenType.FLOAT32 || peek().type == TokenType.FLOAT64 || peek().type == TokenType.BOOL
-                || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
+                || peek().type == TokenType.FLOAT32 || peek().type == TokenType.FLOAT64
+                || peek().type == TokenType.BIG_INT || peek().type == TokenType.BIG_FLOAT
+                || peek().type == TokenType.BOOL || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
             return new Expression(ExpressionType.OPERAND, next());
         } else if (peek().type == TokenType.LPAR) {
             next();
@@ -44,14 +45,26 @@ public class Parser {
         }
     }
 
+    private Expression parsePower() throws Exception {
+        Expression left = parseFactor();
+        if (peek().type == TokenType.POWER) {
+            Token operator = next();
+            Expression right = parseFactor();
+            return new Expression(ExpressionType.BINARY_OPERATOR, operator,
+                    new ArrayList<Expression>(Arrays.asList(left, right)));
+        } else {
+            return left;
+        }
+    }
+
     private Expression parseSign() throws Exception {
         if (peek().type == TokenType.MINUS || peek().type == TokenType.PLUS) {
             Token operator = next();
-            Expression right = parseFactor();
+            Expression right = parsePower();
             return new Expression(ExpressionType.UNARY_OPERATOR, operator,
                     new ArrayList<Expression>(Arrays.asList(right)));
         } else {
-            return parseFactor();
+            return parsePower();
         }
     }
 

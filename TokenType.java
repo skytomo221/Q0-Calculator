@@ -161,7 +161,7 @@ public enum TokenType {
     /**
      * ^ を表します。
      */
-    XOR,
+    POWER,
     /**
      * + を表します。
      */

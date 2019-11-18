@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,131 +20,133 @@ public class Calculator {
     }
 
     public static void promoteToInt8(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = (byte) obj;
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            op.value = (byte) op.value;
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は Int8 に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は Int8 に型変換できません。");
         }
         expression.operator.type = TokenType.INT8;
     }
 
     public static void promoteToInt16(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = (short) (byte) obj;
-        } else if (obj instanceof Short) {
-            obj = (short) obj;
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            op.value = (short) (byte) op.value;
+        } else if (op.value instanceof Short) {
+            op.value = (short) op.value;
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は Int16 に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は Int16 に型変換できません。");
         }
         expression.operator.type = TokenType.INT16;
     }
 
     public static void promoteToInt32(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = (int) (byte) obj;
-        } else if (obj instanceof Short) {
-            obj = (int) (short) obj;
-        } else if (obj instanceof Integer) {
-            obj = (int) obj;
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            op.value = (int) (byte) op.value;
+        } else if (op.value instanceof Short) {
+            op.value = (int) (short) op.value;
+        } else if (op.value instanceof Integer) {
+            op.value = (int) op.value;
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は Int32 に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は Int32 に型変換できません。");
         }
         expression.operator.type = TokenType.INT32;
     }
 
     public static void promoteToInt64(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = (float) (byte) obj;
-        } else if (obj instanceof Short) {
-            obj = (float) (short) obj;
-        } else if (obj instanceof Integer) {
-            obj = (float) (int) obj;
-        } else if (obj instanceof Long) {
-            obj = (float) (long) obj;
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            op.value = (long) (byte) op.value;
+        } else if (op.value instanceof Short) {
+            op.value = (long) (short) op.value;
+        } else if (op.value instanceof Integer) {
+            op.value = (long) (int) op.value;
+        } else if (op.value instanceof Long) {
+            op.value = (long) op.value;
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は Int64 に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は Int64 に型変換できません。");
         }
         expression.operator.type = TokenType.INT64;
     }
 
     public static void promoteToFloat32(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = (float) (byte) obj;
-        } else if (obj instanceof Short) {
-            obj = (float) (short) obj;
-        } else if (obj instanceof Integer) {
-            obj = (float) (int) obj;
-        } else if (obj instanceof Long) {
-            obj = (float) (long) obj;
-        } else if (obj instanceof Float) {
-            obj = (float) obj;
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            op.value = (float) (byte) op.value;
+        } else if (op.value instanceof Short) {
+            op.value = (float) (short) op.value;
+        } else if (op.value instanceof Integer) {
+            op.value = (float) (int) op.value;
+        } else if (op.value instanceof Long) {
+            op.value = (float) (long) op.value;
+        } else if (op.value instanceof Float) {
+            op.value = (float) op.value;
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は Float32 に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は Float32 に型変換できません。");
         }
         expression.operator.type = TokenType.FLOAT32;
     }
 
     public static void promoteToFloat64(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = (double) (byte) obj;
-        } else if (obj instanceof Short) {
-            obj = (double) (short) obj;
-        } else if (obj instanceof Integer) {
-            obj = (double) (int) obj;
-        } else if (obj instanceof Long) {
-            obj = (double) (long) obj;
-        } else if (obj instanceof Float) {
-            obj = (double) (float) obj;
-        } else if (obj instanceof Double) {
-            obj = (double) obj;
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            op.value = (double) (byte) op.value;
+        } else if (op.value instanceof Short) {
+            op.value = (double) (short) op.value;
+        } else if (op.value instanceof Integer) {
+            op.value = (double) (int) op.value;
+        } else if (op.value instanceof Long) {
+            op.value = (double) (long) op.value;
+        } else if (op.value instanceof Float) {
+            op.value = (double) (float) op.value;
+        } else if (op.value instanceof Double) {
+            op.value = (double) op.value;
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は Float64 に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は Float64 に型変換できません。");
         }
         expression.operator.type = TokenType.FLOAT64;
     }
 
     public static void promoteToBigInt(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = new BigDecimal((byte) obj);
-        } else if (obj instanceof Short) {
-            obj = new BigDecimal((short) obj);
-        } else if (obj instanceof Integer) {
-            obj = new BigDecimal((int) obj);
-        } else if (obj instanceof Long) {
-            obj = new BigDecimal((long) obj);
-        } else if (obj instanceof String) {
-            obj = new BigDecimal((String) obj);
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            expression.operator.value = new BigDecimal((byte) op.value);
+        } else if (op.value instanceof Short) {
+            expression.operator.value = new BigDecimal((short) op.value);
+        } else if (op.value instanceof Integer) {
+            expression.operator.value = new BigDecimal((int) op.value);
+        } else if (op.value instanceof Long) {
+            expression.operator.value = new BigDecimal((long) op.value);
+        } else if (op.value instanceof String) {
+            expression.operator.value = new BigDecimal((String) op.value);
+        } else if (op.value instanceof BigDecimal) {
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は BigInt に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は BigInt に型変換できません。");
         }
         expression.operator.type = TokenType.BIG_INT;
     }
 
     public static void promoteToBigFloat(Expression expression) {
-        Object obj = expression.operator.value;
-        if (obj instanceof Byte) {
-            obj = new BigDecimal((byte) obj);
-        } else if (obj instanceof Short) {
-            obj = new BigDecimal((short) obj);
-        } else if (obj instanceof Integer) {
-            obj = new BigDecimal((int) obj);
-        } else if (obj instanceof Long) {
-            obj = new BigDecimal((long) obj);
-        } else if (obj instanceof Float) {
-            obj = new BigDecimal((float) obj);
-        } else if (obj instanceof Double) {
-            obj = new BigDecimal((double) obj);
-        } else if (obj instanceof String) {
-            obj = new BigDecimal((String) obj);
+        Token op = expression.operator;
+        if (op.value instanceof Byte) {
+            expression.operator.value = new BigDecimal((byte) op.value);
+        } else if (op.value instanceof Short) {
+            expression.operator.value = new BigDecimal((short) op.value);
+        } else if (op.value instanceof Integer) {
+            expression.operator.value = new BigDecimal((int) op.value);
+        } else if (op.value instanceof Long) {
+            expression.operator.value = new BigDecimal((long) op.value);
+        } else if (op.value instanceof Float) {
+            expression.operator.value = new BigDecimal((float) op.value);
+        } else if (op.value instanceof Double) {
+            expression.operator.value = new BigDecimal((double) op.value);
+        } else if (op.value instanceof String) {
+            expression.operator.value = new BigDecimal((String) op.value);
+        } else if (op.value instanceof BigDecimal) {
         } else {
-            throw new ClassCastException(obj.getClass().getName() + " は BigFloat に型変換できません。");
+            throw new ClassCastException(op.value.getClass().getName() + " は BigFloat に型変換できません。");
         }
         expression.operator.type = TokenType.BIG_FLOAT;
     }
@@ -221,8 +224,9 @@ public class Calculator {
         case BINARY_OPERATOR:
             Expression left = expression(expression.operands.get(0));
             Expression right = expression(expression.operands.get(1));
-            Object lov = left.operator.value;
-            Object rov = right.operator.value;
+            Token lop = left.operator;
+            Token rop = right.operator;
+            answer = null;
             if (left.operator.type == TokenType.BIG_FLOAT || right.operator.type == TokenType.BIG_FLOAT) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_FLOAT, null));
                 ansop = answer.operator;
@@ -230,24 +234,24 @@ public class Calculator {
                 promoteToBigFloat(right);
                 switch (expression.operator.type) {
                 case MULTIPLICATION:
-                    ansop.value = ((BigDecimal) lov).multiply((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).multiply((BigDecimal) rop.value);
                     break;
                 case DIVISION:
-                    ansop.value = ((BigDecimal) lov).divide((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).divide((BigDecimal) rop.value);
                     break;
                 case MOD:
-                    ansop.value = ((BigDecimal) lov).remainder((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).remainder((BigDecimal) rop.value);
                     break;
                 case PLUS:
-                    ansop.value = ((BigDecimal) lov).add((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).add((BigDecimal) rop.value);
                     break;
                 case MINUS:
-                    ansop.value = ((BigDecimal) lov).subtract((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).subtract((BigDecimal) rop.value);
                     break;
                 default:
                     throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
                 }
-                ansop.name = ansop.value.toString();
+                ansop.name = ((BigDecimal) ansop.value).toPlainString();
             } else if (left.operator.type == TokenType.BIG_INT || right.operator.type == TokenType.BIG_INT) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_INT, null));
                 ansop = answer.operator;
@@ -255,91 +259,266 @@ public class Calculator {
                 promoteToBigInt(right);
                 switch (expression.operator.type) {
                 case MULTIPLICATION:
-                    ansop.value = ((BigDecimal) lov).multiply((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).multiply((BigDecimal) rop.value);
                     break;
                 case DIVISION:
-                    ansop.value = ((BigDecimal) lov).divide((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).divide((BigDecimal) rop.value);
                     break;
                 case MOD:
-                    ansop.value = ((BigDecimal) lov).remainder((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).remainder((BigDecimal) rop.value);
                     break;
                 case PLUS:
-                    ansop.value = ((BigDecimal) lov).add((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).add((BigDecimal) rop.value);
                     break;
                 case MINUS:
-                    ansop.value = ((BigDecimal) lov).subtract((BigDecimal) rov);
+                    ansop.value = ((BigDecimal) lop.value).subtract((BigDecimal) rop.value);
                     break;
                 default:
                     throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
                 }
-                ansop.name = ansop.value.toString();
+                ansop.name = ((BigDecimal) ansop.value).toPlainString();
             } else if (left.operator.type == TokenType.FLOAT64 || right.operator.type == TokenType.FLOAT64) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT64, null));
                 ansop = answer.operator;
                 promoteToFloat64(left);
                 promoteToFloat64(right);
                 switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = Math.pow((double) lop.value, (double) rop.value);
+                    break;
                 case MULTIPLICATION:
-                    ansop.value = (double) lov * (double) rov;
+                    ansop.value = (double) lop.value * (double) rop.value;
                     break;
                 case DIVISION:
-                    ansop.value = (double) lov / (double) rov;
+                    ansop.value = (double) lop.value / (double) rop.value;
                     break;
                 case MOD:
-                    ansop.value = (double) lov % (double) rov;
+                    ansop.value = (double) lop.value % (double) rop.value;
                     break;
                 case PLUS:
-                    ansop.value = (double) lov + (double) rov;
+                    ansop.value = (double) lop.value + (double) rop.value;
                     break;
                 case MINUS:
-                    ansop.value = (double) lov - (double) rov;
+                    ansop.value = (double) lop.value - (double) rop.value;
                     break;
                 default:
                     throw new Exception("FLOAT64 が対応していない二項演算子です。");
                 }
-                ansop.name = ansop.value.toString();
+                ansop.name = ansop.value.toString().replaceAll("E", "e");
             } else if (left.operator.type == TokenType.FLOAT32 || right.operator.type == TokenType.FLOAT32) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT32, null));
                 ansop = answer.operator;
                 promoteToFloat32(left);
                 promoteToFloat32(right);
                 switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = (float) Math.pow((float) lop.value, (float) rop.value);
+                    break;
                 case MULTIPLICATION:
-                    ansop.value = (float) lov * (float) rov;
+                    ansop.value = (float) lop.value * (float) rop.value;
                     break;
                 case DIVISION:
-                    ansop.value = (float) lov / (float) rov;
+                    ansop.value = (float) lop.value / (float) rop.value;
                     break;
                 case MOD:
-                    ansop.value = (float) lov % (float) rov;
+                    ansop.value = (float) lop.value % (float) rop.value;
                     break;
                 case PLUS:
-                    ansop.value = (float) lov + (float) rov;
+                    ansop.value = (float) lop.value + (float) rop.value;
                     break;
                 case MINUS:
-                    ansop.value = (float) lov - (float) rov;
+                    ansop.value = (float) lop.value - (float) rop.value;
                     break;
                 default:
                     throw new Exception("FLOAT32 が対応していない二項演算子です。");
                 }
-                ansop.name = ansop.value.toString();
-            } else if (left.operator.type == TokenType.CHAR && right.operator.type == TokenType.INT64) {
-            } else if (left.operator.type == TokenType.STRING && right.operator.type == TokenType.STRING) {
+                ansop.name = ansop.value.toString().replaceAll("E", "f");
+            } else if (left.operator.type == TokenType.CHAR && TokenType.isInt(right.operator.type)) {
+                promoteToInt64(right);
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
                 ansop = answer.operator;
                 switch (expression.operator.type) {
                 case PLUS:
-                    ansop.value = (String) lov + (String) rov;
+                    ansop.value = (char) ((char) lop.value + (long) rop.value);
                     break;
                 default:
-                    throw new Exception("STRING が対応していない二項演算子です。");
+                    throw new Exception("CHAR が対応していない二項演算子です。");
+                }
+                ansop.name = "\'" + ansop.value.toString() + "\'";
+            } else if (left.operator.type == TokenType.STRING && right.operator.type == TokenType.STRING) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
+                ansop = answer.operator;
+                switch (expression.operator.type) {
+                case MULTIPLICATION:
+                    ansop.value = (String) lop.value + (String) rop.value;
+                    break;
+                default:
+                }
+                ansop.name = "\"" + ansop.value.toString() + "\"";
+            } else if (left.operator.type == TokenType.STRING && TokenType.isInt(right.operator.type)) {
+                promoteToInt64(right);
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
+                ansop = answer.operator;
+                switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = String.join("", Collections.nCopies((int) (long) rop.value, (String) lop.value));
+                    break;
+                default:
                 }
                 ansop.name = "\"" + ansop.value.toString() + "\"";
             } else if (left.operator.type == TokenType.INT64 || right.operator.type == TokenType.INT64) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT64, null));
+                ansop = answer.operator;
+                promoteToInt64(left);
+                promoteToInt64(right);
+                switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = (long) Math.pow((long) lop.value, (long) rop.value);
+                    break;
+                case MULTIPLICATION:
+                    ansop.value = (long) lop.value * (long) rop.value;
+                    break;
+                case DIVISION:
+                    ansop.value = (double) (long) lop.value / (double) (long) rop.value;
+                    break;
+                case BIT_AND:
+                    ansop.value = (long) lop.value & (long) rop.value;
+                    break;
+                case MOD:
+                    ansop.value = (long) lop.value % (long) rop.value;
+                    break;
+                case PLUS:
+                    ansop.value = (long) lop.value + (long) rop.value;
+                    break;
+                case MINUS:
+                    ansop.value = (long) lop.value - (long) rop.value;
+                    break;
+                case BIT_OR:
+                    ansop.value = (long) lop.value | (long) rop.value;
+                    break;
+                default:
+                    throw new Exception("INT64 が対応していない二項演算子です。");
+                }
+                ansop.name = ansop.value.toString();
             } else if (left.operator.type == TokenType.INT32 || right.operator.type == TokenType.INT32) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT32, null));
+                ansop = answer.operator;
+                promoteToInt32(left);
+                promoteToInt32(right);
+                switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = (int) Math.pow((int) lop.value, (int) rop.value);
+                    break;
+                case MULTIPLICATION:
+                    ansop.value = (int) lop.value * (int) rop.value;
+                    break;
+                case DIVISION:
+                    ansop.value = (double) (int) lop.value / (double) (int) rop.value;
+                    break;
+                case BIT_AND:
+                    ansop.value = (int) lop.value & (int) rop.value;
+                    break;
+                case MOD:
+                    ansop.value = (int) lop.value % (int) rop.value;
+                    break;
+                case PLUS:
+                    ansop.value = (int) lop.value + (int) rop.value;
+                    break;
+                case MINUS:
+                    ansop.value = (int) lop.value - (int) rop.value;
+                    break;
+                case BIT_OR:
+                    ansop.value = (int) lop.value | (int) rop.value;
+                    break;
+                default:
+                    throw new Exception("INT32 が対応していない二項演算子です。");
+                }
+                ansop.name = ansop.value.toString();
             } else if (left.operator.type == TokenType.INT16 || right.operator.type == TokenType.INT16) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT16, null));
+                ansop = answer.operator;
+                promoteToInt16(left);
+                promoteToInt16(right);
+                switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = (short) Math.pow((short) lop.value, (short) rop.value);
+                    break;
+                case MULTIPLICATION:
+                    ansop.value = (short) lop.value * (short) rop.value;
+                    break;
+                case DIVISION:
+                    ansop.value = (double) (short) lop.value / (double) (short) rop.value;
+                    break;
+                case BIT_AND:
+                    ansop.value = (short) lop.value & (short) rop.value;
+                    break;
+                case MOD:
+                    ansop.value = (short) lop.value % (short) rop.value;
+                    break;
+                case PLUS:
+                    ansop.value = (short) lop.value + (short) rop.value;
+                    break;
+                case MINUS:
+                    ansop.value = (short) lop.value - (short) rop.value;
+                    break;
+                case BIT_OR:
+                    ansop.value = (short) lop.value | (short) rop.value;
+                    break;
+                default:
+                    throw new Exception("INT16 が対応していない二項演算子です。");
+                }
+                ansop.name = ansop.value.toString();
             } else if (left.operator.type == TokenType.INT8 || right.operator.type == TokenType.INT8) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT8, null));
+                ansop = answer.operator;
+                promoteToInt8(left);
+                promoteToInt8(right);
+                switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = (byte) Math.pow((byte) lop.value, (byte) rop.value);
+                    break;
+                case MULTIPLICATION:
+                    ansop.value = (byte) lop.value * (byte) rop.value;
+                    break;
+                case DIVISION:
+                    ansop.value = (double) (byte) lop.value / (double) (byte) rop.value;
+                    break;
+                case BIT_AND:
+                    ansop.value = (byte) lop.value & (byte) rop.value;
+                    break;
+                case MOD:
+                    ansop.value = (byte) lop.value % (byte) rop.value;
+                    break;
+                case PLUS:
+                    ansop.value = (byte) lop.value + (byte) rop.value;
+                    break;
+                case MINUS:
+                    ansop.value = (byte) lop.value - (byte) rop.value;
+                    break;
+                case BIT_OR:
+                    ansop.value = (byte) lop.value | (byte) rop.value;
+                    break;
+                default:
+                    throw new Exception("INT8 が対応していない二項演算子です。");
+                }
+                ansop.name = ansop.value.toString();
             } else if (left.operator.type == TokenType.BOOL || right.operator.type == TokenType.BOOL) {
+                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BOOL, null));
+                ansop = answer.operator;
+                switch (expression.operator.type) {
+                case POWER:
+                    ansop.value = (boolean) lop.value ^ (boolean) rop.value;
+                    break;
+                case BIT_AND:
+                    ansop.value = (boolean) lop.value & (boolean) rop.value;
+                    break;
+                case BIT_OR:
+                    ansop.value = (boolean) lop.value | (boolean) rop.value;
+                    break;
+                default:
+                    throw new Exception("BOOL が対応していない二項演算子です。");
+                }
+                ansop.name = ansop.value.toString();
             }
             return answer;
         case COMPARSION_OPERATOR:

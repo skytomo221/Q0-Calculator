@@ -260,7 +260,7 @@ public class Lexer {
                     b2.append(next());
                 }
                 return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
-                        Float.parseFloat(b.toString()) * Math.pow(10, Float.parseFloat(b2.toString())));
+                        Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
             } else if (peek() == 'f') { // 0f
                 Character prefix = peek();
                 StringBuilder b2 = new StringBuilder();
@@ -269,8 +269,8 @@ public class Lexer {
                 while (!isEndOfString() && Character.isDigit(peek())) {
                     b2.append(next());
                 }
-                return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
-                        Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
+                return new Token(TokenType.FLOAT32, b.toString() + Character.toString(prefix) + b2.toString(),
+                        Float.parseFloat(b.toString()) * (float)Math.pow(10, Float.parseFloat(b2.toString())));
             }
             while (!isEndOfString() && (Character.isDigit(peek()) || peek() == '.' || peek() == '¬')) {
                 if (peek() == '.') {
@@ -291,13 +291,13 @@ public class Lexer {
                     if (isInt64Fu(b.toString())) {
                         return new Token(TokenType.INT64, b.toString(), parseFuToInt64(b.toString()));
                     } else {
-                        return new Token(TokenType.INT64, b.toString(), parseFuToBigInt(b.toString()));
+                        return new Token(TokenType.BIG_INT, b.toString(), parseFuToBigInt(b.toString()));
                     }
                 } else {
                     if (isInt64(b.toString())) {
                         return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString()));
                     } else {
-                        return new Token(TokenType.INT64, b.toString(), new BigDecimal(b.toString()));
+                        return new Token(TokenType.BIG_INT, b.toString(), new BigDecimal(b.toString()));
                     }
                 }
             }
@@ -318,8 +318,8 @@ public class Lexer {
                     while (!isEndOfString() && Character.isDigit(peek())) {
                         b2.append(next());
                     }
-                    return new Token(TokenType.FLOAT32, b.toString() + Character.toString(prefix) + b2.toString(),
-                            Float.parseFloat(b.toString()) * Math.pow(10, Float.parseFloat(b2.toString())));
+                    return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
+                            Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
                 } else if (peek() == 'f') {
                     Character prefix = peek();
                     StringBuilder b2 = new StringBuilder();
@@ -328,8 +328,8 @@ public class Lexer {
                     while (!isEndOfString() && Character.isDigit(peek())) {
                         b2.append(next());
                     }
-                    return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
-                            Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
+                    return new Token(TokenType.FLOAT32, b.toString() + Character.toString(prefix) + b2.toString(),
+                            Float.parseFloat(b.toString()) * (float)Math.pow(10, Float.parseFloat(b2.toString())));
                 }
                 b.append(next());
             }
@@ -344,13 +344,13 @@ public class Lexer {
                     if (isInt64Fu(b.toString())) {
                         return new Token(TokenType.INT64, b.toString(), parseFuToInt64(b.toString()));
                     } else {
-                        return new Token(TokenType.INT64, b.toString(), parseFuToBigInt(b.toString()));
+                        return new Token(TokenType.BIG_INT, b.toString(), parseFuToBigInt(b.toString()));
                     }
                 } else {
                     if (isInt64(b.toString())) {
                         return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString()));
                     } else {
-                        return new Token(TokenType.INT64, b.toString(), new BigDecimal(b.toString()));
+                        return new Token(TokenType.BIG_INT, b.toString(), new BigDecimal(b.toString()));
                     }
                 }
             }
@@ -440,7 +440,7 @@ public class Lexer {
         } else if (peek() == '~') {
             return new Token(TokenType.BIT_NOT, Character.toString(next()));
         } else if (peek() == '^') {
-            return new Token(TokenType.XOR, Character.toString(next()));
+            return new Token(TokenType.POWER, Character.toString(next()));
         } else if (peek() == '(') {
             return new Token(TokenType.LPAR, Character.toString(next()));
         } else if (peek() == ')') {
