@@ -6,9 +6,9 @@ import java.util.Map;
 
 public class Lexer {
 
-    public String text;
-    private int index;
-    private Map<String, TokenType> keywords = new HashMap<String, TokenType>() {
+    protected String text;
+    protected int index;
+    protected Map<String, TokenType> keywords = new HashMap<String, TokenType>() {
         private static final long serialVersionUID = 1L;
         {
             put("baremodule", TokenType.BAREMODULE);

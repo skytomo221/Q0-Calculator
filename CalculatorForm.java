@@ -63,6 +63,10 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     public boolean displayLexerResult = true;
     public boolean displayPerserResult = true;
 
+    protected Lexer lexer = new Lexer();
+    protected Parser parser = new Parser();
+    protected Calculator calculator = new Calculator();
+
     CalculatorForm() {
         super("Q0 Calculator");
         setSize(800, 500);
@@ -215,37 +219,32 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 }
                 inputTextPane.setText(inputTextPane.getText() + b.getText());
             } else if (b.getText().equals("=")) {
-                Lexer l = new Lexer();
-                l.text = inputTextPane.getText();
                 try {
-                    List<Token> tokens = l.parse(inputTextPane.getText());
+                    List<Token> tokens = lexer.parse(inputTextPane.getText());
                     if (displayLexerResult) {
                         for (Token token : tokens) {
                             System.out.println(token.toString());
                         }
                         System.out.println("");
                     }
-                    Parser p = new Parser();
-                    List<Expression> expressions = p.parse(tokens);
+                    List<Expression> expressions = parser.parse(tokens);
                     if (displayPerserResult) {
                         for (Expression expression : expressions) {
                             System.out.println(expression.toString());
                         }
                         System.out.println("");
                     }
-                    Calculator c = new Calculator(expressions);
-                    c.run();
+                    calculator.calculate(expressions);
                     insertColorText(logTextPane, "Input  => ", foregroundColor);
                     insertHighlight(logTextPane, inputTextPane.getText());
                     insertColorText(logTextPane, "\n", foregroundColor);
                     insertColorText(logTextPane, "Output => ", foregroundColor);
-                    insertHighlight(logTextPane, c.getAnswerToString());
+                    insertHighlight(logTextPane, calculator.getAnswerToString());
                     insertColorText(logTextPane, "\n\n", foregroundColor);
-                    inputTextPane.setText(c.getAnswerToString());
+                    inputTextPane.setText(calculator.getAnswerToString());
                 } catch (Exception ex) {
                     logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
                 } finally {
-                    l = null;
                 }
             } else if (b.getText().equals("+") || b.getText().equals("-") || b.getText().equals("×")
                     || b.getText().equals("÷")) {

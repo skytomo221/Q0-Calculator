@@ -45,11 +45,16 @@ public class Expression {
     public String toString() {
         switch (type) {
         case OPERAND:
-            return operator.value.toString();
+            if (operator.type == TokenType.ID) {
+                return operator.name;
+            } else {
+                return operator.value.toString();
+            }
         case UNARY_OPERATOR:
             return "(" + operator.name + " " + operands.get(0) + ")";
         case BINARY_OPERATOR:
         case COMPARSION_OPERATOR:
+        case ASSAIGNMENT_OPERATOR:
             return "(" + operands.get(0) + " " + operator.name + " " + operands.get(1) + ")";
         case END:
             return "(end)";

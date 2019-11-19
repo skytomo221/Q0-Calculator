@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 public class Calculator {
-    public Map<String, Integer> variables;
+    public Map<String, Variable> variables;
     public Expression answer;
-    List<Expression> body;
+    List<Expression> expressions;
 
-    public Calculator(List<Expression> body) {
-        variables = new HashMap<String, Integer>();
-        answer = null;
-        this.body = body;
+    public Calculator() {
+        variables = new HashMap<String, Variable>();
     }
 
     public String getAnswerToString() {
@@ -187,7 +185,17 @@ public class Calculator {
     public Expression expression(Expression expression) throws Exception {
         switch (expression.type) {
         case OPERAND:
-            expression.operator.name = expression.operator.value.toString();
+            if (expression.operator.type == TokenType.ID) {
+                if (variables.containsKey(expression.operator.name)) {
+                    System.out.println(variables.get(expression.operator.name).contents);
+                    expression.operator.value = variables.get(expression.operator.name).contents;
+                    // expression.operator.name = expression.operator.value.toString();
+                } else {
+                    return expression;
+                }
+            } else {
+                expression.operator.name = expression.operator.value.toString();
+            }
             return expression;
         case UNARY_OPERATOR:
             Expression operand = expression(expression.operands.get(0));
@@ -571,7 +579,7 @@ public class Calculator {
                         new Token(right.operator.type, right.operator.name, right.operator.value), right.operands);
                 promoteToBigFloat(bigLeft);
                 promoteToBigFloat(bigRight);
-                lop = ((ComparisonResult)bigLeft.operator.value).comparison.operator;
+                lop = ((ComparisonResult) bigLeft.operator.value).comparison.operator;
                 rop = bigRight.operator;
                 if (((ComparisonResult) left.operator.value).result) {
                     switch (expression.operator.type) {
@@ -1007,19 +1015,33 @@ public class Calculator {
             }
             ansop.name = ansop.value.toString();
             return answer;
+        case ASSAIGNMENT_OPERATOR:
+            left = expression(expression.operands.get(0));
+            right = expression(expression.operands.get(1));
+            lop = left.operator;
+            rop = right.operator;
+            answer = null;
+            ansop = null;
+            switch (expression.operator.type) {
+            case ASSAIGNMENT:
+                answer = right;
+                variables.put(left.operator.name, new Variable(left.toString(), expression.operator.type, rop.value));
+            default:
+            }
+            return answer;
         default:
         }
         throw new Exception("計算機がおかしい");
     }
 
-    public void body(List<Expression> body) throws Exception {
-        for (Expression expression : body) {
+    public Map<String, Variable> calculate(List<Expression> expressions) throws Exception {
+        this.expressions = expressions;
+        for (Expression expression : expressions) {
             answer = expression(expression);
         }
-    }
-
-    public Map<String, Integer> run() throws Exception {
-        body(body);
+        if (variables.containsKey(answer.operator.name)) {
+            answer.operator.name = variables.get(answer.operator.name).contents.toString();
+        }
         return variables;
     }
 }
