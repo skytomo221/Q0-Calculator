@@ -271,12 +271,26 @@ public enum TokenType {
      */
     END_OF_STRING;
 
-    public static boolean isInt(TokenType t) {
-        return t == INT8 || t == INT16 || t == INT32 || t == INT64;
+    public static boolean isNumber(TokenType t) {
+        return t == INT || t == FLOAT || t == BIG_DECIMAL;
     }
 
-    public static boolean isNumber(TokenType t) {
-        return t == INT8 || t == INT16 || t == INT32 || t == INT64 || t == UINT8 || t == UINT16 || t == UINT32
-                || t == UINT64 || t == FLOAT32 || t == FLOAT64 || t == BIG_INT || t == BIG_FLOAT;
+    /**
+     * トークンの種類を文字列に変換します。
+     * 
+     * @return トークンの種類
+     */
+    @Override
+    public String toString() {
+        switch (this) {
+        case INT:
+            return "Int";
+        case FLOAT:
+            return "Float";
+        case BIG_DECIMAL:
+            return "BigDecimal";
+        default:
+            return null;
+        }
     }
 }

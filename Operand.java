@@ -61,6 +61,17 @@ public class Operand extends Expression {
     }
 
     /**
+     * トークンから被演算子を初期化します。
+     * 
+     * @param token 対象のトークン
+     */
+    public Operand(Token token) {
+        setName(token.name);
+        setType(token.type.toString());
+        setValue(token.value);
+    }
+
+    /**
      * 被演算子の名前を文字列に変換します。
      * 
      * @return 被演算子の名前

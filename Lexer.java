@@ -212,7 +212,7 @@ public class Lexer {
             Boolean isFu = false;
             b.append(next());
             if (isEndOfString()) {
-                return new Token(TokenType.INT32, "0", 0);
+                return new Token(TokenType.INT, "0", 0);
             } else if (peek() == '.') { // 0.
                 isDouble = true;
             } else if (peek() == '¬') { // 0¬
@@ -225,7 +225,7 @@ public class Lexer {
                     }
                     b.append(next());
                 }
-                return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString().substring(2), 2));
+                return new Token(TokenType.INT, b.toString(), Long.parseLong(b.toString().substring(2), 2));
             } else if (peek() == 'o') { // 0o
                 b.append(next());
                 while (!isEndOfString() && Character.isDigit(peek())) {
@@ -234,7 +234,7 @@ public class Lexer {
                     }
                     b.append(next());
                 }
-                return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString().substring(2), 8));
+                return new Token(TokenType.INT, b.toString(), Long.parseLong(b.toString().substring(2), 8));
             } else if (peek() == 'x') { // 0x
                 b.append(next());
                 while (!isEndOfString() && (Character.isDigit(peek()) || peek() == 'a' || peek() == 'b' || peek() == 'c'
@@ -242,7 +242,7 @@ public class Lexer {
                         || peek() == 'C' || peek() == 'D' || peek() == 'E' || peek() == 'F')) {
                     b.append(next());
                 }
-                return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString().substring(2), 16));
+                return new Token(TokenType.INT, b.toString(), Long.parseLong(b.toString().substring(2), 16));
             } else if (peek() == 'e') { // 0e
                 Character prefix = peek();
                 StringBuilder b2 = new StringBuilder();
@@ -251,18 +251,8 @@ public class Lexer {
                 while (!isEndOfString() && Character.isDigit(peek())) {
                     b2.append(next());
                 }
-                return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
+                return new Token(TokenType.FLOAT, b.toString() + Character.toString(prefix) + b2.toString(),
                         Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
-            } else if (peek() == 'f') { // 0f
-                Character prefix = peek();
-                StringBuilder b2 = new StringBuilder();
-                next();
-                b2.append(next());
-                while (!isEndOfString() && Character.isDigit(peek())) {
-                    b2.append(next());
-                }
-                return new Token(TokenType.FLOAT32, b.toString() + Character.toString(prefix) + b2.toString(),
-                        Float.parseFloat(b.toString()) * (float)Math.pow(10, Float.parseFloat(b2.toString())));
             }
             while (!isEndOfString() && (Character.isDigit(peek()) || peek() == '.' || peek() == '¬')) {
                 if (peek() == '.') {
@@ -274,22 +264,22 @@ public class Lexer {
             }
             if (isDouble) {
                 if (isFu) {
-                    return new Token(TokenType.FLOAT64, b.toString(), parseFuToFloat64(b.toString()));
+                    return new Token(TokenType.FLOAT, b.toString(), parseFuToFloat64(b.toString()));
                 } else {
-                    return new Token(TokenType.FLOAT64, b.toString(), Double.parseDouble(b.toString()));
+                    return new Token(TokenType.FLOAT, b.toString(), Double.parseDouble(b.toString()));
                 }
             } else {
                 if (isFu) {
                     if (isInt64Fu(b.toString())) {
-                        return new Token(TokenType.INT64, b.toString(), parseFuToInt64(b.toString()));
+                        return new Token(TokenType.INT, b.toString(), parseFuToInt64(b.toString()));
                     } else {
-                        return new Token(TokenType.BIG_INT, b.toString(), parseFuToBigInt(b.toString()));
+                        return new Token(TokenType.BIG_DECIMAL, b.toString(), parseFuToBigInt(b.toString()));
                     }
                 } else {
                     if (isInt64(b.toString())) {
-                        return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString()));
+                        return new Token(TokenType.INT, b.toString(), Long.parseLong(b.toString()));
                     } else {
-                        return new Token(TokenType.BIG_INT, b.toString(), new BigDecimal(b.toString()));
+                        return new Token(TokenType.BIG_DECIMAL, b.toString(), new BigDecimal(b.toString()));
                     }
                 }
             }
@@ -310,39 +300,29 @@ public class Lexer {
                     while (!isEndOfString() && Character.isDigit(peek())) {
                         b2.append(next());
                     }
-                    return new Token(TokenType.FLOAT64, b.toString() + Character.toString(prefix) + b2.toString(),
+                    return new Token(TokenType.FLOAT, b.toString() + Character.toString(prefix) + b2.toString(),
                             Double.parseDouble(b.toString()) * Math.pow(10, Double.parseDouble(b2.toString())));
-                } else if (peek() == 'f') {
-                    Character prefix = peek();
-                    StringBuilder b2 = new StringBuilder();
-                    next();
-                    b2.append(next());
-                    while (!isEndOfString() && Character.isDigit(peek())) {
-                        b2.append(next());
-                    }
-                    return new Token(TokenType.FLOAT32, b.toString() + Character.toString(prefix) + b2.toString(),
-                            Float.parseFloat(b.toString()) * (float)Math.pow(10, Float.parseFloat(b2.toString())));
                 }
                 b.append(next());
             }
             if (isDouble) {
                 if (isFu) {
-                    return new Token(TokenType.FLOAT64, b.toString(), parseFuToFloat64(b.toString()));
+                    return new Token(TokenType.FLOAT, b.toString(), parseFuToFloat64(b.toString()));
                 } else {
-                    return new Token(TokenType.FLOAT64, b.toString(), Double.parseDouble(b.toString()));
+                    return new Token(TokenType.FLOAT, b.toString(), Double.parseDouble(b.toString()));
                 }
             } else {
                 if (isFu) {
                     if (isInt64Fu(b.toString())) {
-                        return new Token(TokenType.INT64, b.toString(), parseFuToInt64(b.toString()));
+                        return new Token(TokenType.INT, b.toString(), parseFuToInt64(b.toString()));
                     } else {
-                        return new Token(TokenType.BIG_INT, b.toString(), parseFuToBigInt(b.toString()));
+                        return new Token(TokenType.BIG_DECIMAL, b.toString(), parseFuToBigInt(b.toString()));
                     }
                 } else {
                     if (isInt64(b.toString())) {
-                        return new Token(TokenType.INT64, b.toString(), Long.parseLong(b.toString()));
+                        return new Token(TokenType.INT, b.toString(), Long.parseLong(b.toString()));
                     } else {
-                        return new Token(TokenType.BIG_INT, b.toString(), new BigDecimal(b.toString()));
+                        return new Token(TokenType.BIG_DECIMAL, b.toString(), new BigDecimal(b.toString()));
                     }
                 }
             }
