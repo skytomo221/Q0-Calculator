@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Calculator {
     public Map<String, Variable> variables;
-    public Expression answer;
+    public Operand answer;
     List<Expression> expressions;
 
     public Calculator() {
@@ -14,175 +14,55 @@ public class Calculator {
     }
 
     public String getAnswerToString() {
-        return answer.operator.name;
+        return answer.value.toString();
     }
 
-    public static void promoteToInt8(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (byte) op.value;
+    public static Operand promoteToInt(Operand operand) {
+        if (operand.value instanceof Integer) {
         } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int8 に型変換できません。");
+            throw new ClassCastException(operand.type + " は Int に型変換できません。");
         }
-        expression.operator.type = TokenType.INT8;
+        return operand;
     }
 
-    public static void promoteToInt16(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (short) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (short) op.value;
+    public static Operand promoteToFloat(Operand operand) {
+        if (operand.value instanceof Integer) {
+            operand.value = (double) (long) operand.value;
+        } else if (operand.value instanceof Double) {
         } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int16 に型変換できません。");
+            throw new ClassCastException(operand.type + " は Int に型変換できません。");
         }
-        expression.operator.type = TokenType.INT16;
+        return operand;
     }
 
-    public static void promoteToInt32(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (int) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (int) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (int) op.value;
+    public static Operand promoteToBigDecimal(Operand operand) {
+        if (operand.value instanceof Integer) {
+            operand.value = new BigDecimal((long) operand.value);
+        } else if (operand.value instanceof Double) {
+            operand.value = new BigDecimal((double) operand.value);
+        } else if (operand.value instanceof BigDecimal) {
         } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int32 に型変換できません。");
+            throw new ClassCastException(operand.type + " は BigDecimal に型変換できません。");
         }
-        expression.operator.type = TokenType.INT32;
+        return operand;
     }
 
-    public static void promoteToInt64(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (long) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (long) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (long) (int) op.value;
-        } else if (op.value instanceof Long) {
-            op.value = (long) op.value;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int64 に型変換できません。");
+    protected Operand getOperand(Expression expression) {
+        if (expression instanceof Variable && variables.containsKey(expression.name)) {
+            ((Variable) expression).value = variables.get(expression.name).value;
         }
-        expression.operator.type = TokenType.INT64;
-    }
-
-    public static void promoteToFloat32(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (float) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (float) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (float) (int) op.value;
-        } else if (op.value instanceof Long) {
-            op.value = (float) (long) op.value;
-        } else if (op.value instanceof Float) {
-            op.value = (float) op.value;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Float32 に型変換できません。");
-        }
-        expression.operator.type = TokenType.FLOAT32;
-    }
-
-    public static void promoteToFloat64(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (double) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (double) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (double) (int) op.value;
-        } else if (op.value instanceof Long) {
-            op.value = (double) (long) op.value;
-        } else if (op.value instanceof Float) {
-            op.value = (double) (float) op.value;
-        } else if (op.value instanceof Double) {
-            op.value = (double) op.value;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Float64 に型変換できません。");
-        }
-        expression.operator.type = TokenType.FLOAT64;
-    }
-
-    public static void promoteToBigInt(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            expression.operator.value = new BigDecimal((byte) op.value);
-        } else if (op.value instanceof Short) {
-            expression.operator.value = new BigDecimal((short) op.value);
-        } else if (op.value instanceof Integer) {
-            expression.operator.value = new BigDecimal((int) op.value);
-        } else if (op.value instanceof Long) {
-            expression.operator.value = new BigDecimal((long) op.value);
-        } else if (op.value instanceof String) {
-            expression.operator.value = new BigDecimal((String) op.value);
-        } else if (op.value instanceof BigDecimal) {
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は BigInt に型変換できません。");
-        }
-        expression.operator.type = TokenType.BIG_INT;
-    }
-
-    public static void promoteToBigFloat(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            expression.operator.value = new BigDecimal((byte) op.value);
-        } else if (op.value instanceof Short) {
-            expression.operator.value = new BigDecimal((short) op.value);
-        } else if (op.value instanceof Integer) {
-            expression.operator.value = new BigDecimal((int) op.value);
-        } else if (op.value instanceof Long) {
-            expression.operator.value = new BigDecimal((long) op.value);
-        } else if (op.value instanceof Float) {
-            expression.operator.value = new BigDecimal((float) op.value);
-        } else if (op.value instanceof Double) {
-            expression.operator.value = new BigDecimal((double) op.value);
-        } else if (op.value instanceof String) {
-            expression.operator.value = new BigDecimal((String) op.value);
-        } else if (op.value instanceof BigDecimal) {
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Byte) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (byte) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Short) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (short) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Integer) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (int) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Long) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (long) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Float) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (float) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Double) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (double) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof BigDecimal) {
-            return;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は BigFloat に型変換できません。");
-        }
-        expression.operator.type = TokenType.BIG_FLOAT;
+        return (Operand) expression;
     }
 
     public Expression expression(Expression expression) throws Exception {
+        if (expression instanceof Operand) {
+            return getOperand(expression);
+        } else if (expression instanceof Oprator) {
+            Oprator oprator = (Oprator) expression;
+        } else {
+            throw new Exception("何かがおかしい");
+        }
+
         switch (expression.type) {
         case OPERAND:
             if (expression.operator.type == TokenType.ID) {
