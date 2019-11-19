@@ -310,4 +310,9 @@ public enum TokenType {
     public static boolean isInt(TokenType t) {
         return t == INT8 || t == INT16 || t == INT32 || t == INT64;
     }
+
+    public static boolean isNumber(TokenType t) {
+        return t == INT8 || t == INT16 || t == INT32 || t == INT64 || t == UINT8 || t == UINT16 || t == UINT32
+                || t == UINT64 || t == FLOAT32 || t == FLOAT64 || t == BIG_INT || t == BIG_FLOAT;
+    }
 }

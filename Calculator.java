@@ -145,6 +145,39 @@ public class Calculator {
         } else if (op.value instanceof String) {
             expression.operator.value = new BigDecimal((String) op.value);
         } else if (op.value instanceof BigDecimal) {
+        } else if (op.value instanceof ComparisonResult
+                && ((ComparisonResult) op.value).comparison.operator.value instanceof Byte) {
+            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
+                    (byte) ((ComparisonResult) op.value).comparison.operator.value);
+            return;
+        } else if (op.value instanceof ComparisonResult
+                && ((ComparisonResult) op.value).comparison.operator.value instanceof Short) {
+            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
+                    (short) ((ComparisonResult) op.value).comparison.operator.value);
+            return;
+        } else if (op.value instanceof ComparisonResult
+                && ((ComparisonResult) op.value).comparison.operator.value instanceof Integer) {
+            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
+                    (int) ((ComparisonResult) op.value).comparison.operator.value);
+            return;
+        } else if (op.value instanceof ComparisonResult
+                && ((ComparisonResult) op.value).comparison.operator.value instanceof Long) {
+            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
+                    (long) ((ComparisonResult) op.value).comparison.operator.value);
+            return;
+        } else if (op.value instanceof ComparisonResult
+                && ((ComparisonResult) op.value).comparison.operator.value instanceof Float) {
+            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
+                    (float) ((ComparisonResult) op.value).comparison.operator.value);
+            return;
+        } else if (op.value instanceof ComparisonResult
+                && ((ComparisonResult) op.value).comparison.operator.value instanceof Double) {
+            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
+                    (double) ((ComparisonResult) op.value).comparison.operator.value);
+            return;
+        } else if (op.value instanceof ComparisonResult
+                && ((ComparisonResult) op.value).comparison.operator.value instanceof BigDecimal) {
+            return;
         } else {
             throw new ClassCastException(op.value.getClass().getName() + " は BigFloat に型変換できません。");
         }
@@ -529,10 +562,17 @@ public class Calculator {
             rop = right.operator;
             answer = null;
             ansop = null;
-            if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.BIG_FLOAT) {
+            if (left.operator.value instanceof ComparisonResult && TokenType.isInt(right.operator.type)) {
                 answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_FLOAT, null));
                 ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
+                Expression bigLeft = new Expression(left.type,
+                        new Token(left.operator.type, left.operator.name, left.operator.value), left.operands);
+                Expression bigRight = new Expression(right.type,
+                        new Token(right.operator.type, right.operator.name, right.operator.value), right.operands);
+                promoteToBigFloat(bigLeft);
+                promoteToBigFloat(bigRight);
+                lop = ((ComparisonResult)bigLeft.operator.value).comparison.operator;
+                rop = bigRight.operator;
                 if (((ComparisonResult) left.operator.value).result) {
                     switch (expression.operator.type) {
                     case EQ:
@@ -558,102 +598,6 @@ public class Calculator {
                     case GT:
                         ansop.value = new ComparisonResult(right,
                                 ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) > 0);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.BIG_INT) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_INT, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) == 0);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) != 0);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) <= 0);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) < 0);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) >= 0);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) > 0);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.FLOAT64) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT64, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (double) lop.value == (double) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (double) lop.value != (double) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right, (double) lop.value <= (double) rop.value);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right, (double) lop.value < (double) rop.value);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right, (double) lop.value >= (double) rop.value);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right, (double) lop.value > (double) rop.value);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.FLOAT32) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT32, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (float) lop.value == (float) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (float) lop.value != (float) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right, (float) lop.value <= (float) rop.value);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right, (float) lop.value < (float) rop.value);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right, (float) lop.value >= (float) rop.value);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right, (float) lop.value > (float) rop.value);
                         break;
                     default:
                         throw new Exception("問題のある比較演算子です。");
@@ -720,126 +664,6 @@ public class Calculator {
                     case GT:
                         ansop.value = new ComparisonResult(right,
                                 ((String) lop.value).compareTo((String) rop.value) > 0);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.INT64) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT64, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (long) lop.value == (long) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (long) lop.value != (long) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right, (long) lop.value <= (long) rop.value);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right, (long) lop.value < (long) rop.value);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right, (long) lop.value >= (long) rop.value);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right, (long) lop.value > (long) rop.value);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.INT32) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT32, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (int) lop.value == (int) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (int) lop.value != (int) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right, (int) lop.value <= (int) rop.value);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right, (int) lop.value < (int) rop.value);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right, (int) lop.value >= (int) rop.value);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right, (int) lop.value > (int) rop.value);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.INT16) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.CHAR, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (short) lop.value == (short) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (short) lop.value != (short) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right, (short) lop.value <= (short) rop.value);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right, (short) lop.value < (short) rop.value);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right, (short) lop.value >= (short) rop.value);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right, (short) lop.value > (short) rop.value);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.INT8) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.CHAR, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (byte) lop.value == (byte) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (byte) lop.value != (byte) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right, (byte) lop.value <= (byte) rop.value);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right, (byte) lop.value < (byte) rop.value);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right, (byte) lop.value >= (byte) rop.value);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right, (byte) lop.value > (byte) rop.value);
                         break;
                     default:
                         throw new Exception("問題のある比較演算子です。");
