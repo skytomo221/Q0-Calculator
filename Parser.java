@@ -24,8 +24,12 @@ public class Parser {
     }
 
     private Expression parseFactor() throws Exception {
-        if (peek().type == TokenType.ID || peek().type == TokenType.INTEGER || peek().type == TokenType.DOUBLE
-                || peek().type == TokenType.BOOLEAN) {
+        if (peek().type == TokenType.ID || peek().type == TokenType.INT8 || peek().type == TokenType.INT16
+                || peek().type == TokenType.INT32 || peek().type == TokenType.INT64 | peek().type == TokenType.UINT8
+                || peek().type == TokenType.UINT16 || peek().type == TokenType.UINT32 || peek().type == TokenType.UINT64
+                || peek().type == TokenType.FLOAT32 || peek().type == TokenType.FLOAT64
+                || peek().type == TokenType.BIG_INT || peek().type == TokenType.BIG_FLOAT
+                || peek().type == TokenType.BOOL || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
             return new Expression(ExpressionType.OPERAND, next());
         } else if (peek().type == TokenType.LPAR) {
             next();
@@ -41,40 +45,52 @@ public class Parser {
         }
     }
 
+    private Expression parsePower() throws Exception {
+        Expression left = parseFactor();
+        if (peek().type == TokenType.POWER) {
+            Token operator = next();
+            Expression right = parsePower();
+            return new Expression(ExpressionType.BINARY_OPERATOR, operator,
+                    new ArrayList<Expression>(Arrays.asList(left, right)));
+        } else {
+            return left;
+        }
+    }
+
     private Expression parseSign() throws Exception {
         if (peek().type == TokenType.MINUS || peek().type == TokenType.PLUS) {
             Token operator = next();
-            Expression right = parseFactor();
+            Expression right = parsePower();
             return new Expression(ExpressionType.UNARY_OPERATOR, operator,
                     new ArrayList<Expression>(Arrays.asList(right)));
         } else {
-            return parseFactor();
+            return parsePower();
         }
     }
 
     private Expression parseTimes() throws Exception {
         Expression left = parseSign();
-        if (peek().type == TokenType.MULTIPLICATION || peek().type == TokenType.DIVISION
+        while (peek().type == TokenType.MULTIPLICATION || peek().type == TokenType.DIVISION
                 || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD) {
             Token operator = next();
             Expression right = parseSign();
-            return new Expression(ExpressionType.BINARY_OPERATOR, operator,
+            Expression parent = new Expression(ExpressionType.BINARY_OPERATOR, operator,
                     new ArrayList<Expression>(Arrays.asList(left, right)));
-        } else {
-            return left;
+            left = parent;
         }
+        return left;
     }
 
     private Expression parsePlus() throws Exception {
         Expression left = parseTimes();
-        if (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR) {
+        while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR) {
             Token operator = next();
             Expression right = parseTimes();
-            return new Expression(ExpressionType.BINARY_OPERATOR, operator,
+            Expression parent = new Expression(ExpressionType.BINARY_OPERATOR, operator,
                     new ArrayList<Expression>(Arrays.asList(left, right)));
-        } else {
-            return left;
+            left = parent;
         }
+        return left;
     }
 
     private Expression parseComparsionExpression() throws Exception {

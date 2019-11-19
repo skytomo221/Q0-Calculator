@@ -60,6 +60,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     final static Color tagAttributeColor = new Color(253, 151, 31);
     final static Color tagNameColor = new Color(249, 38, 114);
 
+    public boolean displayLexerResult = true;
+    public boolean displayPerserResult = true;
+
     CalculatorForm() {
         super("Q0 Calculator");
         setSize(800, 500);
@@ -216,27 +219,29 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 l.text = inputTextPane.getText();
                 try {
                     List<Token> tokens = l.parse(inputTextPane.getText());
-                    // for (Token token : tokens) {
-                    // System.out.println(token.toString());
-                    // }
-                    // System.out.println("");
+                    if (displayLexerResult) {
+                        for (Token token : tokens) {
+                            System.out.println(token.toString());
+                        }
+                        System.out.println("");
+                    }
                     Parser p = new Parser();
                     List<Expression> expressions = p.parse(tokens);
-                    // for (Expression expression : expressions) {
-                    // System.out.println(expression.toString());
-                    // }
-                    // System.out.println("");
+                    if (displayPerserResult) {
+                        for (Expression expression : expressions) {
+                            System.out.println(expression.toString());
+                        }
+                        System.out.println("");
+                    }
                     Calculator c = new Calculator(expressions);
                     c.run();
                     insertColorText(logTextPane, "Input  => ", foregroundColor);
                     insertHighlight(logTextPane, inputTextPane.getText());
                     insertColorText(logTextPane, "\n", foregroundColor);
-                    for (Object object : c.answers) {
-                        insertColorText(logTextPane, "Output => ", foregroundColor);
-                        insertHighlight(logTextPane, object.toString());
-                        insertColorText(logTextPane, "\n\n", foregroundColor);
-                        inputTextPane.setText(object.toString());
-                    }
+                    insertColorText(logTextPane, "Output => ", foregroundColor);
+                    insertHighlight(logTextPane, c.getAnswerToString());
+                    insertColorText(logTextPane, "\n\n", foregroundColor);
+                    inputTextPane.setText(c.getAnswerToString());
                 } catch (Exception ex) {
                     logTextPane.setText(logTextPane.getText() + "\n" + ex.getLocalizedMessage());
                 } finally {
@@ -333,12 +338,22 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         List<Token> tokens = l.parse(s);
         for (Token token : tokens) {
             switch (token.type) {
-            case INTEGER:
-            case DOUBLE:
-            case BOOLEAN:
+            case INT8:
+            case UINT8:
+            case INT16:
+            case UINT16:
+            case INT32:
+            case UINT32:
+            case INT64:
+            case UINT64:
+            case FLOAT32:
+            case FLOAT64:
+            case BIG_INT:
+            case BIG_FLOAT:
+            case BOOL:
                 insertColorText(j, token.name, constantColor);
                 break;
-            case CHARACTER:
+            case CHAR:
                 if (token.name.length() == 3) {
                     insertColorText(j, "\'", commentColor);
                     insertColorText(j, token.value.toString(), stringColor);
@@ -366,10 +381,16 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             case ID:
                 insertColorText(j, token.name, tagAttributeColor);
                 break;
+            case EQ:
+            case NE:
+            case LE:
+            case LT:
+            case GE:
+            case GT:
             case AND:
             case OR:
             case NOT:
-            case XOR:
+            case POWER:
             case BIT_AND:
             case BIT_OR:
             case BIT_NOT:
