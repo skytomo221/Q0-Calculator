@@ -35,6 +35,14 @@ public enum TokenType {
      */
     COMMA,
     /**
+     * コロンを表します。
+     */
+    COLON,
+    /**
+     * セミコロンを表します。
+     */
+    SEMICOLON,
+    /**
      * 代入を表します。
      */
     ASSAIGNMENT,
@@ -297,6 +305,10 @@ public enum TokenType {
             return "String";
         case COMMA:
             return ",";
+        case COLON:
+            return ":";
+        case SEMICOLON:
+            return ";";
         case ASSAIGNMENT:
             return "=";
         case PLUS_ASSAIGNMENT:
