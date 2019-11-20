@@ -212,7 +212,7 @@ public class Lexer {
             Boolean isFu = false;
             b.append(next());
             if (isEndOfString()) {
-                return new Token(TokenType.INT, "0", 0);
+                return new Token(TokenType.INT, "0", 0L);
             } else if (peek() == '.') { // 0.
                 isDouble = true;
             } else if (peek() == '¬') { // 0¬
@@ -425,6 +425,8 @@ public class Lexer {
             return new Token(TokenType.MULTIPLICATION, Character.toString(next()));
         } else if (peek() == '/' || peek() == '÷') {
             return new Token(TokenType.DIVISION, Character.toString(next()));
+        } else if (peek() == '%') {
+            return new Token(TokenType.MOD, Character.toString(next()));
         } else if (peek() == '\n') {
             return new Token(TokenType.NEW_LINE, Character.toString(next()));
         } else {

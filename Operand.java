@@ -91,10 +91,9 @@ public class Operand extends Expression {
     @Override
     public String toString() {
         if (value instanceof String) {
-            return 
-        }
-        else {
-        return value;
+            return "\"" + value.toString() + "\"";
+        } else {
+            return value.toString();
         }
     }
 }

@@ -39,15 +39,20 @@ public class Operator extends Expression {
     }
 
     /**
-     *  演算子と被演算子または引数を文字列に変換します。
+     * 演算子と被演算子または引数を文字列に変換します。
+     * 
      * @return 演算子と被演算子または引数
      */
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder("(");
-        s.append(name);
+        StringBuilder s = new StringBuilder(name);
+        s.append("(");
         for (Expression expression : arguments) {
-            s.append(" " + expression.toString());
+            if (expression == arguments.get(arguments.size() - 1)) {
+                s.append(expression.toString());
+            } else {
+                s.append(expression.toString() + ", ");
+            }
         }
         s.append(")");
         return s.toString();

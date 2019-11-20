@@ -382,6 +382,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             case MINUS:
             case MULTIPLICATION:
             case DIVISION:
+            case MOD:
             case BAREMODULE:
             case BEGIN:
             case BREAK:
