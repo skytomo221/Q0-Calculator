@@ -3,17 +3,17 @@ import java.util.List;
 /**
  * 関数を表します。
  */
-public class Function extends Oprator {
+public class Function extends Operator {
     /**
      * 関数の定義を表します。
      */
-    protected List<Oprator> definition;
+    protected List<Operator> definition;
 
     /**
      * 関数の定義を取得します。
      * @return 関数の定義
      */
-    public List<Oprator> getDefinition() {
+    public List<Operator> getDefinition() {
         return definition;
     }
 
@@ -21,7 +21,7 @@ public class Function extends Oprator {
      * 関数の定義を設定します。
      * @param definition 設定する関数の定義
      */
-    public void setDefinition(List<Oprator> definition) {
+    public void setDefinition(List<Operator> definition) {
         this.definition = definition;
     }
 
@@ -31,7 +31,7 @@ public class Function extends Oprator {
      * @param arguments 設定する関数の引数
      * @param definition 設定する関数の定義
      */
-    public Function(String name, List<Expression> arguments, List<Oprator> definition) {
+    public Function(String name, List<Expression> arguments, List<Operator> definition) {
         super(name, arguments);
         setDefinition(definition);
     }

@@ -243,7 +243,7 @@ public class Lexer {
                     b.append(next());
                 }
                 return new Token(TokenType.INT, b.toString(), Long.parseLong(b.toString().substring(2), 16));
-            } else if (peek() == 'e') { // 0e
+            } else if (peek() == 'e' || peek() == 'E') { // 0e
                 Character prefix = peek();
                 StringBuilder b2 = new StringBuilder();
                 next();
@@ -286,13 +286,13 @@ public class Lexer {
         } else if (Character.isDigit(peek()) || peek() == '.' || peek() == '¬') { // 0 以外から始まるトークン
             Boolean isDouble = false;
             Boolean isFu = false;
-            while (!isEndOfString() && (Character.isDigit(peek()) || peek() == '.' || peek() == '¬' || peek() == 'e'
+            while (!isEndOfString() && (Character.isDigit(peek()) || peek() == '.' || peek() == '¬' || peek() == 'e' || peek() == 'E'
                     || peek() == 'f')) { // 数字か小数点
                 if (peek() == '.') {
                     isDouble = true;
                 } else if (peek() == '¬') {
                     isFu = true;
-                } else if (peek() == 'e') {
+                } else if (peek() == 'e' || peek() == 'E') {
                     Character prefix = peek();
                     StringBuilder b2 = new StringBuilder();
                     next();

@@ -337,18 +337,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         List<Token> tokens = l.parse(s);
         for (Token token : tokens) {
             switch (token.type) {
-            case INT8:
-            case UINT8:
-            case INT16:
-            case UINT16:
-            case INT32:
-            case UINT32:
-            case INT64:
-            case UINT64:
-            case FLOAT32:
-            case FLOAT64:
-            case BIG_INT:
-            case BIG_FLOAT:
+            case INT:
+            case FLOAT:
+            case BIG_DECIMAL:
             case BOOL:
                 insertColorText(j, token.name, constantColor);
                 break;

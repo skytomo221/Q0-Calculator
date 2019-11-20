@@ -61,6 +61,18 @@ public class Operand extends Expression {
     }
 
     /**
+     * 被演算子を初期化します。名前が値から明らかな場合は省略できます。
+     * 
+     * @param type  設定する被演算子の型
+     * @param value 設定する被演算子の値
+     */
+    public Operand(String type, Object value) {
+        setName(value.toString());
+        setType(type);
+        setValue(value);
+    }
+
+    /**
      * トークンから被演算子を初期化します。
      * 
      * @param token 対象のトークン
@@ -72,12 +84,17 @@ public class Operand extends Expression {
     }
 
     /**
-     * 被演算子の名前を文字列に変換します。
+     * 被演算子を電卓に表示するために適切な文字列に変換します。値は
      * 
      * @return 被演算子の名前
      */
     @Override
     public String toString() {
-        return name;
+        if (value instanceof String) {
+            return 
+        }
+        else {
+        return value;
+        }
     }
 }

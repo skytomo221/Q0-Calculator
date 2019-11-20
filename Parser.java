@@ -47,7 +47,7 @@ public class Parser {
         if (peek().type == TokenType.POWER) {
             Token operator = next();
             Expression right = parsePower();
-            return new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            return new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
         } else {
             return left;
         }
@@ -57,7 +57,7 @@ public class Parser {
         if (peek().type == TokenType.MINUS || peek().type == TokenType.PLUS) {
             Token operator = next();
             Expression right = parsePower();
-            return new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(right)));
+            return new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(right)));
         } else {
             return parsePower();
         }
@@ -69,7 +69,7 @@ public class Parser {
                 || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD) {
             Token operator = next();
             Expression right = parseSign();
-            Expression parent = new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            Expression parent = new Operator(operator.type.toString(), new ArrayList<Expression>(Arrays.asList(left, right)));
             left = parent;
         }
         return left;
@@ -80,7 +80,7 @@ public class Parser {
         while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR) {
             Token operator = next();
             Expression right = parseTimes();
-            Expression parent = new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            Expression parent = new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
             left = parent;
         }
         return left;
@@ -92,7 +92,7 @@ public class Parser {
                 || peek().type == TokenType.LT || peek().type == TokenType.GE || peek().type == TokenType.GT) {
             Token operator = next();
             Expression right = parsePlus();
-            Expression parent = new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            Expression parent = new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
             left = parent;
         }
         return left;
@@ -103,7 +103,7 @@ public class Parser {
         if (peek().type == TokenType.AND) {
             Token operator = next();
             Expression right = parseComparsionExpression();
-            return new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            return new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
         } else {
             return left;
         }
@@ -114,7 +114,7 @@ public class Parser {
         if (peek().type == TokenType.OR) {
             Token operator = next();
             Expression right = parseAnd();
-            return new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            return new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
         } else {
             return left;
         }
@@ -125,7 +125,7 @@ public class Parser {
         if (peek().type == TokenType.ASSAIGNMENT) {
             Token operator = next();
             Expression right = parseOr();
-            return new Oprator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            return new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
         } else {
             return left;
         }

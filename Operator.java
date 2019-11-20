@@ -3,7 +3,7 @@ import java.util.List;
 /**
  * 演算子を表します。
  */
-public class Oprator extends Expression {
+public class Operator extends Expression {
     /**
      * 被演算子または引数を表します。
      */
@@ -33,7 +33,7 @@ public class Oprator extends Expression {
      * @param name      設定する演算子の名前
      * @param arguments 設定する被演算子または引数
      */
-    public Oprator(String name, List<Expression> arguments) {
+    public Operator(String name, List<Expression> arguments) {
         setName(name);
         setArguments(arguments);
     }
