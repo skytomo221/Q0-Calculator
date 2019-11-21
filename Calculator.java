@@ -10,23 +10,54 @@ public class Calculator {
     public Operand answer;
     List<Expression> expressions;
     List<EnumeratedType> enumeratedTypes;
+    protected long logNumber = 0;
+    /**
+     * 解析中の式を選択します。
+     */
+    protected Expression currentExpression = null;
+    /**
+     * ログを残します。
+     */
+    protected String log = null;
 
     public Calculator() {
         variables = new HashMap<String, Variable>();
         enumeratedTypes = new ArrayList<EnumeratedType>(/*
                                                          * Arrays.asList(new EnumeratedType(new HashMap<Long, String>()
                                                          * { private static final long serialVersionUID = 1L;
-                                                         * 
+                                                         *
                                                          * { put(0L, "false"); put(1L, "true"); } }, "Bool"))
                                                          */);
 
+    }
+
+    protected String getLogNumber() {
+        return getLogNumber(0);
+    }
+
+    protected String getLogNumber(long index) {
+        return "$" + Long.toString(logNumber + index);
+    }
+
+    protected void setLog(Expression currentExpression) {
+        logNumber++;
+        this.currentExpression = currentExpression;
+        log = getLogNumber() + " = " + this.currentExpression.toString() + "\n";
+    }
+
+    protected void pushLog() {
+        log += getLogNumber().replaceAll(".", " ") + " = " + currentExpression.toString() + "\n";
+    }
+
+    protected String getLog() {
+        return log;
     }
 
     public String getAnswerToString() {
         return answer.toString();
     }
 
-    public static Operand promoteToFloat(Operand operand) {
+    public Operand promoteToFloat(Operand operand) {
         if (operand.value instanceof Long) {
             operand.value = (double) (long) operand.value;
         } else if (operand.value instanceof Double) {
@@ -36,15 +67,12 @@ public class Calculator {
         return operand;
     }
 
-    public static Operand promoteToBigDecimal(Operand operand) {
+    public Operand promoteToBigDecimal(Operand operand) {
         if (operand.value instanceof Long) {
             operand.value = new BigDecimal((long) operand.value);
         } else if (operand.value instanceof Double) {
             operand.value = new BigDecimal((double) operand.value);
         } else if (operand.value instanceof BigDecimal) {
-            // } else if (operand instanceof ComparisonResult) {
-            // ComparisonResult comparisonResult = (ComparisonResult) operand;
-            // return promoteToBigDecimal(comparisonResult.getComparison());
         } else {
             throw new ClassCastException(operand.type + " は BigDecimal に型変換できません。");
         }
@@ -213,8 +241,11 @@ public class Calculator {
 
     protected Operand calculateAddition(Operator operator) throws Exception {
         Operand answer = new Operand("Int", 0L);
-        for (Expression expression : operator.arguments) {
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
+            operator.arguments.set(i, operand);
+           // pushLog();
             if (answer.type.equals("Char") && operand.type.equals("Int")) {
                 answer = new Operand("Char", (char) ((char) answer.value) + (long) operand.value);
             } else if (answer.type.equals("Int") && operand.type.equals("Char")) {
@@ -412,7 +443,9 @@ public class Calculator {
     public Operand calculate(List<Expression> expressions) throws Exception {
         this.expressions = expressions;
         for (Expression expression : expressions) {
+            setLog(expression);
             answer = (Operand) calculateExpression(expression);
+            pushLog();
         }
         return answer;
     }

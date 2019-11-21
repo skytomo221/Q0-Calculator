@@ -62,6 +62,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
 
     public boolean displayLexerResult = true;
     public boolean displayPerserResult = true;
+    public boolean displayCalclatorResult = true;
 
     protected Lexer lexer = new Lexer();
     protected Parser parser = new Parser();
@@ -222,6 +223,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 try {
                     List<Token> tokens = lexer.parse(inputTextPane.getText());
                     if (displayLexerResult) {
+                    	System.out.println("[Lexer Log]");
                         for (Token token : tokens) {
                             System.out.println(token.toString());
                         }
@@ -229,12 +231,16 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     }
                     List<Expression> expressions = parser.parse(tokens);
                     if (displayPerserResult) {
+                    	System.out.println("[Parser Log]");
                         for (Expression expression : expressions) {
                             System.out.println(expression.toString());
                         }
                         System.out.println("");
                     }
                     calculator.calculate(expressions);
+                    if (displayCalclatorResult) {
+                        System.out.println(calculator.getLog());
+                    }
                     insertColorText(logTextPane, "Input  => ", foregroundColor);
                     insertHighlight(logTextPane, inputTextPane.getText());
                     insertColorText(logTextPane, "\n", foregroundColor);
@@ -322,7 +328,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
 
     /**
      * JTextPaneにハイライトされた文字列を追加する
-     * 
+     *
      * @param j 追加するコンポーネント
      * @param s 追加する文字列
      */
