@@ -115,6 +115,14 @@ public class Calculator {
     protected Operand repeatString(Operator operator) throws Exception {
         Operand left = (Operand) calculateExpression(operator.arguments.get(0));
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0) instanceof Operand)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1) instanceof Operand)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
         return new Operand("String",
                 String.join("", Collections.nCopies((int) (long) right.value, (String) left.value)));
     }
@@ -122,6 +130,14 @@ public class Calculator {
     protected Operand calculatePower(Operator operator) throws Exception {
         Operand left = (Operand) calculateExpression(operator.arguments.get(0));
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0) instanceof Operand)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1) instanceof Operand)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
         if (left.type.equals("Int") && right.type.equals("Int")) {
             if (Math.pow((long) left.value, (long) right.value) <= Long.MAX_VALUE) {
                 left = new Operand("Int", (long) Math.pow((long) left.value, (long) right.value));
@@ -143,8 +159,13 @@ public class Calculator {
 
     protected Operand stringConcatenation(Operator operator) throws Exception {
         Operand answer = new Operand("String", "");
-        for (Expression expression : operator.arguments) {
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.equals("String") && operand.type.equals("String")) {
                 answer = new Operand("String", (String) answer.value + (String) operand.value);
                 answer.setName("\"" + answer.getValue().toString() + "\"");
@@ -157,8 +178,13 @@ public class Calculator {
 
     protected Operand calculateMultiplication(Operator operator) throws Exception {
         Operand answer = new Operand("Int", 1L);
-        for (Expression expression : operator.arguments) {
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.equals("Int") && operand.type.equals("Int")) {
                 answer = new Operand("Int", (long) answer.value * (long) operand.value);
             } else if (answer.type.equals("BigDecimal") || operand.type.equals("BigDecimal")) {
@@ -178,8 +204,13 @@ public class Calculator {
 
     protected Operand calculateDivision(Operator operator) throws Exception {
         Operand answer = new Operand("Float", 1.0);
-        for (Expression expression : operator.arguments) {
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.matches("Int|Float") || operand.type.matches("Int|Float")) {
                 answer = promoteToFloat(answer);
                 operand = promoteToFloat(operand);
@@ -205,8 +236,13 @@ public class Calculator {
         } else {
             throw new Exception(operand.type + " 型 & 任意型は未定義です．\n");
         }
-        for (Expression expression : operator.arguments) {
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
             operand = (Operand) calculateExpression(expression);
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.matches("Bool") && operand.type.matches("Bool")) {
                 answer = new Operand("Bool", (boolean) answer.value & (boolean) operand.value);
             } else if (answer.type.matches("Int") && operand.type.matches("Int")) {
@@ -220,8 +256,13 @@ public class Calculator {
 
     protected Operand calculateRemainder(Operator operator) throws Exception {
         Operand answer = new Operand("Int", 1L);
-        for (Expression expression : operator.arguments) {
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.matches("Int") && operand.type.matches("Int")) {
                 answer = new Operand("Int", (long) answer.value % (long) operand.value);
             } else if (answer.type.equals("BigDecimal") || operand.type.equals("BigDecimal")) {
@@ -244,8 +285,10 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
-            operator.arguments.set(i, operand);
-           // pushLog();
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.equals("Char") && operand.type.equals("Int")) {
                 answer = new Operand("Char", (char) ((char) answer.value) + (long) operand.value);
             } else if (answer.type.equals("Int") && operand.type.equals("Char")) {
@@ -282,9 +325,17 @@ public class Calculator {
 
     protected Operand calculateSubtraction(Operator operator) throws Exception {
         Operand answer = (Operand) calculateExpression(operator.arguments.get(0));
-        operator.arguments.remove(0);
-        for (Expression expression2 : operator.arguments) {
-            Operand operand = (Operand) calculateExpression(expression2);
+        if (!(operator.arguments.get(0) instanceof Operand)) {
+            operator.arguments.set(0, answer);
+            pushLog();
+        }
+        for (int i = 1; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.equals("Char") && operand.type.equals("Int")) {
                 answer = new Operand("Char", (char) ((char) answer.value) - (long) operand.value);
             } else if (answer.type.equals("Int") && operand.type.equals("Char")) {
@@ -316,8 +367,13 @@ public class Calculator {
         } else {
             throw new Exception(operand.type + " 型 & 任意型は未定義です．\n");
         }
-        for (Expression expression : operator.arguments) {
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
             operand = (Operand) calculateExpression(expression);
+            if (!(expression instanceof Operand)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
             if (answer.type.matches("Bool") && operand.type.matches("Bool")) {
                 answer = new Operand("Bool", (boolean) answer.value | (boolean) operand.value);
             } else if (answer.type.matches("Int") && operand.type.matches("Int")) {
@@ -329,12 +385,17 @@ public class Calculator {
         return answer;
     }
 
-    protected ComparisonResult calculateComparison(Operator operator) throws Exception {
+    protected Operand calculateComparison(Operator operator) throws Exception {
+        ComparisonResult answer = getComparisonResult(operator);
+        return new Operand(answer.name, "Bool", answer.value);
+    }
+
+    protected ComparisonResult getComparisonResult(Operator operator) throws Exception {
         Operand left = null;
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
         if (operator.arguments.get(0) instanceof Operator
                 && ((Operator) operator.arguments.get(0)).name.matches("==|!=|<=|<|>|>=")) {
-            left = calculateComparison((Operator) operator.arguments.get(0));
+            left = getComparisonResult((Operator) operator.arguments.get(0));
             if (!((boolean) left.getValue())) {
                 return new ComparisonResult(right, false);
             } else {
@@ -442,10 +503,15 @@ public class Calculator {
 
     public Operand calculate(List<Expression> expressions) throws Exception {
         this.expressions = expressions;
-        for (Expression expression : expressions) {
-            setLog(expression);
+        for (int i = 0; i < this.expressions.size(); i++) {
+            Expression expression = this.expressions.get(i);
+            currentExpression = expression;
+            setLog(currentExpression);
             answer = (Operand) calculateExpression(expression);
-            pushLog();
+            if (!(expression instanceof Operand)) {
+                currentExpression = answer;
+                pushLog();
+            }
         }
         return answer;
     }
