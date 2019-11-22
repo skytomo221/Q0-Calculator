@@ -458,6 +458,21 @@ public class Calculator {
         throw new Exception("問題のある比較演算子です。");
     }
 
+    protected Operand calcualteAssaignment(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0) instanceof Operand)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1) instanceof Operand)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        return new Operand("String",
+                String.join("", Collections.nCopies((int) (long) right.value, (String) left.value)));
+    }
+
     protected Expression calculateExpression(Expression expression) throws Exception {
         if (expression instanceof Operand) {
             return getOperand(expression);
