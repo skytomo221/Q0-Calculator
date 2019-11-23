@@ -1,32 +1,25 @@
 /**
  * Variable
  */
-public class Variable {
+public class Variable extends Operand {
 
-    String name;
-    TokenType type;
-    String typeName;
-    Object contents;
-
-    Variable(String name, TokenType type, Object contents) {
-        setVariable(name, type, contents);
+    public Variable(String name, String type, Object value) {
+        super(name, type, value);
     }
 
-    Variable(String name, String typeName, Object contents) {
-        setVariable(name, typeName, contents);
-    }
-
-    public void setVariable(String name, TokenType type, Object contents) {
-        this.name = name;
-        this.type = type;
-        this.typeName = null;
-        this.contents = contents;
-    }
-
-    public void setVariable(String name, String typeName, Object contents) {
-        this.name = name;
-        this.type = null;
-        this.typeName = typeName;
-        this.contents = contents;
+    /**
+     * 変数を電卓に表示するために適切な文字列に変換します。 基本的に value を返します。 value が null である場合、 name を返します。
+     * 
+     * @return 変数を文字列に変換したもの
+     */
+    @Override
+    public String toString() {
+        if (value == null) {
+            return name;
+        } else if (value instanceof String) {
+            return "\"" + value.toString() + "\"";
+        } else {
+            return value.toString();
+        }
     }
 }
