@@ -473,6 +473,58 @@ public class Calculator {
         throw new Exception("問題のある比較演算子です。");
     }
 
+    protected Operand calcualteAnd(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        if (!(operator.arguments.get(0) instanceof Operand)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (left.getType().equals("Bool")) {
+            if ((boolean) left.value) {
+                Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+                if (left.getType().equals("Bool")) {
+                    if (!(operator.arguments.get(1) instanceof Operand)) {
+                        operator.arguments.set(1, right);
+                        pushLog();
+                    }
+                    return right;
+                } else {
+                    throw new Exception(right.getType() + " 型は未定義です．\n");
+                }
+            } else {
+                return left;
+            }
+        } else {
+            throw new Exception(left.getType() + " 型は未定義です．\n");
+        }
+    }
+
+    protected Operand calcualteOr(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        if (!(operator.arguments.get(0) instanceof Operand)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (left.getType().equals("Bool")) {
+            if (!(boolean) left.value) {
+                Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+                if (left.getType().equals("Bool")) {
+                    if (!(operator.arguments.get(1) instanceof Operand)) {
+                        operator.arguments.set(1, right);
+                        pushLog();
+                    }
+                    return right;
+                } else {
+                    throw new Exception(right.getType() + " 型は未定義です．\n");
+                }
+            } else {
+                return left;
+            }
+        } else {
+            throw new Exception(left.getType() + " 型は未定義です．\n");
+        }
+    }
+
     protected Operand calcualteAssaignment(Operator operator) throws Exception {
         if (!(operator.arguments.get(0) instanceof Variable)) {
             throw new Exception("左辺は変数である必要があります。");
@@ -524,6 +576,10 @@ public class Calculator {
                 return calculateBitOr(operator);
             } else if (operator.getName().matches("==|!=|<=|<|>|>=")) {
                 return calculateComparison(operator);
+            } else if (operator.getName().equals("&&")) {
+                return calcualteAnd(operator);
+            } else if (operator.getName().equals("||")) {
+                return calcualteOr(operator);
             } else if (operator.getName().equals("=")) {
                 return calcualteAssaignment(operator);
             } else {
