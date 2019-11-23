@@ -30,10 +30,12 @@ public class Parser {
     }
 
     protected Expression parseFactor() throws Exception {
-        if (peek().type == TokenType.ID || peek().type == TokenType.INT || peek().type == TokenType.FLOAT
+        if (peek().type == TokenType.INT || peek().type == TokenType.FLOAT
                 || peek().type == TokenType.BIG_DECIMAL || peek().type == TokenType.BOOL
                 || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
             return new Operand(next());
+        } else if (peek().type == TokenType.ID) {
+            return new Variable(next().name, "Variable", null);
         } else if (peek().type == TokenType.LPAR) {
             next();
             Expression expression = parseExpression();

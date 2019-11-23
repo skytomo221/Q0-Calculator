@@ -105,7 +105,7 @@ public class Calculator {
 
     protected Operand getOperand(Expression expression) {
         if (expression instanceof Variable && variables.containsKey(expression.name)) {
-            ((Variable) expression).value = variables.get(expression.name).value;
+            expression = variables.get(expression.name);
         } else if (includeEnumeratedType(expression.name)) {
             return generateEnumeratedType(expression.name);
         }
@@ -459,18 +459,19 @@ public class Calculator {
     }
 
     protected Operand calcualteAssaignment(Operator operator) throws Exception {
-        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
-        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
-        if (!(operator.arguments.get(0) instanceof Operand)) {
-            operator.arguments.set(0, left);
-            pushLog();
+        if (!(operator.arguments.get(0) instanceof Variable)) {
+            throw new Exception("左辺は変数である必要があります。");
         }
+        Operand left = (Operand) getOperand(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
         if (!(operator.arguments.get(1) instanceof Operand)) {
             operator.arguments.set(1, right);
             pushLog();
         }
-        return new Operand("String",
-                String.join("", Collections.nCopies((int) (long) right.value, (String) left.value)));
+        left.setType(right.getType());
+        left.setValue(right.getValue());
+        variables.put(left.getName(), (Variable)left);
+        return left;
     }
 
     protected Expression calculateExpression(Expression expression) throws Exception {
@@ -508,6 +509,8 @@ public class Calculator {
                 return calculateBitOr(operator);
             } else if (operator.name.matches("==|!=|<=|<|>|>=")) {
                 return calculateComparison(operator);
+            } else if (operator.name.equals("=")) {
+                return calcualteAssaignment(operator);
             } else {
                 throw new Exception("演算子 " + operator.name + " は未定義です．\n");
             }
