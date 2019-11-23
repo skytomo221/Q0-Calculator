@@ -1,8 +1,3 @@
----
-stylesheet: https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css
-body_class: markdown-body
----
-
 # Q0 Calculator
 
 <img src="https://github.com/skytomo221/Q0-Calculator/blob/master/images/icon.png?raw=true" width="200px">
