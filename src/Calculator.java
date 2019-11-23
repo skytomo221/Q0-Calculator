@@ -23,11 +23,11 @@ public class Calculator {
     public Calculator() {
         variables = new HashMap<String, Variable>();
         enumeratedTypes = new ArrayList<EnumeratedType>(/*
-                                                         * Arrays.asList(new EnumeratedType(new HashMap<Long, String>()
-                                                         * { private static final long serialVersionUID = 1L;
-                                                         *
-                                                         * { put(0L, "false"); put(1L, "true"); } }, "Bool"))
-                                                         */);
+         * Arrays.asList(new EnumeratedType(new HashMap<Long, String>()
+         * { private static final long serialVersionUID = 1L;
+         *
+         * { put(0L, "false"); put(1L, "true"); } }, "Bool"))
+         */);
 
     }
 

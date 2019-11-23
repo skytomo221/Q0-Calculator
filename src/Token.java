@@ -18,6 +18,7 @@ public class Token {
     /**
      * トークンを初期化します。
      * これは字句解析で使われるためのコンストラクタです。
+     *
      * @param type トークンの種類
      * @param name トークンの名前
      */
@@ -28,8 +29,9 @@ public class Token {
 
     /**
      * トークンを値付きで初期化します。
-     * @param type トークンの種類
-     * @param name トークンの名前
+     *
+     * @param type  トークンの種類
+     * @param name  トークンの名前
      * @param value トークンの値
      */
     Token(TokenType type, String name, Object value) {

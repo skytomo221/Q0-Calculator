@@ -10,6 +10,7 @@ public class Lexer {
     protected int index;
     protected Map<String, TokenType> keywords = new HashMap<String, TokenType>() {
         private static final long serialVersionUID = 1L;
+
         {
             put("baremodule", TokenType.BAREMODULE);
             put("begin", TokenType.BEGIN);
@@ -70,7 +71,7 @@ public class Lexer {
 
     /**
      * 文字列が10進数の整数であり、かつ Int64 の範疇に収まるかどうかを判定する。
-     * 
+     *
      * @param str 判定対象の文字列。
      * @return 文字列が10進数の整数であり、かつintの範疇に収まる場合はTrue.
      */
@@ -462,7 +463,7 @@ public class Lexer {
 
     /**
      * 字句解析した結果からホワイトスペースのトークンを取り除きます。
-     * 
+     *
      * @param list 対象のリスト
      * @return ホワイトスペースのトークンを取り除いたリスト
      */

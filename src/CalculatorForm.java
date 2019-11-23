@@ -1,3 +1,16 @@
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.StyledDocument;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,13 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.StyledDocument;
 
 class CalculatorForm extends JFrame implements ActionListener, ComponentListener, DocumentListener, KeyListener {
     /**
@@ -38,6 +44,8 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     protected JTextPane inputTextPane = new JTextPane();
     protected JTextPane logTextPane = new JTextPane();
     protected StyledDocument inputStyledDocument;
+    protected JScrollPane inputScrollPane = new JScrollPane(inputTextPane);
+    protected JScrollPane logScrollPane = new JScrollPane(logTextPane);
 
     public boolean displayLexerResult = true;
     public boolean displayPerserResult = true;
@@ -46,6 +54,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     protected Lexer lexer = new Lexer();
     protected Parser parser = new Parser();
     protected Calculator calculator = new Calculator();
+
+    protected JTextPaneColorizer inputTextPaneColorizer;
+    protected JTextPaneColorizer logTextPaneColorizer;
 
     CalculatorForm() {
         super("Q0 Calculator");
@@ -84,8 +95,8 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         p1.setBorder(null);
         p2.setBorder(null);
         p1.add(p2);
-        p1.add(logTextPane);
-        p2.add(inputTextPane);
+        p1.add(logScrollPane);
+        p2.add(inputScrollPane);
         p2.add(tabbedPane);
         getContentPane().add(p1, BorderLayout.CENTER);
 
@@ -140,22 +151,35 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         }
         fuButtonPanel.setLayout(new GridLayout(5, 4));
         tabbedPane.setBackground(JTextPaneColorizer.colors.get("background"));
-        inputTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
-        logTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
         tabbedPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
+        inputTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
         inputTextPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
-        logTextPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
         inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 36));
-        logTextPane.setFont(new Font("Consolas", Font.PLAIN, 18));
-        inputScrollPane.setBorder(null);
-        logScrollPane.setBorder(null);
-        inputStyledDocument = inputTextPane.getStyledDocument();
-        inputStyledDocument.addDocumentListener(this);
         inputTextPane.addKeyListener(this);
         inputTextPane.setCaretColor(JTextPaneColorizer.colors.get("foreground"));
         inputTextPaneColorizer = new JTextPaneColorizer(inputTextPane, lexer);
-        logTextPaneColorizer = new JTextPaneColorizer(logTextPane, lexer);
+        logTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
+        logTextPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
+        logTextPane.setFont(new Font("Consolas", Font.PLAIN, 18));
         logTextPane.setEditable(false);
+        logTextPaneColorizer = new JTextPaneColorizer(logTextPane, lexer);
+        inputScrollPane.setBorder(null);
+//        inputScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+//        inputScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+//        inputScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+//        inputScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        logScrollPane.setBorder(null);
+//        logScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+//        logScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+//        logScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+//        logScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        inputStyledDocument = inputTextPane.getStyledDocument();
+        inputStyledDocument.addDocumentListener(this);
+//        try {
+//            inputTextPaneColorizer.insertCode("0");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

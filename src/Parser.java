@@ -162,7 +162,7 @@ public class Parser {
             while (peek().type == TokenType.SEMICOLON) {
                 next();
                 skipNewLine();
-            }            
+            }
         }
         return expressions;
     }

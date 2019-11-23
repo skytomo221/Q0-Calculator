@@ -11,7 +11,7 @@ public class Operator extends Expression {
 
     /**
      * 被演算子または引数を取得します。
-     * 
+     *
      * @return 被演算子または引数
      */
     public List<Expression> getArguments() {
@@ -20,7 +20,7 @@ public class Operator extends Expression {
 
     /**
      * 被演算子または引数を設定します。
-     * 
+     *
      * @param arguments 設定する被演算子または引数
      */
     public void setArguments(List<Expression> arguments) {
@@ -29,7 +29,7 @@ public class Operator extends Expression {
 
     /**
      * 演算子を初期化します。
-     * 
+     *
      * @param name      設定する演算子の名前
      * @param arguments 設定する被演算子または引数
      */
@@ -40,7 +40,7 @@ public class Operator extends Expression {
 
     /**
      * 演算子と被演算子または引数を文字列に変換します。
-     * 
+     *
      * @return 演算子と被演算子または引数
      */
     @Override

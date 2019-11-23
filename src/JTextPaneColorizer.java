@@ -1,8 +1,13 @@
-import javax.swing.*;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.*;
-import java.awt.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import java.awt.Color;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -14,6 +19,8 @@ public class JTextPaneColorizer {
     protected Lexer lexer;
     protected Boolean highlighted = false;
     public static HashMap<String, Color> colors = new HashMap<>() {
+        private static final long serialVersionUID = 1L;
+
         {
             put("background", Color.decode("#2d2a2e"));
             put("foreground", Color.decode("#eeeeee"));
@@ -36,8 +43,6 @@ public class JTextPaneColorizer {
         this.textPane = textPane;
         this.lexer = lexer;
         this.textPane.addHyperlinkListener(new HyperlinkListener() {
-            private String tooltip;
-
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -177,10 +182,10 @@ public class JTextPaneColorizer {
         SimpleAttributeSet attr = new SimpleAttributeSet();
         StyleConstants.setForeground(attr, c);
         try {
-            for (int i = 0;i < s.length();i++             ) {
+            for (int i = 0; i < s.length(); i++) {
                 if (Character.toString(s.charAt(i)).matches("[\\u0000-\\u00ff]")) {
                     StyleConstants.setFontFamily(attr, "Consolas");
-                }else {
+                } else {
                     StyleConstants.setFontFamily(attr, "メイリオ");
                 }
                 doc.insertString(doc.getLength(), Character.toString(s.charAt(i)), attr);

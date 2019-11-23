@@ -4,6 +4,13 @@
             "type": "java",
             "name": "CodeLens (Launch) - Q0",
             "request": "launch",
+            "mainClass": "src.Q0",
+            "projectName": "Q0-Calculator_cb692879"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Q0",
+            "request": "launch",
             "mainClass": "Q0",
             "projectName": "Q0-Calculator_cb692879"
         }
