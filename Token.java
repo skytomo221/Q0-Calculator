@@ -41,9 +41,9 @@ public class Token {
     @Override
     public String toString() {
         if (value == null) {
-            return "type: " + type + ", name: \"" + name + "\"";
+            return name + " => " + type;
         } else {
-            return "type: " + type + ", name: \"" + name + "\", value: " + value;
+            return name + " => " + value + "::" + type;
         }
     }
 }

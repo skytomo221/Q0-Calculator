@@ -1,60 +1,23 @@
-import java.util.ArrayList;
-
 /**
  * 式を表します。
  */
 public class Expression {
     /**
-     * 式の種類
+     * 式の名前
      */
-    ExpressionType type;
+    protected String name;
     /**
-     * 演算子
+     * 名前を取得します。
+     * @return 名前
      */
-    Token operator;
-    /**
-     * 被演算子のリスト
-     */
-    ArrayList<Expression> operands = new ArrayList<Expression>();
-
-    /**
-     * これは被演算子を登録するためのコンストラクタです。 もし、式の種類が被演算子だった場合、{@code operator}には被演算子のトークンが入ります。
-     * 
-     * @param type    式の種類
-     * @param operand 被演算子
-     */
-    Expression(ExpressionType type, Token operand) {
-        this.type = type;
-        this.operator = operand;
+    public String getName() {
+        return name;
     }
-
     /**
-     * これは演算子を登録するためのコンストラクタです。
-     * 
-     * @param type     式の種類
-     * @param operator 演算子
-     * @param operands 被演算子のリスト
+     * 名前を設定します。
+     * @param name 設定する名前
      */
-    Expression(ExpressionType type, Token operator, ArrayList<Expression> operands) {
-        this.type = type;
-        this.operator = operator;
-        this.operands = operands;
-    }
-
-    @Override
-    public String toString() {
-        switch (type) {
-        case OPERAND:
-            return operator.value.toString();
-        case UNARY_OPERATOR:
-            return "(" + operator.name + " " + operands.get(0) + ")";
-        case BINARY_OPERATOR:
-        case COMPARSION_OPERATOR:
-            return "(" + operands.get(0) + " " + operator.name + " " + operands.get(1) + ")";
-        case END:
-            return "(end)";
-        default:
-            return "(未設定)";
-        }
+    public void setName(String name) {
+        this.name = name;
     }
 }

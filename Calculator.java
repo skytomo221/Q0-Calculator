@@ -1,1025 +1,615 @@
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Calculator {
-    public Map<String, Integer> variables;
-    public Expression answer;
-    List<Expression> body;
+    public Map<String, Variable> variables;
+    public Operand answer;
+    List<Expression> expressions;
+    List<EnumeratedType> enumeratedTypes;
+    protected long logNumber = 0;
+    /**
+     * 解析中の式を選択します。
+     */
+    protected Expression currentExpression = null;
+    /**
+     * ログを残します。
+     */
+    protected String log = null;
 
-    public Calculator(List<Expression> body) {
-        variables = new HashMap<String, Integer>();
-        answer = null;
-        this.body = body;
+    public Calculator() {
+        variables = new HashMap<String, Variable>();
+        enumeratedTypes = new ArrayList<EnumeratedType>(/*
+                                                         * Arrays.asList(new EnumeratedType(new HashMap<Long, String>()
+                                                         * { private static final long serialVersionUID = 1L;
+                                                         *
+                                                         * { put(0L, "false"); put(1L, "true"); } }, "Bool"))
+                                                         */);
+
+    }
+
+    protected String getLogNumber() {
+        return getLogNumber(0);
+    }
+
+    protected String getLogNumber(long index) {
+        return "$" + Long.toString(logNumber + index);
+    }
+
+    protected void setLog(Expression currentExpression) {
+        logNumber++;
+        this.currentExpression = currentExpression;
+        log = getLogNumber() + " = " + this.currentExpression.toString() + "\n";
+    }
+
+    protected void pushLog() {
+        log += getLogNumber().replaceAll(".", " ") + " = " + currentExpression.toString() + "\n";
+    }
+
+    protected String getLog() {
+        return log;
     }
 
     public String getAnswerToString() {
-        return answer.operator.name;
+        return answer.toString();
     }
 
-    public static void promoteToInt8(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (byte) op.value;
+    public Operand promoteToFloat(Operand operand) {
+        if (operand.getValue() instanceof Long) {
+            operand.setValue((double) (long) operand.getValue());
+        } else if (operand.getValue() instanceof Double) {
         } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int8 に型変換できません。");
+            throw new ClassCastException(operand.getType() + " は Int に型変換できません。\n");
         }
-        expression.operator.type = TokenType.INT8;
+        return operand;
     }
 
-    public static void promoteToInt16(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (short) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (short) op.value;
+    public Operand promoteToBigDecimal(Operand operand) {
+        if (operand.getValue() instanceof Long) {
+            operand.setValue(new BigDecimal((long) operand.getValue()));
+        } else if (operand.getValue() instanceof Double) {
+            operand.setValue(new BigDecimal((double) operand.getValue()));
+        } else if (operand.getValue() instanceof BigDecimal) {
         } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int16 に型変換できません。");
+            throw new ClassCastException(operand.getType() + " は BigDecimal に型変換できません。\n");
         }
-        expression.operator.type = TokenType.INT16;
+        return operand;
     }
 
-    public static void promoteToInt32(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (int) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (int) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (int) op.value;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int32 に型変換できません。");
+    protected boolean includeEnumeratedType(String name) {
+        for (EnumeratedType enumeratedType : enumeratedTypes) {
+            if (enumeratedType.getIdentifiers().containsValue(name)) {
+                return true;
+            }
         }
-        expression.operator.type = TokenType.INT32;
+        return false;
     }
 
-    public static void promoteToInt64(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (long) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (long) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (long) (int) op.value;
-        } else if (op.value instanceof Long) {
-            op.value = (long) op.value;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Int64 に型変換できません。");
-        }
-        expression.operator.type = TokenType.INT64;
-    }
-
-    public static void promoteToFloat32(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (float) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (float) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (float) (int) op.value;
-        } else if (op.value instanceof Long) {
-            op.value = (float) (long) op.value;
-        } else if (op.value instanceof Float) {
-            op.value = (float) op.value;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Float32 に型変換できません。");
-        }
-        expression.operator.type = TokenType.FLOAT32;
-    }
-
-    public static void promoteToFloat64(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            op.value = (double) (byte) op.value;
-        } else if (op.value instanceof Short) {
-            op.value = (double) (short) op.value;
-        } else if (op.value instanceof Integer) {
-            op.value = (double) (int) op.value;
-        } else if (op.value instanceof Long) {
-            op.value = (double) (long) op.value;
-        } else if (op.value instanceof Float) {
-            op.value = (double) (float) op.value;
-        } else if (op.value instanceof Double) {
-            op.value = (double) op.value;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は Float64 に型変換できません。");
-        }
-        expression.operator.type = TokenType.FLOAT64;
-    }
-
-    public static void promoteToBigInt(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            expression.operator.value = new BigDecimal((byte) op.value);
-        } else if (op.value instanceof Short) {
-            expression.operator.value = new BigDecimal((short) op.value);
-        } else if (op.value instanceof Integer) {
-            expression.operator.value = new BigDecimal((int) op.value);
-        } else if (op.value instanceof Long) {
-            expression.operator.value = new BigDecimal((long) op.value);
-        } else if (op.value instanceof String) {
-            expression.operator.value = new BigDecimal((String) op.value);
-        } else if (op.value instanceof BigDecimal) {
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は BigInt に型変換できません。");
-        }
-        expression.operator.type = TokenType.BIG_INT;
-    }
-
-    public static void promoteToBigFloat(Expression expression) {
-        Token op = expression.operator;
-        if (op.value instanceof Byte) {
-            expression.operator.value = new BigDecimal((byte) op.value);
-        } else if (op.value instanceof Short) {
-            expression.operator.value = new BigDecimal((short) op.value);
-        } else if (op.value instanceof Integer) {
-            expression.operator.value = new BigDecimal((int) op.value);
-        } else if (op.value instanceof Long) {
-            expression.operator.value = new BigDecimal((long) op.value);
-        } else if (op.value instanceof Float) {
-            expression.operator.value = new BigDecimal((float) op.value);
-        } else if (op.value instanceof Double) {
-            expression.operator.value = new BigDecimal((double) op.value);
-        } else if (op.value instanceof String) {
-            expression.operator.value = new BigDecimal((String) op.value);
-        } else if (op.value instanceof BigDecimal) {
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Byte) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (byte) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Short) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (short) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Integer) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (int) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Long) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (long) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Float) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (float) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof Double) {
-            ((ComparisonResult) op.value).comparison.operator.value = new BigDecimal(
-                    (double) ((ComparisonResult) op.value).comparison.operator.value);
-            return;
-        } else if (op.value instanceof ComparisonResult
-                && ((ComparisonResult) op.value).comparison.operator.value instanceof BigDecimal) {
-            return;
-        } else {
-            throw new ClassCastException(op.value.getClass().getName() + " は BigFloat に型変換できません。");
-        }
-        expression.operator.type = TokenType.BIG_FLOAT;
-    }
-
-    public Expression expression(Expression expression) throws Exception {
-        switch (expression.type) {
-        case OPERAND:
-            expression.operator.name = expression.operator.value.toString();
-            return expression;
-        case UNARY_OPERATOR:
-            Expression operand = expression(expression.operands.get(0));
-            Object oov = operand.operator.value;
-            Expression answer = new Expression(ExpressionType.OPERAND, new Token(operand.operator.type, null));
-            Token ansop = answer.operator;
-            if (oov instanceof BigDecimal) {
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = ((BigDecimal) oov).plus();
-                case MINUS:
-                    ansop.value = ((BigDecimal) oov).negate();
-                default:
+    protected EnumeratedType generateEnumeratedType(String name) {
+        for (EnumeratedType enumeratedType : enumeratedTypes) {
+            if (enumeratedType.getIdentifiers().containsValue(name)) {
+                long value = -1L;
+                for (long key : enumeratedType.getIdentifiers().keySet()) {
+                    if (name.equals(enumeratedType.getIdentifiers().get(key))) {
+                        value = key;
+                    }
                 }
-            } else if (oov instanceof Double) {
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = +(double) oov;
-                case MINUS:
-                    ansop.value = -(double) oov;
-                default:
+                return new EnumeratedType(enumeratedType.getIdentifiers(), enumeratedType.getType(), value);
+            }
+        }
+        return null;
+    }
+
+    protected Operand getOperand(Expression expression) {
+        if (expression instanceof Variable && variables.containsKey(expression.getName())) {
+            expression = variables.get(expression.getName());
+        } else if (includeEnumeratedType(expression.getName())) {
+            return generateEnumeratedType(expression.getName());
+        }
+        return (Operand) expression;
+    }
+
+    protected Operand repeatString(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        return new Operand("String",
+                String.join("", Collections.nCopies((int) (long) right.getValue(), (String) left.getValue())));
+    }
+
+    protected Operand calculatePower(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().equals("Int") && right.getType().equals("Int")) {
+            if (Math.pow((long) left.getValue(), (long) right.getValue()) <= Long.MAX_VALUE) {
+                left = new Operand("Int", (long) Math.pow((long) left.getValue(), (long) right.getValue()));
+            } else {
+                left = promoteToBigDecimal(left);
+                left = new Operand("BigDecimal", ((BigDecimal) left.getValue()).pow((int) (long) right.getValue()));
+            }
+        } else if (left.getType().equals("BigDecimal") && right.getType().equals("Int")) {
+            left = new Operand("BigDecimal", ((BigDecimal) left.getValue()).pow((int) (long) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", Math.pow((double) left.getValue(), (double) right.getValue()));
+        } else {
+            throw new Exception(left.getType() + " 型 ^ " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
+    }
+
+    protected Operand stringConcatenation(Operator operator) throws Exception {
+        Operand answer = new Operand("String", "");
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().equals("String") && operand.getType().equals("String")) {
+                answer = new Operand("String", (String) answer.getValue() + (String) operand.getValue());
+                answer.setName("\"" + answer.getValue().toString() + "\"");
+            } else {
+                throw new Exception(answer.getType() + " 型 * " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand calculateMultiplication(Operator operator) throws Exception {
+        Operand answer = new Operand("Int", 1L);
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().equals("Int") && operand.getType().equals("Int")) {
+                answer = new Operand("Int", (long) answer.getValue() * (long) operand.getValue());
+            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
+                answer = promoteToBigDecimal(answer);
+                operand = promoteToBigDecimal(operand);
+                answer = new Operand("BigDecimal",
+                        ((BigDecimal) answer.getValue()).multiply((BigDecimal) operand.getValue()));
+            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
+                answer = promoteToFloat(answer);
+                operand = promoteToFloat(operand);
+                answer = new Operand("Float", (double) answer.getValue() * (double) operand.getValue());
+            } else {
+                throw new Exception(answer.getType() + " 型 * " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand calculateDivision(Operator operator) throws Exception {
+        Operand answer = new Operand("Float", 1.0);
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().matches("Int|Float") || operand.getType().matches("Int|Float")) {
+                answer = promoteToFloat(answer);
+                operand = promoteToFloat(operand);
+                answer = new Operand("Float", (double) answer.getValue() / (double) operand.getValue());
+            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
+                answer = promoteToBigDecimal(answer);
+                operand = promoteToBigDecimal(operand);
+                answer = new Operand("BigDecimal",
+                        ((BigDecimal) answer.getValue()).divide((BigDecimal) operand.getValue()));
+            } else {
+                throw new Exception(answer.getType() + " 型 / " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand calculateBitAnd(Operator operator) throws Exception {
+        Operand answer = null;
+        Operand operand = (Operand) calculateExpression(operator.arguments.get(0));
+        if (operand.getType().matches("Bool")) {
+            answer = new Operand("Bool", true);
+        } else if (operand.getType().matches("Int")) {
+            answer = new Operand("Int", -1L);
+        } else {
+            throw new Exception(operand.getType() + " 型 & 任意型は未定義です。\n");
+        }
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().matches("Bool") && operand.getType().matches("Bool")) {
+                answer = new Operand("Bool", (boolean) answer.getValue() & (boolean) operand.getValue());
+            } else if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
+                answer = new Operand("Int", (long) answer.getValue() & (long) operand.getValue());
+            } else {
+                throw new Exception(answer.getType() + " 型 & " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand calculateRemainder(Operator operator) throws Exception {
+        Operand answer = new Operand("Int", 1L);
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
+                answer = new Operand("Int", (long) answer.getValue() % (long) operand.getValue());
+            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
+                answer = promoteToBigDecimal(answer);
+                operand = promoteToBigDecimal(operand);
+                answer = new Operand("BigDecimal",
+                        ((BigDecimal) answer.getValue()).remainder((BigDecimal) operand.getValue()));
+            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
+                answer = promoteToFloat(answer);
+                operand = promoteToFloat(operand);
+                answer = new Operand("Float", (double) answer.getValue() % (double) operand.getValue());
+            } else {
+                throw new Exception(answer.getType() + " 型 % " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand calculateAddition(Operator operator) throws Exception {
+        Operand answer = new Operand("Int", 0L);
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().equals("Char") && operand.getType().equals("Int")) {
+                answer = new Operand("Char", (char) ((char) answer.getValue()) + (long) operand.getValue());
+            } else if (answer.getType().equals("Int") && operand.getType().equals("Char")) {
+                answer = new Operand("Char", (char) ((long) answer.getValue()) + (char) operand.getValue());
+            } else if (answer.getType().equals("Int") && operand.getType().equals("Int")) {
+                answer = new Operand("Int", (long) answer.getValue() + (long) operand.getValue());
+            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
+                answer = promoteToBigDecimal(answer);
+                operand = promoteToBigDecimal(operand);
+                answer = new Operand("BigDecimal",
+                        ((BigDecimal) answer.getValue()).add((BigDecimal) operand.getValue()));
+            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
+                answer = promoteToFloat(answer);
+                operand = promoteToFloat(operand);
+                answer = new Operand("Float", (double) answer.getValue() + (double) operand.getValue());
+            } else {
+                throw new Exception(answer.getType() + " 型 + " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand nagete(Operand operand) throws Exception {
+        if (operand.getType().equals("Int")) {
+            return new Operand("Int", -(long) operand.getValue());
+        } else if (operand.getType().equals("Float")) {
+            operand = promoteToFloat(operand);
+            return new Operand("Float", -(double) promoteToFloat(operand).getValue());
+        } else if (operand.getType().equals("BigDecimal")) {
+            return new Operand("BigDecimal", ((BigDecimal) operand.getValue()).negate());
+        } else {
+            throw new Exception("-" + operand.getType() + " 型は未定義です。\n");
+        }
+    }
+
+    protected Operand calculateSubtraction(Operator operator) throws Exception {
+        Operand answer = (Operand) calculateExpression(operator.arguments.get(0));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, answer);
+            pushLog();
+        }
+        for (int i = 1; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            Operand operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().equals("Char") && operand.getType().equals("Int")) {
+                answer = new Operand("Char", (char) ((char) answer.getValue()) - (long) operand.getValue());
+            } else if (answer.getType().equals("Int") && operand.getType().equals("Char")) {
+                answer = new Operand("Char", (char) ((long) answer.getValue()) - (char) operand.getValue());
+            } else if (answer.getType().equals("Int") && operand.getType().equals("Int")) {
+                answer = new Operand("Int", (long) answer.getValue() - (long) operand.getValue());
+            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
+                answer = promoteToBigDecimal(answer);
+                operand = promoteToBigDecimal(operand);
+                answer = new Operand("BigDecimal",
+                        ((BigDecimal) answer.getValue()).subtract((BigDecimal) operand.getValue()));
+            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
+                answer = promoteToFloat(answer);
+                operand = promoteToFloat(operand);
+                answer = new Operand("Float", (double) answer.getValue() - (double) operand.getValue());
+            } else {
+                throw new Exception(answer.getType() + " 型 - " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand calculateBitOr(Operator operator) throws Exception {
+        Operand answer = null;
+        Operand operand = (Operand) calculateExpression(operator.arguments.get(0));
+        if (operand.getType().matches("Bool")) {
+            answer = new Operand("Bool", false);
+        } else if (operand.getType().matches("Int")) {
+            answer = new Operand("Int", 0L);
+        } else {
+            throw new Exception(operand.getType() + " 型 & 任意型は未定義です。\n");
+        }
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+            if (answer.getType().matches("Bool") && operand.getType().matches("Bool")) {
+                answer = new Operand("Bool", (boolean) answer.getValue() | (boolean) operand.getValue());
+            } else if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
+                answer = new Operand("Int", (long) answer.getValue() | (long) operand.getValue());
+            } else {
+                throw new Exception(answer.getType() + " 型 | " + operand.getType() + " 型は未定義です。\n");
+            }
+        }
+        return answer;
+    }
+
+    protected Operand calculateComparison(Operator operator) throws Exception {
+        ComparisonResult answer = getComparisonResult(operator);
+        return new Operand(answer.getName(), "Bool", answer.getValue());
+    }
+
+    protected ComparisonResult getComparisonResult(Operator operator) throws Exception {
+        Operand left = null;
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(right.getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (operator.arguments.get(0) instanceof Operator
+                && ((Operator) operator.arguments.get(0)).getName().matches("==|!=|<=|<|>|>=")) {
+            left = getComparisonResult((Operator) operator.arguments.get(0));
+            if (!((boolean) left.getValue())) {
+                return new ComparisonResult(right, false);
+            } else {
+                if (!(left.getClass() == Operand.class)) {
+                    operator.arguments.set(0, left);
+                    pushLog();
                 }
-            } else if (oov instanceof Float) {
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = +(float) oov;
-                case MINUS:
-                    ansop.value = -(float) oov;
-                default:
-                }
-            } else if (oov instanceof Long) {
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = +(long) oov;
-                case MINUS:
-                    ansop.value = -(long) oov;
-                default:
-                }
-            } else if (oov instanceof Integer) {
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = +(int) oov;
-                case MINUS:
-                    ansop.value = -(int) oov;
-                default:
-                }
-            } else if (oov instanceof Short) {
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = +(short) oov;
-                case MINUS:
-                    ansop.value = -(short) oov;
-                default:
-                }
-            } else if (oov instanceof Byte) {
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = +(byte) oov;
-                case MINUS:
-                    ansop.value = -(byte) oov;
-                default:
+                left = ((ComparisonResult) left).getComparison();
+            }
+        } else {
+            left = (Operand) calculateExpression(operator.arguments.get(0));
+        }
+        if (left.getType().equals("Char") && right.getType().equals("Char")) {
+            if (operator.getName().equals("==")) {
+                return new ComparisonResult(right, (char) left.getValue() == (char) right.getValue());
+            } else if (operator.getName().equals("!=")) {
+                return new ComparisonResult(right, (char) left.getValue() != (char) right.getValue());
+            } else if (operator.getName().equals("<=")) {
+                return new ComparisonResult(right, (char) left.getValue() <= (char) right.getValue());
+            } else if (operator.getName().equals("<")) {
+                return new ComparisonResult(right, (char) left.getValue() < (char) right.getValue());
+            } else if (operator.getName().equals(">")) {
+                return new ComparisonResult(right, (char) left.getValue() > (char) right.getValue());
+            } else if (operator.getName().equals(">=")) {
+                return new ComparisonResult(right, (char) left.getValue() >= (char) right.getValue());
+            }
+        } else if (left.getType().equals("String") && right.getType().equals("String")) {
+            if (operator.getName().equals("==")) {
+                return new ComparisonResult(right,
+                        ((String) left.getValue()).compareTo((String) right.getValue()) == 0);
+            } else if (operator.getName().equals("!=")) {
+                return new ComparisonResult(right,
+                        ((String) left.getValue()).compareTo((String) right.getValue()) != 0);
+            } else if (operator.getName().equals("<=")) {
+                return new ComparisonResult(right,
+                        ((String) left.getValue()).compareTo((String) right.getValue()) <= 0);
+            } else if (operator.getName().equals("<")) {
+                return new ComparisonResult(right, ((String) left.getValue()).compareTo((String) right.getValue()) < 0);
+            } else if (operator.getName().equals(">")) {
+                return new ComparisonResult(right,
+                        ((String) left.getValue()).compareTo((String) right.getValue()) >= 0);
+            } else if (operator.getName().equals(">=")) {
+                return new ComparisonResult(right, ((String) left.getValue()).compareTo((String) right.getValue()) > 0);
+            }
+        } else if (left.getType().equals("Bool") && right.getType().equals("Bool")) {
+            if (operator.getName().equals("==")) {
+                return new ComparisonResult(right, (boolean) left.getValue() == (boolean) right.getValue());
+            } else if (operator.getName().equals("!=")) {
+                return new ComparisonResult(right, (boolean) left.getValue() == (boolean) right.getValue());
+            }
+        } else if (left.getType().matches("Int|Float|BigDecimal") && right.getType().matches("Int|Float|BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            if (operator.getName().equals("==")) {
+                return new ComparisonResult(right,
+                        ((BigDecimal) left.getValue()).compareTo((BigDecimal) right.getValue()) == 0);
+            } else if (operator.getName().equals("!=")) {
+                return new ComparisonResult(right,
+                        ((BigDecimal) left.getValue()).compareTo((BigDecimal) right.getValue()) != 0);
+            } else if (operator.getName().equals("<=")) {
+                return new ComparisonResult(right,
+                        ((BigDecimal) left.getValue()).compareTo((BigDecimal) right.getValue()) <= 0);
+            } else if (operator.getName().equals("<")) {
+                return new ComparisonResult(right,
+                        ((BigDecimal) left.getValue()).compareTo((BigDecimal) right.getValue()) < 0);
+            } else if (operator.getName().equals(">")) {
+                return new ComparisonResult(right,
+                        ((BigDecimal) left.getValue()).compareTo((BigDecimal) right.getValue()) >= 0);
+            } else if (operator.getName().equals(">=")) {
+                return new ComparisonResult(right,
+                        ((BigDecimal) left.getValue()).compareTo((BigDecimal) right.getValue()) > 0);
+            }
+        }
+        throw new Exception("問題のある比較演算子です。\n");
+    }
+
+    protected Operand calcualteAnd(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (left.getType().equals("Bool")) {
+            if ((boolean) left.value) {
+                Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+                if (left.getType().equals("Bool")) {
+                    if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+                        operator.arguments.set(1, right);
+                        pushLog();
+                    }
+                    return right;
+                } else {
+                    throw new Exception(right.getType() + " 型は未定義です。\n");
                 }
             } else {
-                throw new Exception("Calculator が対応していない単項演算子です。");
+                return left;
             }
-            ansop.name = ansop.value.toString();
-            return answer;
-        case BINARY_OPERATOR:
-            Expression left = expression(expression.operands.get(0));
-            Expression right = expression(expression.operands.get(1));
-            Token lop = left.operator;
-            Token rop = right.operator;
-            answer = null;
-            if (left.operator.type == TokenType.BIG_FLOAT || right.operator.type == TokenType.BIG_FLOAT) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_FLOAT, null));
-                ansop = answer.operator;
-                promoteToBigFloat(left);
-                promoteToBigFloat(right);
-                switch (expression.operator.type) {
-                case MULTIPLICATION:
-                    ansop.value = ((BigDecimal) lop.value).multiply((BigDecimal) rop.value);
-                    break;
-                case DIVISION:
-                    ansop.value = ((BigDecimal) lop.value).divide((BigDecimal) rop.value);
-                    break;
-                case MOD:
-                    ansop.value = ((BigDecimal) lop.value).remainder((BigDecimal) rop.value);
-                    break;
-                case PLUS:
-                    ansop.value = ((BigDecimal) lop.value).add((BigDecimal) rop.value);
-                    break;
-                case MINUS:
-                    ansop.value = ((BigDecimal) lop.value).subtract((BigDecimal) rop.value);
-                    break;
-                default:
-                    throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
-                }
-                ansop.name = ((BigDecimal) ansop.value).toPlainString();
-            } else if (left.operator.type == TokenType.BIG_INT || right.operator.type == TokenType.BIG_INT) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_INT, null));
-                ansop = answer.operator;
-                promoteToBigInt(left);
-                promoteToBigInt(right);
-                switch (expression.operator.type) {
-                case MULTIPLICATION:
-                    ansop.value = ((BigDecimal) lop.value).multiply((BigDecimal) rop.value);
-                    break;
-                case DIVISION:
-                    ansop.value = ((BigDecimal) lop.value).divide((BigDecimal) rop.value);
-                    break;
-                case MOD:
-                    ansop.value = ((BigDecimal) lop.value).remainder((BigDecimal) rop.value);
-                    break;
-                case PLUS:
-                    ansop.value = ((BigDecimal) lop.value).add((BigDecimal) rop.value);
-                    break;
-                case MINUS:
-                    ansop.value = ((BigDecimal) lop.value).subtract((BigDecimal) rop.value);
-                    break;
-                default:
-                    throw new Exception("BIG_FLOAT が対応していない二項演算子です。");
-                }
-                ansop.name = ((BigDecimal) ansop.value).toPlainString();
-            } else if (left.operator.type == TokenType.FLOAT64 || right.operator.type == TokenType.FLOAT64) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT64, null));
-                ansop = answer.operator;
-                promoteToFloat64(left);
-                promoteToFloat64(right);
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = Math.pow((double) lop.value, (double) rop.value);
-                    break;
-                case MULTIPLICATION:
-                    ansop.value = (double) lop.value * (double) rop.value;
-                    break;
-                case DIVISION:
-                    ansop.value = (double) lop.value / (double) rop.value;
-                    break;
-                case MOD:
-                    ansop.value = (double) lop.value % (double) rop.value;
-                    break;
-                case PLUS:
-                    ansop.value = (double) lop.value + (double) rop.value;
-                    break;
-                case MINUS:
-                    ansop.value = (double) lop.value - (double) rop.value;
-                    break;
-                default:
-                    throw new Exception("FLOAT64 が対応していない二項演算子です。");
-                }
-                ansop.name = ansop.value.toString().replaceAll("E", "e");
-            } else if (left.operator.type == TokenType.FLOAT32 || right.operator.type == TokenType.FLOAT32) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT32, null));
-                ansop = answer.operator;
-                promoteToFloat32(left);
-                promoteToFloat32(right);
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = (float) Math.pow((float) lop.value, (float) rop.value);
-                    break;
-                case MULTIPLICATION:
-                    ansop.value = (float) lop.value * (float) rop.value;
-                    break;
-                case DIVISION:
-                    ansop.value = (float) lop.value / (float) rop.value;
-                    break;
-                case MOD:
-                    ansop.value = (float) lop.value % (float) rop.value;
-                    break;
-                case PLUS:
-                    ansop.value = (float) lop.value + (float) rop.value;
-                    break;
-                case MINUS:
-                    ansop.value = (float) lop.value - (float) rop.value;
-                    break;
-                default:
-                    throw new Exception("FLOAT32 が対応していない二項演算子です。");
-                }
-                ansop.name = ansop.value.toString().replaceAll("E", "f");
-            } else if (left.operator.type == TokenType.CHAR && TokenType.isInt(right.operator.type)) {
-                promoteToInt64(right);
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case PLUS:
-                    ansop.value = (char) ((char) lop.value + (long) rop.value);
-                    break;
-                default:
-                    throw new Exception("CHAR が対応していない二項演算子です。");
-                }
-                ansop.name = "\'" + ansop.value.toString() + "\'";
-            } else if (left.operator.type == TokenType.STRING && right.operator.type == TokenType.STRING) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case MULTIPLICATION:
-                    ansop.value = (String) lop.value + (String) rop.value;
-                    break;
-                default:
-                }
-                ansop.name = "\"" + ansop.value.toString() + "\"";
-            } else if (left.operator.type == TokenType.STRING && TokenType.isInt(right.operator.type)) {
-                promoteToInt64(right);
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = String.join("", Collections.nCopies((int) (long) rop.value, (String) lop.value));
-                    break;
-                default:
-                }
-                ansop.name = "\"" + ansop.value.toString() + "\"";
-            } else if (left.operator.type == TokenType.INT64 || right.operator.type == TokenType.INT64) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT64, null));
-                ansop = answer.operator;
-                promoteToInt64(left);
-                promoteToInt64(right);
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = (long) Math.pow((long) lop.value, (long) rop.value);
-                    break;
-                case MULTIPLICATION:
-                    ansop.value = (long) lop.value * (long) rop.value;
-                    break;
-                case DIVISION:
-                    ansop.value = (double) (long) lop.value / (double) (long) rop.value;
-                    break;
-                case BIT_AND:
-                    ansop.value = (long) lop.value & (long) rop.value;
-                    break;
-                case MOD:
-                    ansop.value = (long) lop.value % (long) rop.value;
-                    break;
-                case PLUS:
-                    ansop.value = (long) lop.value + (long) rop.value;
-                    break;
-                case MINUS:
-                    ansop.value = (long) lop.value - (long) rop.value;
-                    break;
-                case BIT_OR:
-                    ansop.value = (long) lop.value | (long) rop.value;
-                    break;
-                default:
-                    throw new Exception("INT64 が対応していない二項演算子です。");
-                }
-                ansop.name = ansop.value.toString();
-            } else if (left.operator.type == TokenType.INT32 || right.operator.type == TokenType.INT32) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT32, null));
-                ansop = answer.operator;
-                promoteToInt32(left);
-                promoteToInt32(right);
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = (int) Math.pow((int) lop.value, (int) rop.value);
-                    break;
-                case MULTIPLICATION:
-                    ansop.value = (int) lop.value * (int) rop.value;
-                    break;
-                case DIVISION:
-                    ansop.value = (double) (int) lop.value / (double) (int) rop.value;
-                    break;
-                case BIT_AND:
-                    ansop.value = (int) lop.value & (int) rop.value;
-                    break;
-                case MOD:
-                    ansop.value = (int) lop.value % (int) rop.value;
-                    break;
-                case PLUS:
-                    ansop.value = (int) lop.value + (int) rop.value;
-                    break;
-                case MINUS:
-                    ansop.value = (int) lop.value - (int) rop.value;
-                    break;
-                case BIT_OR:
-                    ansop.value = (int) lop.value | (int) rop.value;
-                    break;
-                default:
-                    throw new Exception("INT32 が対応していない二項演算子です。");
-                }
-                ansop.name = ansop.value.toString();
-            } else if (left.operator.type == TokenType.INT16 || right.operator.type == TokenType.INT16) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT16, null));
-                ansop = answer.operator;
-                promoteToInt16(left);
-                promoteToInt16(right);
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = (short) Math.pow((short) lop.value, (short) rop.value);
-                    break;
-                case MULTIPLICATION:
-                    ansop.value = (short) lop.value * (short) rop.value;
-                    break;
-                case DIVISION:
-                    ansop.value = (double) (short) lop.value / (double) (short) rop.value;
-                    break;
-                case BIT_AND:
-                    ansop.value = (short) lop.value & (short) rop.value;
-                    break;
-                case MOD:
-                    ansop.value = (short) lop.value % (short) rop.value;
-                    break;
-                case PLUS:
-                    ansop.value = (short) lop.value + (short) rop.value;
-                    break;
-                case MINUS:
-                    ansop.value = (short) lop.value - (short) rop.value;
-                    break;
-                case BIT_OR:
-                    ansop.value = (short) lop.value | (short) rop.value;
-                    break;
-                default:
-                    throw new Exception("INT16 が対応していない二項演算子です。");
-                }
-                ansop.name = ansop.value.toString();
-            } else if (left.operator.type == TokenType.INT8 || right.operator.type == TokenType.INT8) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT8, null));
-                ansop = answer.operator;
-                promoteToInt8(left);
-                promoteToInt8(right);
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = (byte) Math.pow((byte) lop.value, (byte) rop.value);
-                    break;
-                case MULTIPLICATION:
-                    ansop.value = (byte) lop.value * (byte) rop.value;
-                    break;
-                case DIVISION:
-                    ansop.value = (double) (byte) lop.value / (double) (byte) rop.value;
-                    break;
-                case BIT_AND:
-                    ansop.value = (byte) lop.value & (byte) rop.value;
-                    break;
-                case MOD:
-                    ansop.value = (byte) lop.value % (byte) rop.value;
-                    break;
-                case PLUS:
-                    ansop.value = (byte) lop.value + (byte) rop.value;
-                    break;
-                case MINUS:
-                    ansop.value = (byte) lop.value - (byte) rop.value;
-                    break;
-                case BIT_OR:
-                    ansop.value = (byte) lop.value | (byte) rop.value;
-                    break;
-                default:
-                    throw new Exception("INT8 が対応していない二項演算子です。");
-                }
-                ansop.name = ansop.value.toString();
-            } else if (left.operator.type == TokenType.BOOL || right.operator.type == TokenType.BOOL) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BOOL, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case POWER:
-                    ansop.value = (boolean) lop.value ^ (boolean) rop.value;
-                    break;
-                case BIT_AND:
-                    ansop.value = (boolean) lop.value & (boolean) rop.value;
-                    break;
-                case BIT_OR:
-                    ansop.value = (boolean) lop.value | (boolean) rop.value;
-                    break;
-                default:
-                    throw new Exception("BOOL が対応していない二項演算子です。");
-                }
-                ansop.name = ansop.value.toString();
-            }
-            return answer;
-        case COMPARSION_OPERATOR:
-            left = expression(expression.operands.get(0));
-            right = expression(expression.operands.get(1));
-            lop = left.operator;
-            rop = right.operator;
-            answer = null;
-            ansop = null;
-            if (left.operator.value instanceof ComparisonResult && TokenType.isInt(right.operator.type)) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_FLOAT, null));
-                ansop = answer.operator;
-                Expression bigLeft = new Expression(left.type,
-                        new Token(left.operator.type, left.operator.name, left.operator.value), left.operands);
-                Expression bigRight = new Expression(right.type,
-                        new Token(right.operator.type, right.operator.name, right.operator.value), right.operands);
-                promoteToBigFloat(bigLeft);
-                promoteToBigFloat(bigRight);
-                lop = ((ComparisonResult)bigLeft.operator.value).comparison.operator;
-                rop = bigRight.operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) == 0);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) != 0);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) <= 0);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) < 0);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) >= 0);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right,
-                                ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) > 0);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.CHAR) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.CHAR, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (char) lop.value == (char) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (char) lop.value != (char) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right, (char) lop.value <= (char) rop.value);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right, (char) lop.value < (char) rop.value);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right, (char) lop.value >= (char) rop.value);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right, (char) lop.value > (char) rop.value);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.STRING) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT64, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right,
-                                ((String) lop.value).compareTo((String) rop.value) == 0);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right,
-                                ((String) lop.value).compareTo((String) rop.value) != 0);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right,
-                                ((String) lop.value).compareTo((String) rop.value) <= 0);
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right,
-                                ((String) lop.value).compareTo((String) rop.value) < 0);
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right,
-                                ((String) lop.value).compareTo((String) rop.value) >= 0);
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right,
-                                ((String) lop.value).compareTo((String) rop.value) > 0);
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.value instanceof ComparisonResult && right.operator.type == TokenType.BOOL) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.CHAR, null));
-                ansop = answer.operator;
-                lop = ((Expression) ((ComparisonResult) left.operator.value).comparison).operator;
-                if (((ComparisonResult) left.operator.value).result) {
-                    switch (expression.operator.type) {
-                    case EQ:
-                        ansop.value = new ComparisonResult(right, (boolean) lop.value == (boolean) rop.value);
-                        break;
-                    case NE:
-                        ansop.value = new ComparisonResult(right, (boolean) lop.value != (boolean) rop.value);
-                        break;
-                    case LE:
-                        ansop.value = new ComparisonResult(right,
-                                ((boolean) lop.value ? 1 : 0) <= ((boolean) rop.value ? 1 : 0));
-                        break;
-                    case LT:
-                        ansop.value = new ComparisonResult(right,
-                                ((boolean) lop.value ? 1 : 0) < ((boolean) rop.value ? 1 : 0));
-                        break;
-                    case GE:
-                        ansop.value = new ComparisonResult(right,
-                                ((boolean) lop.value ? 1 : 0) >= ((boolean) rop.value ? 1 : 0));
-                        break;
-                    case GT:
-                        ansop.value = new ComparisonResult(right,
-                                ((boolean) lop.value ? 1 : 0) > ((boolean) rop.value ? 1 : 0));
-                        break;
-                    default:
-                        throw new Exception("問題のある比較演算子です。");
-                    }
-                } else {
-                    ansop.value = new ComparisonResult(right, false);
-                }
-            } else if (left.operator.type == TokenType.BIG_FLOAT || right.operator.type == TokenType.BIG_FLOAT) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_FLOAT, null));
-                ansop = answer.operator;
-                promoteToBigFloat(left);
-                promoteToBigFloat(right);
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) == 0);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) != 0);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) <= 0);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) < 0);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) >= 0);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) > 0);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.BIG_INT || right.operator.type == TokenType.BIG_INT) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.BIG_INT, null));
-                ansop = answer.operator;
-                promoteToBigFloat(left);
-                promoteToBigFloat(right);
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) == 0);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) != 0);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) <= 0);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) < 0);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) >= 0);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right,
-                            ((BigDecimal) lop.value).compareTo((BigDecimal) rop.value) > 0);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.FLOAT64 || right.operator.type == TokenType.FLOAT64) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT64, null));
-                ansop = answer.operator;
-                promoteToFloat64(left);
-                promoteToFloat64(right);
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (double) lop.value == (double) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (double) lop.value != (double) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, (double) lop.value < (double) rop.value);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, (double) lop.value <= (double) rop.value);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, (double) lop.value > (double) rop.value);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, (double) lop.value >= (double) rop.value);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.FLOAT32 || right.operator.type == TokenType.FLOAT32) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.FLOAT32, null));
-                ansop = answer.operator;
-                promoteToFloat32(left);
-                promoteToFloat32(right);
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (float) lop.value == (float) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (float) lop.value != (float) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, (float) lop.value < (float) rop.value);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, (float) lop.value <= (float) rop.value);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, (float) lop.value > (float) rop.value);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, (float) lop.value >= (float) rop.value);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.CHAR && right.operator.type == TokenType.CHAR) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.CHAR, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (char) lop.value == (char) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (char) lop.value != (char) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, (char) lop.value < (char) rop.value);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, (char) lop.value <= (char) rop.value);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, (char) lop.value > (char) rop.value);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, (char) lop.value >= (char) rop.value);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.STRING && right.operator.type == TokenType.STRING) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.STRING, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, ((String) lop.value).compareTo((String) rop.value) == 0);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, ((String) lop.value).compareTo((String) rop.value) != 0);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, ((String) lop.value).compareTo((String) rop.value) <= 0);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, ((String) lop.value).compareTo((String) rop.value) < 0);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, ((String) lop.value).compareTo((String) rop.value) >= 0);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, ((String) lop.value).compareTo((String) rop.value) >= 0);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.INT64 || right.operator.type == TokenType.INT64) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT64, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (long) lop.value == (long) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (long) lop.value != (long) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, (long) lop.value < (long) rop.value);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, (long) lop.value <= (long) rop.value);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, (long) lop.value > (long) rop.value);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, (long) lop.value >= (long) rop.value);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.INT32 || right.operator.type == TokenType.INT32) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT32, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (int) lop.value == (int) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (int) lop.value != (int) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, (int) lop.value < (int) rop.value);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, (int) lop.value <= (int) rop.value);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, (int) lop.value > (int) rop.value);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, (int) lop.value >= (int) rop.value);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.INT16 || right.operator.type == TokenType.INT16) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT16, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (short) lop.value == (short) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (short) lop.value != (short) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, (short) lop.value < (short) rop.value);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, (short) lop.value <= (short) rop.value);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, (short) lop.value > (short) rop.value);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, (short) lop.value >= (short) rop.value);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.INT8 || right.operator.type == TokenType.INT8) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT8, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (byte) lop.value == (byte) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (byte) lop.value != (byte) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right, (byte) lop.value < (byte) rop.value);
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right, (byte) lop.value <= (byte) rop.value);
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right, (byte) lop.value > (byte) rop.value);
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right, (byte) lop.value >= (byte) rop.value);
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            } else if (left.operator.type == TokenType.BOOL || right.operator.type == TokenType.BOOL) {
-                answer = new Expression(ExpressionType.OPERAND, new Token(TokenType.INT8, null));
-                ansop = answer.operator;
-                switch (expression.operator.type) {
-                case EQ:
-                    ansop.value = new ComparisonResult(right, (boolean) lop.value == (boolean) rop.value);
-                    break;
-                case NE:
-                    ansop.value = new ComparisonResult(right, (boolean) lop.value != (boolean) rop.value);
-                    break;
-                case LE:
-                    ansop.value = new ComparisonResult(right,
-                            (((boolean) lop.value) ? 1 : 0) <= (((boolean) lop.value) ? 1 : 0));
-                    break;
-                case LT:
-                    ansop.value = new ComparisonResult(right,
-                            (((boolean) lop.value) ? 1 : 0) < (((boolean) lop.value) ? 1 : 0));
-                    break;
-                case GE:
-                    ansop.value = new ComparisonResult(right,
-                            (((boolean) lop.value) ? 1 : 0) > (((boolean) lop.value) ? 1 : 0));
-                    break;
-                case GT:
-                    ansop.value = new ComparisonResult(right,
-                            (((boolean) lop.value) ? 1 : 0) >= (((boolean) lop.value) ? 1 : 0));
-                    break;
-                default:
-                    throw new Exception("問題のある比較演算子です。");
-                }
-            }
-            ansop.name = ansop.value.toString();
-            return answer;
-        default:
-        }
-        throw new Exception("計算機がおかしい");
-    }
-
-    public void body(List<Expression> body) throws Exception {
-        for (Expression expression : body) {
-            answer = expression(expression);
+        } else {
+            throw new Exception(left.getType() + " 型は未定義です。\n");
         }
     }
 
-    public Map<String, Integer> run() throws Exception {
-        body(body);
-        return variables;
+    protected Operand calcualteOr(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (left.getType().equals("Bool")) {
+            if (!(boolean) left.value) {
+                Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+                if (left.getType().equals("Bool")) {
+                    if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+                        operator.arguments.set(1, right);
+                        pushLog();
+                    }
+                    return right;
+                } else {
+                    throw new Exception(right.getType() + " 型は未定義です。\n");
+                }
+            } else {
+                return left;
+            }
+        } else {
+            throw new Exception(left.getType() + " 型は未定義です。\n");
+        }
+    }
+
+    protected Operand calcualteAssaignment(Operator operator) throws Exception {
+        if (!(operator.arguments.get(0) instanceof Variable)) {
+            throw new Exception("左辺は変数である必要があります。\n");
+        }
+        Operand left = (Operand) getOperand(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        left.setType(right.getType());
+        left.setValue(right.getValue());
+        variables.put(left.getName(), (Variable) left);
+        return left;
+    }
+
+    protected Expression calculateExpression(Expression expression) throws Exception {
+        if (expression instanceof Operand) {
+            return getOperand(expression);
+        } else if (expression instanceof Operator) {
+            Operator operator = (Operator) expression;
+            if (operator.getName().equals("^")) {
+                if (((Operand) calculateExpression(operator.arguments.get(0))).getType().equals("String")) {
+                    return repeatString(operator);
+                } else {
+                    return calculatePower(operator);
+                }
+            } else if (operator.getName().equals("*")) {
+                if (((Operand) calculateExpression(operator.arguments.get(0))).getType().equals("String")) {
+                    return stringConcatenation(operator);
+                } else {
+                    return calculateMultiplication(operator);
+                }
+            } else if (operator.getName().equals("/")) {
+                return calculateDivision(operator);
+            } else if (operator.getName().equals("&")) {
+                return calculateBitAnd(operator);
+            } else if (operator.getName().equals("%")) {
+                return calculateRemainder(operator);
+            } else if (operator.getName().equals("+")) {
+                return calculateAddition(operator);
+            } else if (operator.getName().equals("-")) {
+                if (operator.arguments.size() == 1) {
+                    return nagete((Operand) calculateExpression(operator.arguments.get(0)));
+                } else {
+                    return calculateSubtraction(operator);
+                }
+            } else if (operator.getName().equals("|")) {
+                return calculateBitOr(operator);
+            } else if (operator.getName().matches("==|!=|<=|<|>|>=")) {
+                return calculateComparison(operator);
+            } else if (operator.getName().equals("&&")) {
+                return calcualteAnd(operator);
+            } else if (operator.getName().equals("||")) {
+                return calcualteOr(operator);
+            } else if (operator.getName().equals("=")) {
+                return calcualteAssaignment(operator);
+            } else {
+                throw new Exception("演算子 " + operator.getName() + " は未定義です。\n");
+            }
+        } else {
+            throw new Exception("予期せぬ例外が発生しました。\n開発者に問い合わせてください。\n");
+        }
+    }
+
+    public Operand calculate(List<Expression> expressions) throws Exception {
+        this.expressions = expressions;
+        for (int i = 0; i < this.expressions.size(); i++) {
+            Expression expression = this.expressions.get(i);
+            currentExpression = expression;
+            setLog(currentExpression);
+            answer = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                currentExpression = answer;
+                pushLog();
+            }
+        }
+        return answer;
     }
 }

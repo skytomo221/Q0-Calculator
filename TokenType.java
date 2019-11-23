@@ -7,55 +7,19 @@ public enum TokenType {
      */
     ID,
     /**
-     * Int16 (byte) を表します。
+     * Int (long) を表します。
      */
-    INT8,
+    INT,
     /**
-     * UInt16 (byte) を表します。
+     * Float (double) を表します。
      */
-    UINT8,
+    FLOAT,
     /**
-     * Int16 (short) を表します。
+     * BigDecimal (BigDecimal) を表します。
      */
-    INT16,
+    BIG_DECIMAL,
     /**
-     * UInt16 (short) を表します。
-     */
-    UINT16,
-    /**
-     * Int32 (int) を表します。
-     */
-    INT32,
-    /**
-     * UInt32 (int) を表します。
-     */
-    UINT32,
-    /**
-     * Int64 (long) を表します。
-     */
-    INT64,
-    /**
-     * UInt64 (long) を表します。
-     */
-    UINT64,
-    /**
-     * Float32 (float) を表します。
-     */
-    FLOAT32,
-    /**
-     * Float64 (double) を表します。
-     */
-    FLOAT64,
-    /**
-     * BigInt (BigInteger) を表します。
-     */
-    BIG_INT,
-    /**
-     * BigFloat (BigInteger) を表します。
-     */
-    BIG_FLOAT,
-    /**
-     * Bool (bool) を表します。
+     * Bool (boolean) を表します。
      */
     BOOL,
     /**
@@ -70,6 +34,14 @@ public enum TokenType {
      * カンマを表します。
      */
     COMMA,
+    /**
+     * コロンを表します。
+     */
+    COLON,
+    /**
+     * セミコロンを表します。
+     */
+    SEMICOLON,
     /**
      * 代入を表します。
      */
@@ -307,12 +279,94 @@ public enum TokenType {
      */
     END_OF_STRING;
 
-    public static boolean isInt(TokenType t) {
-        return t == INT8 || t == INT16 || t == INT32 || t == INT64;
+    public static boolean isNumber(TokenType t) {
+        return t == INT || t == FLOAT || t == BIG_DECIMAL;
     }
 
-    public static boolean isNumber(TokenType t) {
-        return t == INT8 || t == INT16 || t == INT32 || t == INT64 || t == UINT8 || t == UINT16 || t == UINT32
-                || t == UINT64 || t == FLOAT32 || t == FLOAT64 || t == BIG_INT || t == BIG_FLOAT;
+    /**
+     * トークンの種類を文字列に変換します。
+     * 
+     * @return トークンの種類
+     */
+    @Override
+    public String toString() {
+        switch (this) {
+        case INT:
+            return "Int";
+        case FLOAT:
+            return "Float";
+        case BIG_DECIMAL:
+            return "BigDecimal";
+        case BOOL:
+            return "Bool";
+        case CHAR:
+            return "Char";
+        case STRING:
+            return "String";
+        case COMMA:
+            return ",";
+        case COLON:
+            return ":";
+        case SEMICOLON:
+            return ";";
+        case ASSAIGNMENT:
+            return "=";
+        case PLUS_ASSAIGNMENT:
+            return "+=";
+        case MINUS_ASSAIGNMENT:
+            return "-=";
+        case MULTIPLICATION_ASSAIGNMENT:
+            return "*=";
+        case DIVISION_ASSAIGNMENT:
+            return "/=";
+        case MOD_ASSAIGNMENT:
+            return "%=";
+        case PIPE_TO_LEFT:
+            return "<|";
+        case PIPE_TO_RIGHT:
+            return "|>";
+        case EQ:
+            return "==";
+        case NE:
+            return "!=";
+        case LT:
+            return "<";
+        case LE:
+            return "<=";
+        case GT:
+            return ">";
+        case GE:
+            return ">=";
+        case LPAR:
+            return "(";
+        case RPAR:
+            return ")";
+        case BIT_AND:
+            return "&";
+        case BIT_OR:
+            return "|";
+        case BIT_NOT:
+            return "~";
+        case AND:
+            return "&&";
+        case OR:
+            return "||";
+        case NOT:
+            return "!";
+        case POWER:
+            return "^";
+        case PLUS:
+            return "+";
+        case MINUS:
+            return "-";
+        case MULTIPLICATION:
+            return "*";
+        case DIVISION:
+            return "/";
+        case MOD:
+            return "%";
+        default:
+            return super.toString().toLowerCase();
+        }
     }
 }

@@ -3,6 +3,10 @@
  */
 public enum ExpressionType {
     /**
+     * 被演算子を表します。
+     */
+    OPERAND,
+    /**
      * 単項演算子を表します。
      */
     UNARY_OPERATOR,
@@ -11,13 +15,13 @@ public enum ExpressionType {
      */
     BINARY_OPERATOR,
     /**
-     * 被演算子を表します。
-     */
-    OPERAND,
-    /**
      * 比較演算子を表します。
      */
     COMPARSION_OPERATOR,
+     /**
+     * 代入演算子を表します。
+     */
+    ASSAIGNMENT_OPERATOR,
     /**
      * 終わりを表します。
      */
