@@ -115,11 +115,11 @@ public class Calculator {
     protected Operand repeatString(Operator operator) throws Exception {
         Operand left = (Operand) calculateExpression(operator.arguments.get(0));
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
-        if (!(operator.arguments.get(0) instanceof Operand)) {
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
             operator.arguments.set(0, left);
             pushLog();
         }
-        if (!(operator.arguments.get(1) instanceof Operand)) {
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
             operator.arguments.set(1, right);
             pushLog();
         }
@@ -130,11 +130,11 @@ public class Calculator {
     protected Operand calculatePower(Operator operator) throws Exception {
         Operand left = (Operand) calculateExpression(operator.arguments.get(0));
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
-        if (!(operator.arguments.get(0) instanceof Operand)) {
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
             operator.arguments.set(0, left);
             pushLog();
         }
-        if (!(operator.arguments.get(1) instanceof Operand)) {
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
             operator.arguments.set(1, right);
             pushLog();
         }
@@ -162,7 +162,7 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -181,7 +181,7 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -208,7 +208,7 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -241,7 +241,7 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -261,7 +261,7 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -288,7 +288,7 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -329,14 +329,14 @@ public class Calculator {
 
     protected Operand calculateSubtraction(Operator operator) throws Exception {
         Operand answer = (Operand) calculateExpression(operator.arguments.get(0));
-        if (!(operator.arguments.get(0) instanceof Operand)) {
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
             operator.arguments.set(0, answer);
             pushLog();
         }
         for (int i = 1; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -375,7 +375,7 @@ public class Calculator {
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
             operand = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 operator.arguments.set(i, operand);
                 pushLog();
             }
@@ -475,7 +475,7 @@ public class Calculator {
 
     protected Operand calcualteAnd(Operator operator) throws Exception {
         Operand left = (Operand) calculateExpression(operator.arguments.get(0));
-        if (!(operator.arguments.get(0) instanceof Operand)) {
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
             operator.arguments.set(0, left);
             pushLog();
         }
@@ -483,7 +483,7 @@ public class Calculator {
             if ((boolean) left.value) {
                 Operand right = (Operand) calculateExpression(operator.arguments.get(1));
                 if (left.getType().equals("Bool")) {
-                    if (!(operator.arguments.get(1) instanceof Operand)) {
+                    if (!(operator.arguments.get(1).getClass() == Operand.class)) {
                         operator.arguments.set(1, right);
                         pushLog();
                     }
@@ -501,7 +501,7 @@ public class Calculator {
 
     protected Operand calcualteOr(Operator operator) throws Exception {
         Operand left = (Operand) calculateExpression(operator.arguments.get(0));
-        if (!(operator.arguments.get(0) instanceof Operand)) {
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
             operator.arguments.set(0, left);
             pushLog();
         }
@@ -509,7 +509,7 @@ public class Calculator {
             if (!(boolean) left.value) {
                 Operand right = (Operand) calculateExpression(operator.arguments.get(1));
                 if (left.getType().equals("Bool")) {
-                    if (!(operator.arguments.get(1) instanceof Operand)) {
+                    if (!(operator.arguments.get(1).getClass() == Operand.class)) {
                         operator.arguments.set(1, right);
                         pushLog();
                     }
@@ -531,7 +531,7 @@ public class Calculator {
         }
         Operand left = (Operand) getOperand(operator.arguments.get(0));
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
-        if (!(operator.arguments.get(1) instanceof Operand)) {
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
             operator.arguments.set(1, right);
             pushLog();
         }
@@ -597,7 +597,7 @@ public class Calculator {
             currentExpression = expression;
             setLog(currentExpression);
             answer = (Operand) calculateExpression(expression);
-            if (!(expression instanceof Operand)) {
+            if (!(expression.getClass() == Operand.class)) {
                 currentExpression = answer;
                 pushLog();
             }
