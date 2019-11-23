@@ -223,7 +223,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 try {
                     List<Token> tokens = lexer.parse(inputTextPane.getText());
                     if (displayLexerResult) {
-                    	System.out.println("[Lexer Log]");
+                        System.out.println("[Lexer Log]");
                         for (Token token : tokens) {
                             System.out.println(token.toString());
                         }
@@ -231,7 +231,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     }
                     List<Expression> expressions = parser.parse(tokens);
                     if (displayPerserResult) {
-                    	System.out.println("[Parser Log]");
+                        System.out.println("[Parser Log]");
                         for (Expression expression : expressions) {
                             System.out.println(expression.toString());
                         }
@@ -239,7 +239,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     }
                     calculator.calculate(expressions);
                     if (displayCalclatorResult) {
-                    	System.out.println("[Calculator Log]");
+                        System.out.println("[Calculator Log]");
                         System.out.println(calculator.getLog());
                     }
                     insertColorText(logTextPane, "Input  => ", foregroundColor);
