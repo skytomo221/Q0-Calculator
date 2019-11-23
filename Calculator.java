@@ -62,7 +62,7 @@ public class Calculator {
             operand.setValue((double) (long) operand.getValue());
         } else if (operand.getValue() instanceof Double) {
         } else {
-            throw new ClassCastException(operand.getType() + " は Int に型変換できません。");
+            throw new ClassCastException(operand.getType() + " は Int に型変換できません。\n");
         }
         return operand;
     }
@@ -74,7 +74,7 @@ public class Calculator {
             operand.setValue(new BigDecimal((double) operand.getValue()));
         } else if (operand.getValue() instanceof BigDecimal) {
         } else {
-            throw new ClassCastException(operand.getType() + " は BigDecimal に型変換できません。");
+            throw new ClassCastException(operand.getType() + " は BigDecimal に型変換できません。\n");
         }
         return operand;
     }
@@ -152,7 +152,7 @@ public class Calculator {
             right = promoteToFloat(right);
             left = new Operand("Float", Math.pow((double) left.getValue(), (double) right.getValue()));
         } else {
-            throw new Exception(left.getType() + " 型 ^ " + right.getType() + " 型は未定義です．\n");
+            throw new Exception(left.getType() + " 型 ^ " + right.getType() + " 型は未定義です。\n");
         }
         return left;
     }
@@ -170,7 +170,7 @@ public class Calculator {
                 answer = new Operand("String", (String) answer.getValue() + (String) operand.getValue());
                 answer.setName("\"" + answer.getValue().toString() + "\"");
             } else {
-                throw new Exception(answer.getType() + " 型 * " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 * " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -197,7 +197,7 @@ public class Calculator {
                 operand = promoteToFloat(operand);
                 answer = new Operand("Float", (double) answer.getValue() * (double) operand.getValue());
             } else {
-                throw new Exception(answer.getType() + " 型 * " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 * " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -222,7 +222,7 @@ public class Calculator {
                 answer = new Operand("BigDecimal",
                         ((BigDecimal) answer.getValue()).divide((BigDecimal) operand.getValue()));
             } else {
-                throw new Exception(answer.getType() + " 型 / " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 / " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -236,7 +236,7 @@ public class Calculator {
         } else if (operand.getType().matches("Int")) {
             answer = new Operand("Int", -1L);
         } else {
-            throw new Exception(operand.getType() + " 型 & 任意型は未定義です．\n");
+            throw new Exception(operand.getType() + " 型 & 任意型は未定義です。\n");
         }
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
@@ -250,7 +250,7 @@ public class Calculator {
             } else if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
                 answer = new Operand("Int", (long) answer.getValue() & (long) operand.getValue());
             } else {
-                throw new Exception(answer.getType() + " 型 & " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 & " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -277,7 +277,7 @@ public class Calculator {
                 operand = promoteToFloat(operand);
                 answer = new Operand("Float", (double) answer.getValue() % (double) operand.getValue());
             } else {
-                throw new Exception(answer.getType() + " 型 % " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 % " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -308,7 +308,7 @@ public class Calculator {
                 operand = promoteToFloat(operand);
                 answer = new Operand("Float", (double) answer.getValue() + (double) operand.getValue());
             } else {
-                throw new Exception(answer.getType() + " 型 + " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 + " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -323,7 +323,7 @@ public class Calculator {
         } else if (operand.getType().equals("BigDecimal")) {
             return new Operand("BigDecimal", ((BigDecimal) operand.getValue()).negate());
         } else {
-            throw new Exception("-" + operand.getType() + " 型は未定義です．\n");
+            throw new Exception("-" + operand.getType() + " 型は未定義です。\n");
         }
     }
 
@@ -356,7 +356,7 @@ public class Calculator {
                 operand = promoteToFloat(operand);
                 answer = new Operand("Float", (double) answer.getValue() - (double) operand.getValue());
             } else {
-                throw new Exception(answer.getType() + " 型 - " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 - " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -370,7 +370,7 @@ public class Calculator {
         } else if (operand.getType().matches("Int")) {
             answer = new Operand("Int", 0L);
         } else {
-            throw new Exception(operand.getType() + " 型 & 任意型は未定義です．\n");
+            throw new Exception(operand.getType() + " 型 & 任意型は未定義です。\n");
         }
         for (int i = 0; i < operator.arguments.size(); i++) {
             Expression expression = operator.arguments.get(i);
@@ -384,7 +384,7 @@ public class Calculator {
             } else if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
                 answer = new Operand("Int", (long) answer.getValue() | (long) operand.getValue());
             } else {
-                throw new Exception(answer.getType() + " 型 | " + operand.getType() + " 型は未定義です．\n");
+                throw new Exception(answer.getType() + " 型 | " + operand.getType() + " 型は未定義です。\n");
             }
         }
         return answer;
@@ -398,12 +398,20 @@ public class Calculator {
     protected ComparisonResult getComparisonResult(Operator operator) throws Exception {
         Operand left = null;
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(right.getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
         if (operator.arguments.get(0) instanceof Operator
                 && ((Operator) operator.arguments.get(0)).getName().matches("==|!=|<=|<|>|>=")) {
             left = getComparisonResult((Operator) operator.arguments.get(0));
             if (!((boolean) left.getValue())) {
                 return new ComparisonResult(right, false);
             } else {
+                if (!(left.getClass() == Operand.class)) {
+                    operator.arguments.set(0, left);
+                    pushLog();
+                }
                 left = ((ComparisonResult) left).getComparison();
             }
         } else {
@@ -470,7 +478,7 @@ public class Calculator {
                         ((BigDecimal) left.getValue()).compareTo((BigDecimal) right.getValue()) > 0);
             }
         }
-        throw new Exception("問題のある比較演算子です。");
+        throw new Exception("問題のある比較演算子です。\n");
     }
 
     protected Operand calcualteAnd(Operator operator) throws Exception {
@@ -489,13 +497,13 @@ public class Calculator {
                     }
                     return right;
                 } else {
-                    throw new Exception(right.getType() + " 型は未定義です．\n");
+                    throw new Exception(right.getType() + " 型は未定義です。\n");
                 }
             } else {
                 return left;
             }
         } else {
-            throw new Exception(left.getType() + " 型は未定義です．\n");
+            throw new Exception(left.getType() + " 型は未定義です。\n");
         }
     }
 
@@ -515,19 +523,19 @@ public class Calculator {
                     }
                     return right;
                 } else {
-                    throw new Exception(right.getType() + " 型は未定義です．\n");
+                    throw new Exception(right.getType() + " 型は未定義です。\n");
                 }
             } else {
                 return left;
             }
         } else {
-            throw new Exception(left.getType() + " 型は未定義です．\n");
+            throw new Exception(left.getType() + " 型は未定義です。\n");
         }
     }
 
     protected Operand calcualteAssaignment(Operator operator) throws Exception {
         if (!(operator.arguments.get(0) instanceof Variable)) {
-            throw new Exception("左辺は変数である必要があります。");
+            throw new Exception("左辺は変数である必要があります。\n");
         }
         Operand left = (Operand) getOperand(operator.arguments.get(0));
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
@@ -583,10 +591,10 @@ public class Calculator {
             } else if (operator.getName().equals("=")) {
                 return calcualteAssaignment(operator);
             } else {
-                throw new Exception("演算子 " + operator.getName() + " は未定義です．\n");
+                throw new Exception("演算子 " + operator.getName() + " は未定義です。\n");
             }
         } else {
-            throw new Exception("何かがおかしい");
+            throw new Exception("予期せぬ例外が発生しました。\n開発者に問い合わせてください。\n");
         }
     }
 

@@ -35,6 +35,6 @@ public class ComparisonResult extends Operand {
 
     @Override
     public String toString() {
-        return value.toString();
+        return comparison.value.toString();
     }
 }

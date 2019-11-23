@@ -250,7 +250,13 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     insertColorText(logTextPane, "\n\n", foregroundColor);
                     inputTextPane.setText(calculator.getAnswerToString());
                 } catch (Exception ex) {
-                    insertColorText(logTextPane, "[Error]\n" + ex.getLocalizedMessage() + "\n", Color.RED);
+                    insertColorText(logTextPane, "Input  => ", foregroundColor);
+                    insertColorText(logTextPane, inputTextPane.getText(), foregroundColor);
+                    insertColorText(logTextPane, "\n", foregroundColor);
+                    insertColorText(logTextPane,
+                            "[Error]\n" + ex.getLocalizedMessage() + calculator.getLog()
+                                    + calculator.getLogNumber().replaceAll(".", " ") + " → throw new Exception(...);\n\n",
+                            Color.RED);
                 } finally {
                 }
             } else if (b.getText().equals("+") || b.getText().equals("-") || b.getText().equals("×")
