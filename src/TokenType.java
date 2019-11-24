@@ -215,6 +215,10 @@ public enum TokenType {
      */
     GLOBAL,
     /**
+     * {@code in}を表します。
+     */
+    IN,
+    /**
      * {@code if}を表します。
      */
     IF,

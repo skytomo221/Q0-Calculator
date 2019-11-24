@@ -28,6 +28,7 @@ public class Lexer {
             put("for", TokenType.FOR);
             put("function", TokenType.FUNCTION);
             put("grobal", TokenType.GLOBAL);
+            put("in", TokenType.IN);
             put("if", TokenType.IF);
             put("import", TokenType.IMPORT);
             put("let", TokenType.LET);

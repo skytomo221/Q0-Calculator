@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +39,16 @@ public class Operator extends Expression {
         setArguments(arguments);
     }
 
+    @Override
+    public Expression copy() {
+        List<Expression> new_arguments = new ArrayList<Expression>();
+        for (Expression expression :
+                arguments) {
+            new_arguments.add(expression.copy());
+        }
+        return new Operator(name, new_arguments);
+    }
+
     /**
      * 演算子と被演算子または引数を文字列に変換します。
      *
@@ -45,16 +56,68 @@ public class Operator extends Expression {
      */
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder(name);
-        s.append("(");
-        for (Expression expression : arguments) {
-            if (expression == arguments.get(arguments.size() - 1)) {
-                s.append(expression.toString());
-            } else {
-                s.append(expression.toString() + ", ");
+        if (name.equals("begin ... end")) {
+            StringBuilder s = new StringBuilder("(");
+            for (Expression expression : arguments) {
+                if (expression == arguments.get(arguments.size() - 1)) {
+                    s.append(expression.toString());
+                } else {
+                    s.append(expression.toString() + "; ");
+                }
             }
+            s.append(")");
+            return s.toString();
+        } else if (name.equals("if ... ... end")) {
+            StringBuilder s = new StringBuilder("(if ");
+            s.append(arguments.get(0).toString());
+            s.append("; ");
+            s.append(arguments.get(1).toString());
+            s.append(" end)");
+            return s.toString();
+        } else if (name.equals("if ... ... else ... end")) {
+            StringBuilder s = new StringBuilder("(if ");
+            s.append(arguments.get(0).toString());
+            s.append("; ");
+            s.append(arguments.get(1).toString());
+            s.append("; else ");
+            s.append(arguments.get(2).toString());
+            s.append(" end)");
+            return s.toString();
+        } else if (name.equals("for ... in ... ... end")) {
+            StringBuilder s = new StringBuilder("(for ");
+            s.append(arguments.get(0).toString());
+            s.append(" in ");
+            s.append(arguments.get(1).toString());
+            s.append("; ");
+            s.append(arguments.get(2).toString());
+            s.append(" end)");
+            return s.toString();
+        } else if (name.equals("while ... ... end")) {
+            StringBuilder s = new StringBuilder("(while ");
+            s.append(arguments.get(0).toString());
+            s.append("; ");
+            s.append(arguments.get(1).toString());
+            s.append(" end)");
+            return s.toString();
+        } else if (name.matches("[\\^*/&%+\\-|]|==|!=|<=|<|>|>=|&&|\\|\\||=") && arguments.size() == 2) {
+            StringBuilder s = new StringBuilder("(");
+            s.append(arguments.get(0).toString());
+            s.append(" " + name + " ");
+            s.append(arguments.get(1).toString());
+            s.append(")");
+            return s.toString();
+        } else {
+            StringBuilder s = new StringBuilder(name);
+            s.append("(");
+            for (Expression expression : arguments) {
+                if (expression == arguments.get(arguments.size() - 1)) {
+                    s.append(expression.toString());
+                } else {
+                    s.append(expression.toString() + ", ");
+                }
+            }
+            s.append(")");
+            return s.toString();
         }
-        s.append(")");
-        return s.toString();
     }
 }

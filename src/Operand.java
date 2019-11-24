@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * 被演算子を表します。
  */
@@ -81,6 +83,11 @@ public class Operand extends Expression {
         setName(token.name);
         setType(token.type.toString());
         setValue(token.value);
+    }
+
+    @Override
+    public Expression copy() {
+        return new Operand(name, type, value);
     }
 
     /**

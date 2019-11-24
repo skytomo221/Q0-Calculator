@@ -24,4 +24,8 @@ public class Expression {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Expression copy() {
+        return copy();
+    }
 }

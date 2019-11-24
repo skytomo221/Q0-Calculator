@@ -202,6 +202,7 @@ public class JTextPaneColorizer {
                 case FOR:
                 case FUNCTION:
                 case GLOBAL:
+                case IN:
                 case IF:
                 case IMPORT:
                 case LET:

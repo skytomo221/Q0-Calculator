@@ -7,6 +7,11 @@ public class Variable extends Operand {
         super(name, type, value);
     }
 
+    @Override
+    public Expression copy() {
+        return new Variable(name, type, value);
+    }
+
     /**
      * 変数を電卓に表示するために適切な文字列に変換します。 基本的に value を返します。 value が null である場合、 name を返します。
      *

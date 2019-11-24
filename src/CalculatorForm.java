@@ -281,7 +281,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                         System.out.println(calculator.getLog());
                     }
                     logTextPaneColorizer.insertColorText("Input  => ", JTextPaneColorizer.colors.get("foreground"));
-                    logTextPaneColorizer.insertCode(inputTextPane.getText());
+                    logTextPaneColorizer.insertCode(inputTextPane.getText().replaceAll("\n", "\n          "));
                     logTextPaneColorizer.insertColorText("\n", JTextPaneColorizer.colors.get("foreground"));
                     logTextPaneColorizer.insertColorText("Output => ", JTextPaneColorizer.colors.get("foreground"));
                     logTextPaneColorizer.insertCode(calculator.getAnswerToString());
