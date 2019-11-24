@@ -146,7 +146,7 @@ public class Parser {
         if (peek().type == TokenType.ASSAIGNMENT) {
             Token operator = next();
             skipNewLine();
-            Expression right = parseOr();
+            Expression right = parseExpression();
             return new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
         } else {
             return left;
