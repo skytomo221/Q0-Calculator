@@ -1,8 +1,10 @@
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 public class Lexer {
@@ -40,7 +42,7 @@ public class Lexer {
             put("while", TokenType.WHILE);
         }
     };
-    protected Map<String,TokenType> operators = new HashMap<String, TokenType>() {
+    protected Map<String,TokenType> operators = new TreeMap<String, TokenType>(Collections.reverseOrder()) {
         {
             put(",", TokenType.COMMA);
             put(":", TokenType.COLON);
@@ -109,7 +111,7 @@ public class Lexer {
             }
         }
         for (String s : operators.keySet()) {
-            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-\\/:->@\\[-`{-~]|$)((.|\\s)*)")) {
+            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")((.|\\s)*)")) {
                 index += s.length();
                 return new Token(operators.get(s), s);
             }
