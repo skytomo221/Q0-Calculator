@@ -245,4 +245,8 @@ public class JTextPaneColorizer {
             e.printStackTrace();
         }
     }
+
+    public void setCaretToBottom() {
+        textPane.setCaretPosition(doc.getLength());
+    }
 }
