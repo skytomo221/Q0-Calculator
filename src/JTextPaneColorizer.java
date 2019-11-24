@@ -73,11 +73,9 @@ public class JTextPaneColorizer {
         label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         label.setFont(new Font("Consolas", Font.PLAIN, 18));
         Font font = label.getFont();
-        Map attributes = font.getAttributes();
-        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-        label.setFont(font.deriveFont(attributes));
         label.setSize(label.getFontMetrics(font).getHeight(), label.getWidth());
         label.setAlignmentY(0.64f);
+        Map attributes = font.getAttributes();
         label.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -93,12 +91,14 @@ public class JTextPaneColorizer {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                // the mouse has entered the label
+                attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                label.setFont(font.deriveFont(attributes));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                // the mouse has exited the label
+                attributes.put(TextAttribute.UNDERLINE, null);
+                label.setFont(font.deriveFont(attributes));// the mouse has exited the label
             }
         });
         int caret = textPane.getCaretPosition();
