@@ -1,3 +1,5 @@
+import javafx.scene.control.ScrollBar;
+
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -10,6 +12,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.StyledDocument;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -164,26 +167,50 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         logTextPane.setEditable(false);
         logTextPaneColorizer = new JTextPaneColorizer(logTextPane, lexer);
         inputScrollPane.setBorder(null);
-//        inputScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-//        inputScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
-//        inputScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-//        inputScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        inputScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        inputScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        inputScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        inputScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        inputScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
+        inputScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
         logScrollPane.setBorder(null);
-//        logScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-//        logScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
-//        logScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-//        logScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        logScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        logScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        logScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        logScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        logScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
+        logScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
         inputStyledDocument = inputTextPane.getStyledDocument();
         inputStyledDocument.addDocumentListener(this);
-//        try {
         inputTextPaneColorizer.insertColorText("0", JTextPaneColorizer.colors.get("constant"));
         logTextPaneColorizer.insertColorText("Q0 Calculator へようこそ！\n", JTextPaneColorizer.colors.get("info"));
         logTextPaneColorizer.insertColorText("詳細な説明書は ", JTextPaneColorizer.colors.get("info"));
         logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
         logTextPaneColorizer.insertColorText(" をクリックしてください。\n\n", JTextPaneColorizer.colors.get("info"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override
