@@ -29,6 +29,12 @@ public class Parser {
         }
     }
 
+    protected void skipSemicolon() throws Exception {
+        if (peek().type == TokenType.SEMICOLON) {
+            next();
+        }
+    }
+
     protected Expression parseFactor() throws Exception {
         if (peek().type == TokenType.INT || peek().type == TokenType.FLOAT
                 || peek().type == TokenType.BIG_DECIMAL || peek().type == TokenType.BOOL
@@ -38,7 +44,7 @@ public class Parser {
             return new Variable(next().name, "Variable", null);
         } else if (peek().type == TokenType.LPAR) {
             next();
-            Expression expression = parseExpression();
+            Expression expression = parseBlock();
             if (peek().type == TokenType.RPAR) {
                 next();
                 return expression;
@@ -140,15 +146,107 @@ public class Parser {
         if (peek().type == TokenType.ASSAIGNMENT) {
             Token operator = next();
             skipNewLine();
-            Expression right = parseOr();
+            Expression right = parseExpression();
             return new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
         } else {
             return left;
         }
     }
 
-    protected Expression parseExpression() throws Exception {
+    protected Expression parseBlock() throws Exception {
+        Operator operator = new Operator("begin ... end", new ArrayList<>());
+        while (peek().type != TokenType.END &&
+                peek().type != TokenType.ELSE &&
+                peek().type != TokenType.ELSEIF &&
+                peek().type != TokenType.RPAR) {
+            operator.arguments.add(parseExpression());
+            skipSemicolon();
+            skipNewLine();
+        }
+        return operator;
+    }
+
+    protected Expression parseIf() throws Exception {
+        next();
+        Expression conditional = parseControlFlow();
+        skipSemicolon();
+        skipNewLine();
+        Expression ifExpression = parseBlock();
+        if (peek().type == TokenType.END) {
+            next();
+            return new Operator("if ... ... end", new ArrayList<>(Arrays.asList(conditional, ifExpression)));
+        } else if (peek().type == TokenType.ELSE) {
+            next();
+            skipSemicolon();
+            skipNewLine();
+            Expression elseExpression = parseBlock();
+            if (peek().type == TokenType.END) {
+                next();
+                return new Operator("if ... ... else ... end",
+                        new ArrayList<>(Arrays.asList(conditional, ifExpression, elseExpression)));
+            }
+            else {
+                throw new Exception("else 句の後に end が必要です。");
+            }
+        } else if (peek().type == TokenType.ELSEIF) {
+            Expression elseifExpression = parseIf();
+            return new Operator("if ... ... else ... end",
+                    new ArrayList<>(Arrays.asList(conditional, ifExpression, elseifExpression)));
+        }
+        throw new Exception("Elseif error\n");
+    }
+
+    protected Expression parseControlFlow() throws Exception {
+        if (peek().type == TokenType.BEGIN) {
+            next();
+            skipSemicolon();
+            skipNewLine();
+            Expression block = parseBlock();
+            if (peek().type == TokenType.END) {
+                next();
+                return block;
+            } else {
+                throw new Exception("begin 句の後に end が必要です。");
+            }
+        } else if (peek().type == TokenType.IF) {
+            return parseIf();
+        } else if (peek().type == TokenType.FOR) {
+            next();
+            Expression i = parseFactor();
+            if (peek().type == TokenType.IN) {
+                next();
+                skipNewLine();
+                Expression list = parseFactor();
+                skipSemicolon();
+                skipNewLine();
+                Expression block = parseBlock();
+                if (peek().type == TokenType.END) {
+                    next();
+                    return new Operator("for ... in ... ... end",
+                            new ArrayList<>(Arrays.asList(i, list, block)));
+                } else {
+                    throw new Exception("while 句の後に end が必要です。");
+                }
+            }
+        } else if (peek().type == TokenType.WHILE) {
+            next();
+            Expression conditionalStatement = parseControlFlow();
+            skipSemicolon();
+            skipNewLine();
+            Expression block = parseBlock();
+            if (peek().type == TokenType.END) {
+                next();
+                return new Operator("while ... ... end",
+                        new ArrayList<>(Arrays.asList(conditionalStatement, block)));
+            } else {
+                throw new Exception("while 句の後に end が必要です。");
+            }
+        }
         return parseAssignmentExpression();
+    }
+
+    protected Expression parseExpression() throws Exception {
+        return parseControlFlow();
     }
 
     public List<Expression> parse(List<Token> tokens) throws Exception {
@@ -162,7 +260,7 @@ public class Parser {
             while (peek().type == TokenType.SEMICOLON) {
                 next();
                 skipNewLine();
-            }            
+            }
         }
         return expressions;
     }

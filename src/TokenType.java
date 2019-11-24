@@ -215,6 +215,10 @@ public enum TokenType {
      */
     GLOBAL,
     /**
+     * {@code in}を表します。
+     */
+    IN,
+    /**
      * {@code if}を表します。
      */
     IF,
@@ -285,88 +289,88 @@ public enum TokenType {
 
     /**
      * トークンの種類を文字列に変換します。
-     * 
+     *
      * @return トークンの種類
      */
     @Override
     public String toString() {
         switch (this) {
-        case INT:
-            return "Int";
-        case FLOAT:
-            return "Float";
-        case BIG_DECIMAL:
-            return "BigDecimal";
-        case BOOL:
-            return "Bool";
-        case CHAR:
-            return "Char";
-        case STRING:
-            return "String";
-        case COMMA:
-            return ",";
-        case COLON:
-            return ":";
-        case SEMICOLON:
-            return ";";
-        case ASSAIGNMENT:
-            return "=";
-        case PLUS_ASSAIGNMENT:
-            return "+=";
-        case MINUS_ASSAIGNMENT:
-            return "-=";
-        case MULTIPLICATION_ASSAIGNMENT:
-            return "*=";
-        case DIVISION_ASSAIGNMENT:
-            return "/=";
-        case MOD_ASSAIGNMENT:
-            return "%=";
-        case PIPE_TO_LEFT:
-            return "<|";
-        case PIPE_TO_RIGHT:
-            return "|>";
-        case EQ:
-            return "==";
-        case NE:
-            return "!=";
-        case LT:
-            return "<";
-        case LE:
-            return "<=";
-        case GT:
-            return ">";
-        case GE:
-            return ">=";
-        case LPAR:
-            return "(";
-        case RPAR:
-            return ")";
-        case BIT_AND:
-            return "&";
-        case BIT_OR:
-            return "|";
-        case BIT_NOT:
-            return "~";
-        case AND:
-            return "&&";
-        case OR:
-            return "||";
-        case NOT:
-            return "!";
-        case POWER:
-            return "^";
-        case PLUS:
-            return "+";
-        case MINUS:
-            return "-";
-        case MULTIPLICATION:
-            return "*";
-        case DIVISION:
-            return "/";
-        case MOD:
-            return "%";
-        default:
-            return super.toString().toLowerCase();
+            case INT:
+                return "Int";
+            case FLOAT:
+                return "Float";
+            case BIG_DECIMAL:
+                return "BigDecimal";
+            case BOOL:
+                return "Bool";
+            case CHAR:
+                return "Char";
+            case STRING:
+                return "String";
+            case COMMA:
+                return ",";
+            case COLON:
+                return ":";
+            case SEMICOLON:
+                return ";";
+            case ASSAIGNMENT:
+                return "=";
+            case PLUS_ASSAIGNMENT:
+                return "+=";
+            case MINUS_ASSAIGNMENT:
+                return "-=";
+            case MULTIPLICATION_ASSAIGNMENT:
+                return "*=";
+            case DIVISION_ASSAIGNMENT:
+                return "/=";
+            case MOD_ASSAIGNMENT:
+                return "%=";
+            case PIPE_TO_LEFT:
+                return "<|";
+            case PIPE_TO_RIGHT:
+                return "|>";
+            case EQ:
+                return "==";
+            case NE:
+                return "!=";
+            case LT:
+                return "<";
+            case LE:
+                return "<=";
+            case GT:
+                return ">";
+            case GE:
+                return ">=";
+            case LPAR:
+                return "(";
+            case RPAR:
+                return ")";
+            case BIT_AND:
+                return "&";
+            case BIT_OR:
+                return "|";
+            case BIT_NOT:
+                return "~";
+            case AND:
+                return "&&";
+            case OR:
+                return "||";
+            case NOT:
+                return "!";
+            case POWER:
+                return "^";
+            case PLUS:
+                return "+";
+            case MINUS:
+                return "-";
+            case MULTIPLICATION:
+                return "*";
+            case DIVISION:
+                return "/";
+            case MOD:
+                return "%";
+            default:
+                return super.toString().toLowerCase();
         }
     }
 }

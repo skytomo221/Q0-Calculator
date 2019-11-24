@@ -23,11 +23,11 @@ public class Calculator {
     public Calculator() {
         variables = new HashMap<String, Variable>();
         enumeratedTypes = new ArrayList<EnumeratedType>(/*
-                                                         * Arrays.asList(new EnumeratedType(new HashMap<Long, String>()
-                                                         * { private static final long serialVersionUID = 1L;
-                                                         *
-                                                         * { put(0L, "false"); put(1L, "true"); } }, "Bool"))
-                                                         */);
+         * Arrays.asList(new EnumeratedType(new HashMap<Long, String>()
+         * { private static final long serialVersionUID = 1L;
+         *
+         * { put(0L, "false"); put(1L, "true"); } }, "Bool"))
+         */);
 
     }
 
@@ -76,6 +76,7 @@ public class Calculator {
         } else {
             throw new ClassCastException(operand.getType() + " は BigDecimal に型変換できません。\n");
         }
+        operand.setType("BigDecimal");
         return operand;
     }
 
@@ -549,6 +550,83 @@ public class Calculator {
         return left;
     }
 
+    protected Operand calculateBeginEnd(Operator operator) throws Exception {
+        Operand operand = null;
+        for (int i = 0; i < operator.arguments.size(); i++) {
+            Expression expression = operator.arguments.get(i);
+            operand = (Operand) calculateExpression(expression);
+            if (!(expression.getClass() == Operand.class)) {
+                operator.arguments.set(i, operand);
+                pushLog();
+            }
+        }
+        return operand;
+    }
+
+    protected Operand calculateIf(Operator operator) throws Exception {
+        Operand conditional = (Operand) calculateExpression(operator.arguments.get(0));
+        if (conditional.value instanceof Boolean) {
+            if ((boolean) conditional.value) {
+                Operand block = (Operand) calculateExpression(operator.arguments.get(1));
+                operator.arguments.set(1, block);
+                pushLog();
+                return block;
+            } else {
+                return new Operand("Bool", false);
+            }
+        } else {
+            throw new Exception("条件文は Bool 型である必要があります。");
+        }
+    }
+
+    protected Operand calculateIfElse(Operator operator) throws Exception {
+        Operand conditional = (Operand) calculateExpression(operator.arguments.get(0));
+        if (conditional.value instanceof Boolean) {
+            if ((boolean) conditional.value) {
+                Operand block = (Operand) calculateExpression(operator.arguments.get(1));
+                operator.arguments.set(1, block);
+                pushLog();
+                return block;
+            } else {
+                Operand block = (Operand) calculateExpression(operator.arguments.get(2));
+                operator.arguments.set(2, block);
+                pushLog();
+                return block;
+            }
+        } else {
+            throw new Exception("条件文は Bool 型である必要があります。");
+        }
+    }
+
+    protected Operand calculateWhile(Operator operator) throws Exception {
+        Expression conditional = operator.arguments.get(0).copy();
+        Operand isContinue = (Operand) calculateExpression(operator.arguments.get(0));
+        if (isContinue.value instanceof Boolean) {
+            Operand block = new Operand("Bool", false);
+            Expression cache = operator.arguments.get(1).copy();
+            operator.arguments.set(0, isContinue);
+            pushLog();
+            while ((boolean) isContinue.value) {
+                operator.arguments.set(1, cache.copy());
+                pushLog();
+                block = (Operand) calculateExpression(operator.arguments.get(1));
+                operator.arguments.set(1, block);
+                pushLog();
+                operator.arguments.set(0, conditional.copy());
+                pushLog();
+                isContinue = (Operand) calculateExpression(conditional.copy());
+                operator.arguments.set(0, isContinue);
+                pushLog();
+                if (!(isContinue.value instanceof Boolean)) {
+                    throw new Exception("条件文は Bool 型である必要があります。");
+                }
+            }
+            return block;
+        } else {
+            throw new Exception("条件文は Bool 型である必要があります。");
+        }
+    }
+
     protected Expression calculateExpression(Expression expression) throws Exception {
         if (expression instanceof Operand) {
             return getOperand(expression);
@@ -590,6 +668,14 @@ public class Calculator {
                 return calcualteOr(operator);
             } else if (operator.getName().equals("=")) {
                 return calcualteAssaignment(operator);
+            } else if (operator.getName().equals("begin ... end")) {
+                return calculateBeginEnd(operator);
+            } else if (operator.getName().equals("if ... ... end")) {
+                return calculateIf(operator);
+            } else if (operator.getName().equals("if ... ... else ... end")) {
+                return calculateIfElse(operator);
+            } else if (operator.getName().equals("while ... ... end")) {
+                return calculateWhile(operator);
             } else {
                 throw new Exception("演算子 " + operator.getName() + " は未定義です。\n");
             }

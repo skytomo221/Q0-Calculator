@@ -1,3 +1,19 @@
+import javafx.scene.control.ScrollBar;
+
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.text.StyledDocument;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,24 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 class CalculatorForm extends JFrame implements ActionListener, ComponentListener, DocumentListener, KeyListener {
     /**
@@ -49,16 +47,8 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     protected JTextPane inputTextPane = new JTextPane();
     protected JTextPane logTextPane = new JTextPane();
     protected StyledDocument inputStyledDocument;
-
-    final static Color backgroundColor = new Color(39, 40, 34);
-    final static Color commentColor = new Color(117, 114, 94);
-    final static Color constantColor = new Color(171, 157, 242);
-    final static Color foregroundColor = new Color(204, 204, 204);
-    final static Color functionColor = new Color(169, 220, 118);
-    final static Color storageTypeColor = new Color(102, 217, 239);
-    final static Color stringColor = new Color(230, 219, 116);
-    final static Color tagAttributeColor = new Color(253, 151, 31);
-    final static Color tagNameColor = new Color(249, 38, 114);
+    protected JScrollPane inputScrollPane = new JScrollPane(inputTextPane);
+    protected JScrollPane logScrollPane = new JScrollPane(logTextPane);
 
     public boolean displayLexerResult = true;
     public boolean displayPerserResult = true;
@@ -67,6 +57,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     protected Lexer lexer = new Lexer();
     protected Parser parser = new Parser();
     protected Calculator calculator = new Calculator();
+
+    protected JTextPaneColorizer inputTextPaneColorizer;
+    protected JTextPaneColorizer logTextPaneColorizer;
 
     CalculatorForm() {
         super("Q0 Calculator");
@@ -83,18 +76,18 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
 
         UIManager.put("TabbedPane.borderHightlightColor", new Color(17, 17, 17));
         UIManager.put("TabbedPane.darkShadow", new Color(17, 17, 17));
-        UIManager.put("TabbedPane.focus", commentColor);
-        UIManager.put("TabbedPane.selected", commentColor);
+        UIManager.put("TabbedPane.focus", JTextPaneColorizer.colors.get("punctuation"));
+        UIManager.put("TabbedPane.selected", JTextPaneColorizer.colors.get("punctuation"));
         UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
-        UIManager.put("Button.select", commentColor);
+        UIManager.put("Button.select", JTextPaneColorizer.colors.get("punctuation"));
 
         tabbedPane = new JTabbedPane();
         tabbedPane.add("標準", buttonPanel);
         tabbedPane.add("関数", functionButtonPanel);
         tabbedPane.add("フ界", fuButtonPanel);
-        buttonPanel.setBorder(new LineBorder(commentColor, 3));
-        functionButtonPanel.setBorder(new LineBorder(commentColor, 3));
-        fuButtonPanel.setBorder(new LineBorder(commentColor, 3));
+        buttonPanel.setBorder(new LineBorder(JTextPaneColorizer.colors.get("punctuation"), 3));
+        functionButtonPanel.setBorder(new LineBorder(JTextPaneColorizer.colors.get("punctuation"), 3));
+        fuButtonPanel.setBorder(new LineBorder(JTextPaneColorizer.colors.get("punctuation"), 3));
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
@@ -105,8 +98,8 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         p1.setBorder(null);
         p2.setBorder(null);
         p1.add(p2);
-        p1.add(logTextPane);
-        p2.add(inputTextPane);
+        p1.add(logScrollPane);
+        p2.add(inputScrollPane);
         p2.add(tabbedPane);
         getContentPane().add(p1, BorderLayout.CENTER);
 
@@ -131,52 +124,97 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         for (JButton jButton : buttons) {
             buttonPanel.add(jButton);
             jButton.addActionListener(this);
-            jButton.setBackground(backgroundColor);
+            jButton.setBackground(JTextPaneColorizer.colors.get("background"));
             jButton.setBorder(null);
             if (jButton.getText().equals("AC") || jButton.getText().equals("C")) {
-                jButton.setForeground(tagNameColor);
+                jButton.setForeground(JTextPaneColorizer.colors.get("operator"));
             } else {
-                jButton.setForeground(foregroundColor);
+                jButton.setForeground(JTextPaneColorizer.colors.get("foreground"));
             }
         }
         buttonPanel.setLayout(new GridLayout(5, 4));
         for (JButton jButton : functionButtons) {
             functionButtonPanel.add(jButton);
             jButton.addActionListener(this);
-            jButton.setBackground(backgroundColor);
-            jButton.setForeground(foregroundColor);
+            jButton.setBackground(JTextPaneColorizer.colors.get("background"));
+            jButton.setForeground(JTextPaneColorizer.colors.get("foreground"));
             jButton.setBorder(null);
         }
         functionButtonPanel.setLayout(new GridLayout(5, 6));
         for (JButton jButton : fuButtons) {
             fuButtonPanel.add(jButton);
             jButton.addActionListener(this);
-            jButton.setBackground(backgroundColor);
+            jButton.setBackground(JTextPaneColorizer.colors.get("background"));
             jButton.setBorder(null);
             if (jButton.getText().equals("AC") || jButton.getText().equals("C")) {
-                jButton.setForeground(tagNameColor);
+                jButton.setForeground(JTextPaneColorizer.colors.get("operator"));
             } else {
-                jButton.setForeground(foregroundColor);
+                jButton.setForeground(JTextPaneColorizer.colors.get("foreground"));
             }
         }
         fuButtonPanel.setLayout(new GridLayout(5, 4));
-        tabbedPane.setBackground(backgroundColor);
-        inputTextPane.setBackground(backgroundColor);
-        logTextPane.setBackground(backgroundColor);
-        tabbedPane.setForeground(foregroundColor);
-        inputTextPane.setForeground(foregroundColor);
-        logTextPane.setForeground(foregroundColor);
+        tabbedPane.setBackground(JTextPaneColorizer.colors.get("background"));
+        tabbedPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
+        inputTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
+        inputTextPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
         inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 36));
+        inputTextPane.addKeyListener(this);
+        inputTextPane.setCaretColor(JTextPaneColorizer.colors.get("foreground"));
+        inputTextPaneColorizer = new JTextPaneColorizer(inputTextPane, lexer);
+        logTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
+        logTextPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
         logTextPane.setFont(new Font("Consolas", Font.PLAIN, 18));
-        inputTextPane.setText("0");
+        logTextPane.setEditable(false);
+        logTextPaneColorizer = new JTextPaneColorizer(logTextPane, lexer);
+        inputScrollPane.setBorder(null);
+        inputScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        inputScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        inputScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        inputScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        inputScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
+        inputScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
+        logScrollPane.setBorder(null);
+        logScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        logScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        logScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
+        logScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        logScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
+        logScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+            }
+        });
         inputStyledDocument = inputTextPane.getStyledDocument();
         inputStyledDocument.addDocumentListener(this);
-        inputTextPane.addKeyListener(this);
+        inputTextPaneColorizer.insertColorText("0", JTextPaneColorizer.colors.get("constant"));
+        logTextPaneColorizer.insertColorText("Q0 Calculator へようこそ！\n", JTextPaneColorizer.colors.get("info"));
+        logTextPaneColorizer.insertColorText("詳細な説明書は ", JTextPaneColorizer.colors.get("info"));
+        logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
+        logTextPaneColorizer.insertColorText(" をクリックしてください。\n\n", JTextPaneColorizer.colors.get("info"));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        highlighted = false;
         if (e.getSource() instanceof JButton) {
             JButton b = (JButton) e.getSource();
             if (b.getText().equals("C")) {
@@ -242,21 +280,25 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                         System.out.println("[Calculator Log]");
                         System.out.println(calculator.getLog());
                     }
-                    insertColorText(logTextPane, "Input  => ", foregroundColor);
-                    insertHighlight(logTextPane, inputTextPane.getText());
-                    insertColorText(logTextPane, "\n", foregroundColor);
-                    insertColorText(logTextPane, "Output => ", foregroundColor);
-                    insertHighlight(logTextPane, calculator.getAnswerToString());
-                    insertColorText(logTextPane, "\n\n", foregroundColor);
+                    logTextPaneColorizer.insertColorText("Input  => ", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertCode(inputTextPane.getText().replaceAll("\n", "\n          "));
+                    logTextPaneColorizer.insertColorText("\n", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertColorText("Output => ", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertCode(calculator.getAnswerToString());
+                    logTextPaneColorizer.insertColorText("\n\n", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.setCaretToBottom();
                     inputTextPane.setText(calculator.getAnswerToString());
                 } catch (Exception ex) {
-                    insertColorText(logTextPane, "Input  => ", foregroundColor);
-                    insertColorText(logTextPane, inputTextPane.getText(), foregroundColor);
-                    insertColorText(logTextPane, "\n", foregroundColor);
-                    insertColorText(logTextPane,
-                            "[Error]\n" + ex.getLocalizedMessage() + calculator.getLog()
-                                    + calculator.getLogNumber().replaceAll(".", " ") + " → throw new Exception(...);\n\n",
-                            Color.RED);
+                    logTextPaneColorizer.insertColorText("Input  => ", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertColorText(inputTextPane.getText(), JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertColorText("\n", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertColorText("[Error]\n" + ex.getLocalizedMessage(), JTextPaneColorizer.colors.get("error"));
+                    logTextPaneColorizer.insertColorText(calculator.getLog(), JTextPaneColorizer.colors.get("error"));
+                    logTextPaneColorizer.insertColorText(calculator.getLogNumber().replaceAll(".", " ")
+                            + " → throw new Exception(...);\n", JTextPaneColorizer.colors.get("error"));
+                    logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
+                    logTextPaneColorizer.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", JTextPaneColorizer.colors.get("info"));
+                    logTextPaneColorizer.setCaretToBottom();
                 } finally {
                 }
             } else if (b.getText().equals("+") || b.getText().equals("-") || b.getText().equals("×")
@@ -266,6 +308,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 inputTextPane.setText(inputTextPane.getText() + b.getText());
             }
         }
+        inputTextPaneColorizer.highlighted = false;
     }
 
     @Override
@@ -299,9 +342,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     }
 
     @Override
-    public void insertUpdate(DocumentEvent e) {
-        highlightInputTextPane();
-    }
+    public void insertUpdate(DocumentEvent e) { inputTextPaneColorizer.colorizeCode(); }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
@@ -311,155 +352,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     public void changedUpdate(DocumentEvent e) {
     }
 
-    Boolean highlighted = false;
-
-    public void highlightInputTextPane() {
-        Runnable doHighlight = new Runnable() {
-            @Override
-            public void run() {
-                if (highlighted) {
-                    return;
-                }
-                highlighted = true;
-                String s = inputTextPane.getText();
-                inputTextPane.setText("");
-                try {
-                    insertHighlight(inputTextPane, s);
-                } catch (Exception e) {
-                    inputTextPane.setText(s);
-                }
-            }
-        };
-        SwingUtilities.invokeLater(doHighlight);
-    }
-
-    /**
-     * JTextPaneにハイライトされた文字列を追加する
-     *
-     * @param j 追加するコンポーネント
-     * @param s 追加する文字列
-     */
-    public void insertHighlight(JTextPane j, String s) throws Exception {
-        Lexer l = new Lexer();
-        List<Token> tokens = l.parse(s);
-        for (Token token : tokens) {
-            switch (token.type) {
-            case INT:
-            case FLOAT:
-            case BIG_DECIMAL:
-            case BOOL:
-                insertColorText(j, token.name, constantColor);
-                break;
-            case CHAR:
-                if (token.name.length() == 3) {
-                    insertColorText(j, "\'", commentColor);
-                    insertColorText(j, token.value.toString(), stringColor);
-                    insertColorText(j, "\'", commentColor);
-                } else {
-                    insertColorText(j, "\'", commentColor);
-                    insertColorText(j, "\\" + token.value.toString(), constantColor);
-                    insertColorText(j, "\'", commentColor);
-                }
-                break;
-            case STRING:
-                insertColorText(j, "\"", commentColor);
-                String s2 = token.value.toString();
-                for (int i = 0; i < s2.length(); i++) {
-                    if (s2.charAt(i) == '\\') {
-                        insertColorText(j, "\\", constantColor);
-                        i++;
-                        insertColorText(j, Character.toString(s2.charAt(i)), constantColor);
-                    } else {
-                        insertColorText(j, Character.toString(s2.charAt(i)), stringColor);
-                    }
-                }
-                insertColorText(j, "\"", commentColor);
-                break;
-            case ID:
-                insertColorText(j, token.name, foregroundColor);
-                break;
-            case ASSAIGNMENT:
-            case EQ:
-            case NE:
-            case LE:
-            case LT:
-            case GE:
-            case GT:
-            case AND:
-            case OR:
-            case NOT:
-            case POWER:
-            case BIT_AND:
-            case BIT_OR:
-            case BIT_NOT:
-            case PLUS:
-            case MINUS:
-            case MULTIPLICATION:
-            case DIVISION:
-            case MOD:
-            case BAREMODULE:
-            case BEGIN:
-            case BREAK:
-            case CATCH:
-            case CONST:
-            case CONTINUE:
-            case DO:
-            case ELSE:
-            case ELSEIF:
-            case END:
-            case EXPORT:
-            case FINALLY:
-            case FOR:
-            case FUNCTION:
-            case GLOBAL:
-            case IF:
-            case IMPORT:
-            case LET:
-            case LOCAL:
-            case MACRO:
-            case MODULE:
-            case QUOTE:
-            case RETURN:
-            case STRUCT:
-            case TRY:
-            case USING:
-            case WHILE:
-                insertColorText(j, token.name, tagNameColor);
-                break;
-            case LPAR:
-            case RPAR:
-                insertColorText(j, token.name, commentColor);
-                break;
-            default:
-                insertColorText(j, token.name, foregroundColor);
-                break;
-            }
-        }
-    }
-
-    /**
-     * JTextPaneに色付き文字列を追加する。
-     *
-     * @param j 追加するコンポーネント
-     * @param s 追加する文字列
-     * @param c 文字列の色
-     */
-    public void insertColorText(JTextPane j, String s, Color c) {
-        SimpleAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setForeground(attr, c);
-
-        Document doc = j.getDocument();
-        if (doc != null) {
-            try {
-                doc.insertString(doc.getLength(), s, attr);
-            } catch (BadLocationException e) {
-            }
-        }
-    }
-
     @Override
     public void keyTyped(KeyEvent e) {
-        highlighted = false;
+        inputTextPaneColorizer.highlighted = false;
     }
 
     @Override
