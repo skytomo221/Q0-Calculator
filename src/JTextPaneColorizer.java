@@ -1,3 +1,4 @@
+import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
@@ -7,12 +8,18 @@ import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JTextPaneColorizer {
     protected JTextPane textPane;
@@ -58,6 +65,46 @@ public class JTextPaneColorizer {
             }
         });
         doc = textPane.getDocument();
+    }
+
+    public void insertHyperlink(String hyperlink) {
+        JLabel label = new JLabel(hyperlink);
+        label.setForeground(JTextPaneColorizer.colors.get("info"));
+        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        label.setFont(new Font("Consolas", Font.PLAIN, 18));
+        Font font = label.getFont();
+        Map attributes = font.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        label.setFont(font.deriveFont(attributes));
+        label.setSize(label.getFontMetrics(font).getHeight(), label.getWidth());
+        label.setAlignmentY(0.64f);
+        label.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new URI(label.getText()));
+                    } catch (IOException | URISyntaxException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // the mouse has entered the label
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // the mouse has exited the label
+            }
+        });
+        int caret = textPane.getCaretPosition();
+        textPane.setCaretPosition(doc.getLength());
+        textPane.insertComponent(label);
+        textPane.setCaretPosition(caret);
     }
 
     public void colorizeCode() {

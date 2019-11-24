@@ -177,6 +177,10 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         inputStyledDocument.addDocumentListener(this);
 //        try {
 //            inputTextPaneColorizer.insertCode("0");
+        logTextPaneColorizer.insertColorText("Q0 Calculator へようこそ！\n", JTextPaneColorizer.colors.get("info"));
+        logTextPaneColorizer.insertColorText("詳細な説明書は ", JTextPaneColorizer.colors.get("info"));
+        logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
+        logTextPaneColorizer.insertColorText(" をクリックしてください。\n\n", JTextPaneColorizer.colors.get("info"));
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
@@ -264,7 +268,8 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     logTextPaneColorizer.insertColorText(calculator.getLog(), JTextPaneColorizer.colors.get("error"));
                     logTextPaneColorizer.insertColorText(calculator.getLogNumber().replaceAll(".", " ")
                             + " → throw new Exception(...);\n", JTextPaneColorizer.colors.get("error"));
-                    logTextPaneColorizer.insertColorText("https://github.com/skytomo221/Q0-Calculator でこの電卓の説明書を見ることができます。\n\n", JTextPaneColorizer.colors.get("info"));
+                    logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
+                    logTextPaneColorizer.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", JTextPaneColorizer.colors.get("info"));
                 } finally {
                 }
             } else if (b.getText().equals("+") || b.getText().equals("-") || b.getText().equals("×")
