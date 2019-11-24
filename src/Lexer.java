@@ -100,19 +100,19 @@ public class Lexer {
 
     private Object find_keywords() throws Exception {
         for (String s : keywords.keySet()) {
-            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
+            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-\\/:->@\\[-`{-~]|$)((.|\\s)*)")) {
                 index += s.length();
                 return new Token(keywords.get(s), s);
             }
         }
         for (String s : operators.keySet()) {
-            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
+            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-\\/:->@\\[-`{-~]|$)((.|\\s)*)")) {
                 index += s.length();
                 return new Token(operators.get(s), s);
             }
         }
         for (String s : operands.keySet()) {
-            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
+            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-\\/:->@\\[-`{-~]|$)((.|\\s)*)")) {
                 index += s.length();
                 return operands.get(s);
             }

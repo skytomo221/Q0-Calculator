@@ -340,9 +340,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     }
 
     @Override
-    public void insertUpdate(DocumentEvent e) {
-        inputTextPaneColorizer.colorizeCode();
-    }
+    public void insertUpdate(DocumentEvent e) { inputTextPaneColorizer.colorizeCode(); }
 
     @Override
     public void removeUpdate(DocumentEvent e) {

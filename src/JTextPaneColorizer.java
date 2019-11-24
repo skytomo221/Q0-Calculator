@@ -132,6 +132,7 @@ public class JTextPaneColorizer {
     public void insertCode(String code) throws Exception {
         List<Token> tokens = lexer.parse(code);
         for (Token token : tokens) {
+            token.name = token.name.replaceAll("\r", "");
             switch (token.type) {
                 case INT:
                 case FLOAT:
