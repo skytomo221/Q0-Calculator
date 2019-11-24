@@ -8,6 +8,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.Font;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -180,10 +181,12 @@ public class JTextPaneColorizer {
 
     public void insertColorText(String s, Color c) {
         SimpleAttributeSet attr = new SimpleAttributeSet();
+        Font consolas = new Font("Consolas", Font.PLAIN, 12);
         StyleConstants.setForeground(attr, c);
+
         try {
             for (int i = 0; i < s.length(); i++) {
-                if (Character.toString(s.charAt(i)).matches("[\\u0000-\\u00ff]")) {
+                if (consolas.canDisplay(s.charAt(i))) {
                     StyleConstants.setFontFamily(attr, "Consolas");
                 } else {
                     StyleConstants.setFontFamily(attr, "メイリオ");
