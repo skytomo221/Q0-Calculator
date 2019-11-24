@@ -3,14 +3,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Lexer {
 
     protected String text;
     protected int index;
     protected Map<String, TokenType> keywords = new HashMap<String, TokenType>() {
-        private static final long serialVersionUID = 1L;
-
         {
             put("baremodule", TokenType.BAREMODULE);
             put("begin", TokenType.BEGIN);
@@ -41,6 +40,46 @@ public class Lexer {
             put("while", TokenType.WHILE);
         }
     };
+    protected Map<String,TokenType> operators = new HashMap<String, TokenType>() {
+        {
+            put("=", TokenType.ASSAIGNMENT);
+            put("+=", TokenType.PLUS_ASSAIGNMENT);
+            put("-=", TokenType.MINUS_ASSAIGNMENT);
+            put("*=", TokenType.MULTIPLICATION_ASSAIGNMENT);
+            put("/=", TokenType.DIVISION_ASSAIGNMENT);
+            put("%=", TokenType.MOD_ASSAIGNMENT);
+            put("<|", TokenType.PIPE_TO_LEFT);
+            put("|>", TokenType.PIPE_TO_RIGHT);
+            put("==", TokenType.EQ);
+            put("!=", TokenType.NE);
+            put("≠", TokenType.NE);
+            put("<", TokenType.LT);
+            put("<=", TokenType.LE);
+            put(">", TokenType.GT);
+            put(">=", TokenType.GE);
+            put("(", TokenType.LPAR);
+            put(")", TokenType.RPAR);
+            put("&", TokenType.BIT_AND);
+            put("~", TokenType.BIT_NOT);
+            put("&&", TokenType.AND);
+            put("||", TokenType.OR);
+            put("!", TokenType.BIT_NOT);
+            put("^", TokenType.POWER);
+            put("+", TokenType.PLUS);
+            put("-", TokenType.MINUS);
+            put("*", TokenType.MULTIPLICATION);
+            put("/", TokenType.DIVISION);
+            put("%", TokenType.MOD);
+        }
+    };
+    protected Map<String,Token> operands = new HashMap<String, Token>() {
+        {
+            put("false", new Token(TokenType.BOOL,"false", false));
+            put("true",  new Token(TokenType.BOOL,"true", true));
+            put("e",  new Token(TokenType.FLOAT,"e", Math.E));
+            put("π",  new Token(TokenType.FLOAT,"π", Math.PI));
+        }
+    };
 
     private boolean isEndOfString() {
         return text.length() <= index;
@@ -61,9 +100,21 @@ public class Lexer {
 
     private Object find_keywords() throws Exception {
         for (String s : keywords.keySet()) {
-            if (text.substring(index).matches("^(" + s + ")(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
+            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
                 index += s.length();
                 return new Token(keywords.get(s), s);
+            }
+        }
+        for (String s : operators.keySet()) {
+            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
+                index += s.length();
+                return new Token(operators.get(s), s);
+            }
+        }
+        for (String s : operands.keySet()) {
+            if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
+                index += s.length();
+                return operands.get(s);
             }
         }
         return null;
@@ -360,86 +411,12 @@ public class Lexer {
                 }
             }
             throw new Exception("\" が閉じられていません。");
-        } else if (peek() == '=') {
-            next();
-            if (!isEndOfString() && peek() == '=') { // ==
-                next();
-                return new Token(TokenType.EQ, "==");
-            } else { // =
-                return new Token(TokenType.ASSAIGNMENT, "=");
-            }
-        } else if (peek() == '!') {
-            next();
-            if (!isEndOfString() && peek() == '=') { // !=
-                next();
-                return new Token(TokenType.NE, "!=");
-            } else { // !
-                return new Token(TokenType.NOT, "!");
-            }
-        } else if (peek() == '&') {
-            next();
-            if (!isEndOfString() && peek() == '&') { // &&
-                next();
-                return new Token(TokenType.AND, "&&");
-            } else { // &
-                return new Token(TokenType.BIT_AND, "&");
-            }
-        } else if (peek() == '|') {
-            next();
-            if (!isEndOfString() && peek() == '|') { // ||
-                next();
-                return new Token(TokenType.OR, "||");
-            } else { // |
-                return new Token(TokenType.BIT_OR, "|");
-            }
-        } else if (peek() == '<') {
-            next();
-            if (!isEndOfString() && peek() == '=') {
-                next();
-                return new Token(TokenType.LE, "<=");
-            } else {
-                return new Token(TokenType.LT, "<");
-            }
-        } else if (peek() == '>') {
-            next();
-            if (!isEndOfString() && peek() == '=') {
-                next();
-                return new Token(TokenType.GE, ">=");
-            } else {
-                return new Token(TokenType.GT, ">");
-            }
-        } else if (peek() == '≠') {
-            return new Token(TokenType.NE, Character.toString(next()));
-        } else if (peek() == '~') {
-            return new Token(TokenType.BIT_NOT, Character.toString(next()));
-        } else if (peek() == '^') {
-            return new Token(TokenType.POWER, Character.toString(next()));
-        } else if (peek() == '(') {
-            return new Token(TokenType.LPAR, Character.toString(next()));
-        } else if (peek() == ')') {
-            return new Token(TokenType.RPAR, Character.toString(next()));
-        } else if (peek() == '+') {
-            return new Token(TokenType.PLUS, Character.toString(next()));
-        } else if (peek() == '-') {
-            return new Token(TokenType.MINUS, Character.toString(next()));
-        } else if (peek() == '*' || peek() == '×') {
-            return new Token(TokenType.MULTIPLICATION, Character.toString(next()));
-        } else if (peek() == '/' || peek() == '÷') {
-            return new Token(TokenType.DIVISION, Character.toString(next()));
-        } else if (peek() == '%') {
-            return new Token(TokenType.MOD, Character.toString(next()));
         } else if (peek() == '\n') {
             return new Token(TokenType.NEW_LINE, Character.toString(next()));
         } else {
             Object obj = null;
             if ((obj = find_keywords()) != null) {
                 return (Token) obj;
-            } else if (text.substring(index).matches("^(true)(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
-                index += "true".length();
-                return new Token(TokenType.BOOL, "true", true);
-            } else if (text.substring(index).matches("^(false)(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
-                index += "false".length();
-                return new Token(TokenType.BOOL, "false", false);
             }
             b.append(next());
             while (!isEndOfString() && !Character.toString(peek()).matches("(\\s|[\"-/:->@\\[-`{-~]|$).*")) {
