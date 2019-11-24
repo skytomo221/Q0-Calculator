@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Calculator {
     public Map<String, Variable> variables;
@@ -610,13 +612,17 @@ public class Calculator {
                 operator.arguments.set(1, cache.copy());
                 pushLog();
                 block = (Operand) calculateExpression(operator.arguments.get(1));
-                operator.arguments.set(1, block);
-                pushLog();
+                if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+                    operator.arguments.set(1, block);
+                    pushLog();
+                }
                 operator.arguments.set(0, conditional.copy());
                 pushLog();
                 isContinue = (Operand) calculateExpression(conditional.copy());
-                operator.arguments.set(0, isContinue);
-                pushLog();
+                if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+                    operator.arguments.set(0, isContinue);
+                    pushLog();
+                }
                 if (!(isContinue.value instanceof Boolean)) {
                     throw new Exception("条件文は Bool 型である必要があります。");
                 }
@@ -628,6 +634,9 @@ public class Calculator {
     }
 
     protected Expression calculateExpression(Expression expression) throws Exception {
+        if (  System.currentTimeMillis() - calculateStartTime > 3000) {
+            throw new Exception("計算時間が制限時間3秒を超過したため、要求がタイムアウトしました。\n");
+        }
         if (expression instanceof Operand) {
             return getOperand(expression);
         } else if (expression instanceof Operator) {
@@ -684,7 +693,9 @@ public class Calculator {
         }
     }
 
+    long calculateStartTime;
     public Operand calculate(List<Expression> expressions) throws Exception {
+        calculateStartTime = System.currentTimeMillis();
         this.expressions = expressions;
         for (int i = 0; i < this.expressions.size(); i++) {
             Expression expression = this.expressions.get(i);
