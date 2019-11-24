@@ -176,7 +176,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         inputStyledDocument = inputTextPane.getStyledDocument();
         inputStyledDocument.addDocumentListener(this);
 //        try {
-//            inputTextPaneColorizer.insertCode("0");
+        inputTextPaneColorizer.insertColorText("0", JTextPaneColorizer.colors.get("constant"));
         logTextPaneColorizer.insertColorText("Q0 Calculator へようこそ！\n", JTextPaneColorizer.colors.get("info"));
         logTextPaneColorizer.insertColorText("詳細な説明書は ", JTextPaneColorizer.colors.get("info"));
         logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
