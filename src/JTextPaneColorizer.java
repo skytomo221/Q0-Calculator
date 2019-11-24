@@ -218,6 +218,9 @@ public class JTextPaneColorizer {
                     break;
                 case LPAR:
                 case RPAR:
+                case COMMA:
+                case COLON:
+                case SEMICOLON:
                     insertColorText(token.name, colors.get("punctuation"));
                     break;
                 default:

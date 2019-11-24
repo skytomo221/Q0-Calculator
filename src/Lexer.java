@@ -42,6 +42,9 @@ public class Lexer {
     };
     protected Map<String,TokenType> operators = new HashMap<String, TokenType>() {
         {
+            put(",", TokenType.COMMA);
+            put(":", TokenType.COLON);
+            put(";", TokenType.SEMICOLON);
             put("=", TokenType.ASSAIGNMENT);
             put("+=", TokenType.PLUS_ASSAIGNMENT);
             put("-=", TokenType.MINUS_ASSAIGNMENT);
