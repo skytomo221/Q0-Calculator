@@ -599,17 +599,25 @@ public class Calculator {
     }
 
     protected Operand calculateWhile(Operator operator) throws Exception {
-        Operand conditional = (Operand) calculateExpression(operator.arguments.get(0));
-        if (conditional.value instanceof Boolean) {
+        Expression conditional = operator.arguments.get(0).copy();
+        Operand isContinue = (Operand) calculateExpression(operator.arguments.get(0));
+        if (isContinue.value instanceof Boolean) {
             Operand block = new Operand("Bool", false);
             Expression cache = operator.arguments.get(1).copy();
-            while ((boolean) conditional.value) {
+            operator.arguments.set(0, isContinue);
+            pushLog();
+            while ((boolean) isContinue.value) {
                 operator.arguments.set(1, cache.copy());
+                pushLog();
                 block = (Operand) calculateExpression(operator.arguments.get(1));
                 operator.arguments.set(1, block);
                 pushLog();
-                conditional = (Operand) calculateExpression(operator.arguments.get(0));
-                if (!(conditional.value instanceof Boolean)) {
+                operator.arguments.set(0, conditional.copy());
+                pushLog();
+                isContinue = (Operand) calculateExpression(conditional.copy());
+                operator.arguments.set(0, isContinue);
+                pushLog();
+                if (!(isContinue.value instanceof Boolean)) {
                     throw new Exception("条件文は Bool 型である必要があります。");
                 }
             }
