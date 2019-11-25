@@ -166,7 +166,11 @@ public class JTextPaneColorizer {
                     insertColorText("\"", colors.get("punctuation"));
                     break;
                 case ID:
-                    insertColorText(token.name, colors.get("foreground"));
+                    if (Calculator.definedFunctions.contains(token.name)) {
+                        insertColorText(token.name, colors.get("function"));
+                    } else {
+                        insertColorText(token.name, colors.get("foreground"));
+                    }
                     break;
                 case ASSAIGNMENT:
                 case EQ:

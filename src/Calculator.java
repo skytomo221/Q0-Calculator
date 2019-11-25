@@ -1,11 +1,10 @@
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.BiFunction;
 
 public class Calculator {
@@ -13,6 +12,34 @@ public class Calculator {
     public Operand answer;
     List<Expression> expressions;
     List<EnumeratedType> enumeratedTypes;
+    public static List<String> definedFunctions = new ArrayList<String>(Arrays.asList(
+            "acos",
+            "asin",
+            "atan",
+            "cbrt",
+            "ceil",
+            "cos",
+            "cosh",
+            "exp",
+            "expm1",
+            "floor",
+            "log",
+            "log10",
+            "nextDown",
+            "nextUp",
+            "rint",
+            "round",
+            "signum",
+            "sin",
+            "sinh",
+            "sqrt",
+            "tan",
+            "tanh",
+            "degrees",
+            "radians",
+            "ulp"
+    ));
+
     protected long logNumber = 0;
     /**
      * 解析中の式を選択します。
