@@ -41,7 +41,28 @@ public class Parser {
                 || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
             return new Operand(next());
         } else if (peek().type == TokenType.ID) {
-            return new Variable(next().name, "Variable", null);
+            Variable variable = new Variable(next().name, "Variable", null);
+            if (peek().type == TokenType.LPAR) {
+                next();
+                ArrayList<Expression> arguments = new ArrayList<Expression>();
+                while (true) {
+                    arguments.add(parseExpression());
+                    if (peek().type == TokenType.COMMA) {
+                        next();
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (peek().type == TokenType.RPAR) {
+                    next();
+                    return new Function(variable.name, arguments, null);
+                } else {
+                    throw new Exception();
+                }
+            } else {
+                return variable;
+            }
         } else if (peek().type == TokenType.LPAR) {
             next();
             Expression expression = parseBlock();

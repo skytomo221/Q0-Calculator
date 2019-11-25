@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.BiFunction;
 
 public class Calculator {
     public Map<String, Variable> variables;
@@ -633,6 +634,80 @@ public class Calculator {
         }
     }
 
+    protected Operand calculateFunction(Function function) throws Exception {
+        if (function.arguments.size() == 1) {
+            Operand operand = (Operand) calculateExpression(function.arguments.get(0));
+            BiFunction<java.util.function.Function<Double, Double>, Operand, Operand> biFunction = (f, x) -> {
+                x = promoteToFloat(x);
+                if (!(function.arguments.get(0).getClass() == Operand.class)) {
+                    function.arguments.set(0, x);
+                    pushLog();
+                }
+                return new Operand("Float", f.apply((double) x.getValue()));
+            };
+            if (function.getName().equals("acos")) {
+                return biFunction.apply(Math::acos, operand);
+            } else if (function.getName().equals("asin")) {
+                return biFunction.apply(Math::asin, operand);
+            } else if (function.getName().equals("atan")) {
+                return biFunction.apply(Math::atan, operand);
+            } else if (function.getName().equals("cbrt")) {
+                return biFunction.apply(Math::cbrt, operand);
+            } else if (function.getName().equals("ceil")) {
+                return biFunction.apply(Math::ceil, operand);
+            } else if (function.getName().equals("cos")) {
+                return biFunction.apply(Math::cos, operand);
+            } else if (function.getName().equals("cosh")) {
+                return biFunction.apply(Math::cosh, operand);
+            } else if (function.getName().equals("exp")) {
+                return biFunction.apply(Math::exp, operand);
+            } else if (function.getName().equals("expm1")) {
+                return biFunction.apply(Math::expm1, operand);
+            } else if (function.getName().equals("floor")) {
+                return biFunction.apply(Math::floor, operand);
+            } else if (function.getName().equals("log")) {
+                return biFunction.apply(Math::log, operand);
+            } else if (function.getName().equals("log10")) {
+                return biFunction.apply(Math::log10, operand);
+            } else if (function.getName().equals("nextDown")) {
+                return biFunction.apply(Math::nextDown, operand);
+            } else if (function.getName().equals("nextUp")) {
+                return biFunction.apply(Math::nextUp, operand);
+            } else if (function.getName().equals("rint")) {
+                return biFunction.apply(Math::rint, operand);
+            } else if (function.getName().equals("round")) {
+                operand = promoteToFloat(operand);
+                if (!(function.arguments.get(0).getClass() == Operand.class)) {
+                    function.arguments.set(0, operand);
+                    pushLog();
+                }
+                return new Operand("Float", Math.round((double) operand.getValue()));
+            } else if (function.getName().equals("signum")) {
+                return biFunction.apply(Math::signum, operand);
+            } else if (function.getName().equals("sin")) {
+                return biFunction.apply(Math::sin, operand);
+            } else if (function.getName().equals("sinh")) {
+                return biFunction.apply(Math::sinh, operand);
+            } else if (function.getName().equals("sqrt")) {
+                return biFunction.apply(Math::sqrt, operand);
+            } else if (function.getName().equals("tan")) {
+                return biFunction.apply(Math::tan, operand);
+            } else if (function.getName().equals("tanh")) {
+                return biFunction.apply(Math::tanh, operand);
+            } else if (function.getName().equals("degrees")) {
+                return biFunction.apply(Math::toDegrees, operand);
+            } else if (function.getName().equals("radians")) {
+                return biFunction.apply(Math::toRadians, operand);
+            } else if (function.getName().equals("ulp")) {
+                return biFunction.apply(Math::ulp, operand);
+            } else {
+                throw new Exception(function.getName() + "(x) は未定義の関数です。");
+            }
+        } else {
+            throw new Exception(function.getName() + " は未定義の関数です。");
+        }
+    }
+
     protected Expression calculateExpression(Expression expression) throws Exception {
         if (  System.currentTimeMillis() - calculateStartTime > 3000) {
             throw new Exception("計算時間が制限時間3秒を超過したため、要求がタイムアウトしました。\n");
@@ -685,6 +760,8 @@ public class Calculator {
                 return calculateIfElse(operator);
             } else if (operator.getName().equals("while ... ... end")) {
                 return calculateWhile(operator);
+            } else if (operator instanceof Function) {
+                return calculateFunction((Function) operator);
             } else {
                 throw new Exception("演算子 " + operator.getName() + " は未定義です。\n");
             }
