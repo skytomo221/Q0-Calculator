@@ -293,19 +293,19 @@ public class Calculator {
             operator.arguments.set(1, right);
             pushLog();
         }
-        if (answer.getType().matches("Int") && right.getType().matches("Int")) {
-            answer = new Operand("Int", (long) answer.getValue() % (long) right.getValue());
-        } else if (answer.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
-            answer = promoteToBigDecimal(answer);
+        if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Int", (long) left.getValue() % (long) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
             right = promoteToBigDecimal(right);
-            answer = new Operand("BigDecimal",
-                    ((BigDecimal) answer.getValue()).remainder((BigDecimal) right.getValue()));
-        } else if (answer.getType().equals("Float") || right.getType().equals("Float")) {
-            answer = promoteToFloat(answer);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).remainder((BigDecimal) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
             right = promoteToFloat(right);
-            answer = new Operand("Float", (double) answer.getValue() % (double) right.getValue());
+            left = new Operand("Float", (double) left.getValue() % (double) right.getValue());
         } else {
-            throw new Exception(answer.getType() + " 型 % " + right.getType() + " 型は未定義です。\n");
+            throw new Exception(left.getType() + " 型 % " + right.getType() + " 型は未定義です。\n");
         }
         return left;
     }
