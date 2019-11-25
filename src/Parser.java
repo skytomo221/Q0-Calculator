@@ -102,7 +102,8 @@ public class Parser {
     protected Expression parseTimes() throws Exception {
         Expression left = parseSign();
         while (peek().type == TokenType.MULTIPLICATION || peek().type == TokenType.DIVISION
-                || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD) {
+                || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD
+                || peek().type == TokenType.PARCENT) {
             Token operator = next();
             skipNewLine();
             Expression right = parseSign();
@@ -115,11 +116,12 @@ public class Parser {
 
     protected Expression parsePlus() throws Exception {
         Expression left = parseTimes();
-        while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR) {
+        while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR
+                || peek().type == TokenType.BIT_XOR) {
             Token operator = next();
             skipNewLine();
             Expression right = parseTimes();
-            Expression parent = new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            Expression parent = new Operator(operator.type.toString(), new ArrayList<Expression>(Arrays.asList(left, right)));
             left = parent;
         }
         return left;
@@ -132,7 +134,7 @@ public class Parser {
             Token operator = next();
             skipNewLine();
             Expression right = parsePlus();
-            Expression parent = new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            Expression parent = new Operator(operator.type.toString(), new ArrayList<Expression>(Arrays.asList(left, right)));
             left = parent;
         }
         return left;

@@ -184,6 +184,7 @@ public class JTextPaneColorizer {
                 case NOT:
                 case POWER:
                 case BIT_AND:
+                case BIT_XOR:
                 case BIT_OR:
                 case BIT_NOT:
                 case PLUS:
@@ -191,6 +192,7 @@ public class JTextPaneColorizer {
                 case MULTIPLICATION:
                 case DIVISION:
                 case MOD:
+                case PARCENT:
                 case BAREMODULE:
                 case BEGIN:
                 case BREAK:

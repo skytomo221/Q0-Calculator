@@ -43,7 +43,7 @@ public class Lexer {
             put("while", TokenType.WHILE);
         }
     };
-    protected Map<String,TokenType> operators = new TreeMap<String, TokenType>(Collections.reverseOrder()) {
+    protected Map<String, TokenType> operators = new TreeMap<String, TokenType>(Collections.reverseOrder()) {
         {
             put(",", TokenType.COMMA);
             put(":", TokenType.COLON);
@@ -61,29 +61,44 @@ public class Lexer {
             put("≠", TokenType.NE);
             put("<", TokenType.LT);
             put("<=", TokenType.LE);
+            put("≼", TokenType.LT);
+            put("≤", TokenType.LT);
+            put("≦", TokenType.LT);
             put(">", TokenType.GT);
             put(">=", TokenType.GE);
+            put("≽", TokenType.GE);
+            put("≥", TokenType.GE);
+            put("≧", TokenType.GE);
             put("(", TokenType.LPAR);
             put(")", TokenType.RPAR);
             put("&", TokenType.BIT_AND);
+            put("and", TokenType.BIT_AND);
+            put("$", TokenType.BIT_XOR);
+            put("xor", TokenType.BIT_XOR);
+            put("|", TokenType.BIT_OR);
+            put("or", TokenType.BIT_OR);
             put("~", TokenType.BIT_NOT);
             put("&&", TokenType.AND);
             put("||", TokenType.OR);
             put("!", TokenType.BIT_NOT);
+            put("not", TokenType.BIT_NOT);
             put("^", TokenType.POWER);
             put("+", TokenType.PLUS);
             put("-", TokenType.MINUS);
             put("*", TokenType.MULTIPLICATION);
             put("/", TokenType.DIVISION);
             put("%", TokenType.MOD);
+            put("mod", TokenType.MOD);
+            put("% of", TokenType.PARCENT);
+            put("%of", TokenType.PARCENT);
         }
     };
-    protected Map<String,Token> operands = new HashMap<String, Token>() {
+    protected Map<String, Token> operands = new HashMap<String, Token>() {
         {
-            put("false", new Token(TokenType.BOOL,"false", false));
-            put("true",  new Token(TokenType.BOOL,"true", true));
-            put("e",  new Token(TokenType.FLOAT,"e", Math.E));
-            put("π",  new Token(TokenType.FLOAT,"π", Math.PI));
+            put("false", new Token(TokenType.BOOL, "false", false));
+            put("true", new Token(TokenType.BOOL, "true", true));
+            put("e", new Token(TokenType.FLOAT, "e", Math.E));
+            put("π", new Token(TokenType.FLOAT, "π", Math.PI));
         }
     };
 

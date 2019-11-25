@@ -310,6 +310,34 @@ public class Calculator {
         return left;
     }
 
+    protected Operand calculateParcent(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Float", (double) (long) left.getValue() * 0.01 * (double) (long) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).multiply(new BigDecimal(0.01)).multiply((BigDecimal) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", (double) left.getValue() * 0.01 * (double) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 % " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
+    }
+
     protected Operand calculateAddition(Operator operator) throws Exception {
         Operand left = (Operand) calculateExpression(operator.arguments.get(0));
         Operand right = (Operand) calculateExpression(operator.arguments.get(1));
@@ -404,6 +432,27 @@ public class Calculator {
             left = new Operand("Int", (long) left.getValue() | (long) right.getValue());
         } else {
             throw new Exception(left.getType() + " 型 | " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
+    }
+
+    protected Operand calculateBitXor(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Bool") && right.getType().matches("Bool")) {
+            left = new Operand("Bool", (boolean) left.getValue() ^ (boolean) right.getValue());
+        } else if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Int", (long) left.getValue() ^ (long) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 $ " + right.getType() + " 型は未定義です。\n");
         }
         return left;
     }
@@ -748,6 +797,8 @@ public class Calculator {
                 return calculateBitAnd(operator);
             } else if (operator.getName().equals("%")) {
                 return calculateRemainder(operator);
+            } else if (operator.getName().equals("% of")) {
+                return calculateParcent(operator);
             } else if (operator.getName().equals("+")) {
                 return calculateAddition(operator);
             } else if (operator.getName().equals("-")) {
@@ -758,6 +809,8 @@ public class Calculator {
                 }
             } else if (operator.getName().equals("|")) {
                 return calculateBitOr(operator);
+            } else if (operator.getName().equals("$")) {
+                return calculateBitXor(operator);
             } else if (operator.getName().matches("==|!=|<=|<|>|>=")) {
                 return calculateComparison(operator);
             } else if (operator.getName().equals("&&")) {

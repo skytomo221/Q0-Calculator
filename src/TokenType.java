@@ -111,6 +111,10 @@ public enum TokenType {
      */
     BIT_AND,
     /**
+     * $ を表します。
+     */
+    BIT_XOR,
+    /**
      * | を表します。
      */
     BIT_OR,
@@ -154,6 +158,10 @@ public enum TokenType {
      * 剰余 を表します。
      */
     MOD,
+    /**
+     * 百分率 を表します。
+     */
+    PARCENT,
     /**
      * {@code baremodule}を表します。
      */
@@ -347,6 +355,8 @@ public enum TokenType {
                 return ")";
             case BIT_AND:
                 return "&";
+            case BIT_XOR:
+                return "$";
             case BIT_OR:
                 return "|";
             case BIT_NOT:
@@ -369,6 +379,8 @@ public enum TokenType {
                 return "/";
             case MOD:
                 return "%";
+            case PARCENT:
+                return "% of";
             default:
                 return super.toString().toLowerCase();
         }
