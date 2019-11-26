@@ -671,19 +671,19 @@ public class Calculator {
             Operand block = new Operand("Bool", false);
             Expression cache = operator.arguments.get(1).copy();
             operator.arguments.set(0, isContinue);
+            operator.arguments.set(1, cache.copy());
             pushLog();
             while ((boolean) isContinue.value) {
-                operator.arguments.set(1, cache.copy());
-                pushLog();
                 block = (Operand) calculateExpression(operator.arguments.get(1));
-                if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+                if (!(cache.getClass() == Operand.class)) {
                     operator.arguments.set(1, block);
                     pushLog();
                 }
+                operator.arguments.set(1, cache.copy());
                 operator.arguments.set(0, conditional.copy());
                 pushLog();
-                isContinue = (Operand) calculateExpression(conditional.copy());
-                if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+                isContinue = (Operand) calculateExpression(operator.arguments.get(0));
+                if (!(conditional.getClass() == Operand.class)) {
                     operator.arguments.set(0, isContinue);
                     pushLog();
                 }
