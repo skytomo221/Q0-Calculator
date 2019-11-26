@@ -52,7 +52,9 @@ public class Lexer {
             put("+=", TokenType.PLUS_ASSAIGNMENT);
             put("-=", TokenType.MINUS_ASSAIGNMENT);
             put("*=", TokenType.MULTIPLICATION_ASSAIGNMENT);
+            put("×=", TokenType.MULTIPLICATION_ASSAIGNMENT);
             put("/=", TokenType.DIVISION_ASSAIGNMENT);
+            put("÷=", TokenType.DIVISION_ASSAIGNMENT);
             put("%=", TokenType.MOD_ASSAIGNMENT);
             put("<|", TokenType.PIPE_TO_LEFT);
             put("|>", TokenType.PIPE_TO_RIGHT);
@@ -86,7 +88,9 @@ public class Lexer {
             put("+", TokenType.PLUS);
             put("-", TokenType.MINUS);
             put("*", TokenType.MULTIPLICATION);
+            put("×", TokenType.MULTIPLICATION);
             put("/", TokenType.DIVISION);
+            put("÷", TokenType.DIVISION);
             put("%", TokenType.MOD);
             put("mod", TokenType.MOD);
             put("% of", TokenType.PARCENT);
