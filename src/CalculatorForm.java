@@ -1,6 +1,5 @@
-import javafx.scene.control.ScrollBar;
-
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,9 +36,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
      */
     private static final long serialVersionUID = 1L;
 
-    private List<JButton> buttons;
-    private List<JButton> functionButtons;
-    private List<JButton> fuButtons;
+    private List<CalculatorButton> buttons;
+    private List<CalculatorButton> functionButtons;
+    private List<CalculatorButton> fuButtons;
 
     protected JTabbedPane tabbedPane;
     protected JPanel buttonPanel = new JPanel();
@@ -103,53 +103,110 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
         p2.add(tabbedPane);
         getContentPane().add(p1, BorderLayout.CENTER);
 
-        buttons = Arrays.asList(new JButton("AC"), new JButton("C"), new JButton("BS"), new JButton("÷"),
-                new JButton("7"), new JButton("8"), new JButton("9"), new JButton("×"), new JButton("4"),
-                new JButton("5"), new JButton("6"), new JButton("-"), new JButton("1"), new JButton("2"),
-                new JButton("3"), new JButton("+"), new JButton("+/-"), new JButton("0"), new JButton("."),
-                new JButton("="));
-        functionButtons = Arrays.asList(new JButton("or"), new JButton("xor"), new JButton("not"), new JButton("and"),
-                new JButton("mod"), new JButton("%"), new JButton("2nd"), new JButton("n²"), new JButton("n³"),
-                new JButton("xⁿ"), new JButton("eⁿ"), new JButton("10ⁿ"), new JButton("1/x"), new JButton("√x"),
-                new JButton("³√x"), new JButton("ⁿ√x"), new JButton("ln"), new JButton("log10"), new JButton("x!"),
-                new JButton("sin"), new JButton("cos"), new JButton("tan"), new JButton("e"), new JButton("π"),
-                new JButton("rand"), new JButton("sinh"), new JButton("cosh"), new JButton("tanh"), new JButton("("),
-                new JButton(")"));
-        fuButtons = Arrays.asList(new JButton("AC"), new JButton("C"), new JButton("BS"), new JButton("÷"),
-                new JButton("7"), new JButton("8"), new JButton("¬"), new JButton("×"), new JButton("4"),
-                new JButton("5"), new JButton("6"), new JButton("-"), new JButton("1"), new JButton("2"),
-                new JButton("3"), new JButton("+"), new JButton("+/-"), new JButton("0"), new JButton("."),
-                new JButton("="));
+        buttons = Arrays.asList(
+                new CalculatorButton("AC"),
+                new CalculatorButton("C"),
+                new CalculatorButton(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
+                new CalculatorButton("÷"),
+                new CalculatorButton("7"),
+                new CalculatorButton("8"),
+                new CalculatorButton("9"),
+                new CalculatorButton("×"),
+                new CalculatorButton("4"),
+                new CalculatorButton("5"),
+                new CalculatorButton("6"),
+                new CalculatorButton("-"),
+                new CalculatorButton("1"),
+                new CalculatorButton("2"),
+                new CalculatorButton("3"),
+                new CalculatorButton("+"),
+                new CalculatorButton(new ImageIcon("./images/plus-and-minus.png"), "plus-and-minus"),
+                // <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+                new CalculatorButton("0"),
+                new CalculatorButton("."),
+                new CalculatorButton("="));
+        functionButtons = Arrays.asList(
+                new CalculatorButton("or"),
+                new CalculatorButton("xor"),
+                new CalculatorButton("not"),
+                new CalculatorButton("and"),
+                new CalculatorButton("mod"),
+                new CalculatorButton("%"),
+                new CalculatorButton("2nd"),
+                new CalculatorButton(new ImageIcon("./images/^2.png"), "^2"),
+                new CalculatorButton(new ImageIcon("./images/^3.png"), "^3"),
+                new CalculatorButton(new ImageIcon("./images/^.png"), "^"),
+                new CalculatorButton(new ImageIcon("./images/e^.png"), "e^"),
+                new CalculatorButton(new ImageIcon("./images/10^.png"), "10^"),
+                new CalculatorButton(new ImageIcon("./images/reciprocal.png"), "reciprocal"),
+                new CalculatorButton(new ImageIcon("./images/sqrt.png"), "sqrt"),
+                new CalculatorButton(new ImageIcon("./images/cbrt.png"), "cbrt"),
+                new CalculatorButton(new ImageIcon("./images/radical-symbol.png"), "radical-symbol"),
+                new CalculatorButton(new ImageIcon("./images/ln.png"), "ln"),
+                new CalculatorButton(new ImageIcon("./images/log10.png"), "log10"),
+                new CalculatorButton("x!"),
+                new CalculatorButton(new ImageIcon("./images/sin.png"), "sin"),
+                new CalculatorButton(new ImageIcon("./images/cos.png"), "cos"),
+                new CalculatorButton(new ImageIcon("./images/tan.png"), "tan"),
+                new CalculatorButton("e"),
+                new CalculatorButton("π"),
+                new CalculatorButton("rand()"),
+                new CalculatorButton(new ImageIcon("./images/sinh.png"), "sinh"),
+                new CalculatorButton(new ImageIcon("./images/cosh.png"), "cosh"),
+                new CalculatorButton(new ImageIcon("./images/tanh.png"), "tanh"),
+                new CalculatorButton("("),
+                new CalculatorButton(")"));
+        fuButtons = Arrays.asList(
+                new CalculatorButton("AC"),
+                new CalculatorButton("C"),
+                new CalculatorButton(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
+                new CalculatorButton("÷"),
+                new CalculatorButton("7"),
+                new CalculatorButton("8"),
+                new CalculatorButton("¬"),
+                new CalculatorButton("×"),
+                new CalculatorButton("4"),
+                new CalculatorButton("5"),
+                new CalculatorButton("6"),
+                new CalculatorButton("-"),
+                new CalculatorButton("1"),
+                new CalculatorButton("2"),
+                new CalculatorButton("3"),
+                new CalculatorButton("+"),
+                new CalculatorButton(new ImageIcon("./images/plus-and-minus.png"), "plus-and-minus"),
+                new CalculatorButton("0"),
+                new CalculatorButton("."),
+                new CalculatorButton("="));
 
-        for (JButton jButton : buttons) {
-            buttonPanel.add(jButton);
-            jButton.addActionListener(this);
-            jButton.setBackground(JTextPaneColorizer.colors.get("background"));
-            jButton.setBorder(null);
-            if (jButton.getText().equals("AC") || jButton.getText().equals("C")) {
-                jButton.setForeground(JTextPaneColorizer.colors.get("operator"));
+        for (CalculatorButton button : buttons) {
+            buttonPanel.add(button);
+            button.addActionListener(this);
+            button.setBackground(JTextPaneColorizer.colors.get("background"));
+            button.setBorder(null);
+            if (button.getText().equals("AC") || button.getText().equals("C")) {
+                button.setForeground(JTextPaneColorizer.colors.get("operator"));
             } else {
-                jButton.setForeground(JTextPaneColorizer.colors.get("foreground"));
+                button.setForeground(JTextPaneColorizer.colors.get("foreground"));
             }
         }
         buttonPanel.setLayout(new GridLayout(5, 4));
-        for (JButton jButton : functionButtons) {
-            functionButtonPanel.add(jButton);
-            jButton.addActionListener(this);
-            jButton.setBackground(JTextPaneColorizer.colors.get("background"));
-            jButton.setForeground(JTextPaneColorizer.colors.get("foreground"));
-            jButton.setBorder(null);
+        for (CalculatorButton button : functionButtons) {
+            functionButtonPanel.add(button);
+            button.addActionListener(this);
+            button.setBackground(JTextPaneColorizer.colors.get("background"));
+            button.setForeground(JTextPaneColorizer.colors.get("foreground"));
+            button.setBorder(null);
         }
         functionButtonPanel.setLayout(new GridLayout(5, 6));
-        for (JButton jButton : fuButtons) {
-            fuButtonPanel.add(jButton);
-            jButton.addActionListener(this);
-            jButton.setBackground(JTextPaneColorizer.colors.get("background"));
-            jButton.setBorder(null);
-            if (jButton.getText().equals("AC") || jButton.getText().equals("C")) {
-                jButton.setForeground(JTextPaneColorizer.colors.get("operator"));
+        for (CalculatorButton button : fuButtons) {
+            fuButtonPanel.add(button);
+            button.addActionListener(this);
+            button.setBackground(JTextPaneColorizer.colors.get("background"));
+            button.setBorder(null);
+            if (button.getText().equals("AC") || button.getText().equals("C")) {
+                button.setForeground(JTextPaneColorizer.colors.get("operator"));
             } else {
-                jButton.setForeground(JTextPaneColorizer.colors.get("foreground"));
+                button.setForeground(JTextPaneColorizer.colors.get("foreground"));
             }
         }
         fuButtonPanel.setLayout(new GridLayout(5, 4));
@@ -215,8 +272,8 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof JButton) {
-            JButton b = (JButton) e.getSource();
+        if (e.getSource() instanceof CalculatorButton) {
+            CalculatorButton b = (CalculatorButton) e.getSource();
             if (b.getText().equals("C")) {
                 inputTextPane.setText("0");
             } else if (b.getText().equals("AC")) {
@@ -224,31 +281,18 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 logTextPane.setText("");
             } else if (b.getText().equals("%")) {
                 inputTextPane.setText(inputTextPane.getText() + "% of ");
-            } else if (b.getText().equals("n²")) {
-                inputTextPane.setText(inputTextPane.getText() + "^2 ");
-            } else if (b.getText().equals("n³")) {
-                inputTextPane.setText(inputTextPane.getText() + "^3 ");
-            } else if (b.getText().equals("xⁿ")) {
-                inputTextPane.setText(inputTextPane.getText() + "^");
-            } else if (b.getText().equals("eⁿ")) {
-                inputTextPane.setText(inputTextPane.getText() + "e^");
-            } else if (b.getText().equals("10ⁿ")) {
-                inputTextPane.setText(inputTextPane.getText() + "10^");
-            } else if (b.getText().equals("1/x")) {
+            } else if (b.getMeaning().equals("reciprocal")) {
                 inputTextPane.setText("1/(" + inputTextPane.getText() + ")");
-            } else if (b.getText().equals("√x")) {
-                inputTextPane.setText(inputTextPane.getText() + "√");
-            } else if (b.getText().equals("³√x")) {
-                inputTextPane.setText(inputTextPane.getText() + "∛");
-            } else if (b.getText().equals("ⁿ√x")) {
-                inputTextPane.setText(inputTextPane.getText() + "sqrt ");
+            } else if (b.getMeaning().equals("radical-symbol")) {
+                inputTextPane.setText("pow(" + inputTextPane.getText() + ", 1/");
             } else if (b.getText().equals("x!")) {
                 inputTextPane.setText(inputTextPane.getText() + "!");
-            } else if (b.getText().equals("+/-")) {
+            } else if (b.getMeaning().equals("plus-and-minus")) {
                 inputTextPane.setText("-(" + inputTextPane.getText() + ")");
-            } else if (b.getText().equals("BS")) {
+            } else if (b.getMeaning().equals("clear-symbol")) {
                 if (inputTextPane.getText().length() > 0) {
-                    inputTextPane.setText(inputTextPane.getText().substring(0, inputTextPane.getText().length() - 1));
+                    inputTextPane.setText(
+                            inputTextPane.getText().substring(0, inputTextPane.getText().strip().length() - 1).strip());
                 }
             } else if (b.getText().matches("[A-Za-z].*")) {
                 inputTextPane.setText(inputTextPane.getText() + " " + b.getText() + " ");
@@ -305,7 +349,7 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     || b.getText().equals("÷")) {
                 inputTextPane.setText(inputTextPane.getText() + " " + b.getText() + " ");
             } else {
-                inputTextPane.setText(inputTextPane.getText() + b.getText());
+                inputTextPane.setText(inputTextPane.getText() + b.getMeaning());
             }
         }
         inputTextPaneColorizer.highlighted = false;
@@ -318,13 +362,50 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                 jButton.setFont(new Font("Arial", Font.BOLD,
                         (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
             }
+            for (JButton jButton : buttons) {
+                if (jButton.getIcon() != null) {
+                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton)jButton).getMeaning() + ".png");
+                    double width = jButton.getWidth();
+                    double height = jButton.getHeight();
+                    double imagemax = Math.max(icon.getIconWidth(), icon.getIconHeight()) * 1.2;
+                    double ratio = Math.max(icon.getIconWidth()* 1.2/width, icon.getIconHeight()* 1.2/height);
+                    width = icon.getIconWidth() / ratio;
+                    height = icon.getIconHeight() / ratio;
+                    jButton.setIcon(new ImageIcon(icon.getImage().
+                            getScaledInstance((int) width, (int) height, Image.SCALE_DEFAULT)));
+                }
+            }
             for (JButton jButton : functionButtons) {
                 jButton.setFont(new Font("Arial", Font.BOLD,
                         (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
             }
+            for (JButton jButton : functionButtons) {
+                if (jButton.getIcon() != null) {
+                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton)jButton).getMeaning() + ".png");
+                    double width = jButton.getWidth();
+                    double height = jButton.getHeight();
+                    double ratio = Math.max(icon.getIconWidth()* 1.2/width, icon.getIconHeight()* 1.2/height);
+                    width = icon.getIconWidth() / ratio;
+                    height = icon.getIconHeight() / ratio;
+                    jButton.setIcon(new ImageIcon(icon.getImage().
+                            getScaledInstance((int) width, (int) height, Image.SCALE_DEFAULT)));
+                }
+            }
             for (JButton jButton : fuButtons) {
                 jButton.setFont(new Font("Arial", Font.BOLD,
                         (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
+            }
+            for (JButton jButton : fuButtons) {
+                if (jButton.getIcon() != null) {
+                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton)jButton).getMeaning() + ".png");
+                    double width = jButton.getWidth();
+                    double height = jButton.getHeight();
+                    double ratio = Math.max(icon.getIconWidth()* 1.2/width, icon.getIconHeight()* 1.2/height);
+                    width = icon.getIconWidth() / ratio;
+                    height = icon.getIconHeight() / ratio;
+                    jButton.setIcon(new ImageIcon(icon.getImage().
+                            getScaledInstance((int) width, (int) height, Image.SCALE_DEFAULT)));
+                }
             }
         }
     }
@@ -342,7 +423,9 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
     }
 
     @Override
-    public void insertUpdate(DocumentEvent e) { inputTextPaneColorizer.colorizeCode(); }
+    public void insertUpdate(DocumentEvent e) {
+        inputTextPaneColorizer.colorizeCode();
+    }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
