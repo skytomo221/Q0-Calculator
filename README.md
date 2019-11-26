@@ -8,12 +8,6 @@
 ## 計算例
 
 ```jl
-Input  => 1 + 1
-Output => 2
-
-Input  => 1 + 1 + 1
-Output => 3
-
 Input  => 1 + 2 * 3
 Output => 7
 
@@ -26,8 +20,8 @@ Output => 0.3333333333333333
 Input  => 0.3333333333333333 × 3
 Output => 1.0
 
-Input  => -2 ^ 10
-Output => -1024
+Input  => -2 ^ 100
+Output => -1267650600228229401496703205376
 
 Input  => 0xff + 0o77 + 0b11
 Output => 321
@@ -50,29 +44,43 @@ Output => "abcdef"
 Input  => "abc" ^ 5
 Output => "abcabcabcabcabc"
 
+Input  => z = begin
+            x = 1
+            y = 2
+            x + y
+          end
+Output => 3
+
+Input  => x = e^π
+          y = π^e
+          if x < y
+              "x is less than y"
+          elseif x > y
+              "x is greater than y"
+          else
+              "x is equal to y"
+          end
+Output => "x is greater than y"
+
 Input  => i = 1
           sum = 0
           while 1 <= i <= 10
             sum = sum + i
             i = i + 1
-            sum
           end
+          sum
 Output => 55
 ```
 
 ## 型
 
-|   型名    |         説明         |
-| :-------: | :------------------: |
-|  `Bool`   |        真理値        |
-|  `Char`   |        真理値        |
-|  `Int8`   |    8ビット整数型     |
-|  `Int16`  |    16ビット整数型    |
-|  `Int32`  |    32ビット整数型    |
-|  `Int64`  |    64ビット整数型    |
-| `Float32` | 単精度浮動小数点数型 |
-| `Float64` | 倍精度浮動小数点数型 |
-| `String`  |       文字列型       |
+|   型名   |      説明      |
+| :------: | :------------: |
+|  `Bool`  |     真理値     |
+|  `Char`  |     真理値     |
+|  `Int`   |     整数型     |
+| `Float`  | 浮動小数点数型 |
+| `String` |    文字列型    |
 
 ## リテラル
 
@@ -91,8 +99,8 @@ Output => 55
 | :------: | :------------------------------------: |
 |    9     |                  `()`                  |
 |    8     |                  `^`                   |
-|    7     |            `*` `/` `&` `%`             |
-|    6     |      `+` `-` <code>&#124;</code>       |
+|    7     |         `*` `/` `&` `%` `% of`         |
+|    6     |    `+` `-` <code>&#124;</code> `$`     |
 |    5     |      `==` `!=` `<=` `<` `>` `>=`       |
 |    4     |                  `&&`                  |
 |    3     |       <code>&#124;&#124;</code>        |
@@ -134,10 +142,40 @@ Output => 55
 
 ### 論理演算子
 
-|    式    |    名称    |                               説明                                |
-| :------: | :--------: | :---------------------------------------------------------------: |
-| `x && y` | AND 演算子 | AND 演算子は、左右のオペランドがどちらも真ならば、真を返します。  |
+|              式               |    名称    |                               説明                                |
+| :---------------------------: | :--------: | :---------------------------------------------------------------: |
+|           `x && y`            | AND 演算子 | AND 演算子は、左右のオペランドがどちらも真ならば、真を返します。  |
 | <code>x &#124;&#124; y</code> | OR 演算子  | OR 演算子は、左右のオペランドがどちらかが真ならば、真を返します。 |
+
+### 関数
+
+|     式     |                                                          説明                                                          |
+| :--------: | :--------------------------------------------------------------------------------------------------------------------: |
+|   `abs`    |                                                   絶対値を返します。                                                   |
+|   `asin`   |               指定された値の逆余弦(アーク・コサイン)を返します。返される角度の範囲は、 0.0 から π です。               |
+|   `atan`   |              指定された値の逆正弦(アーク・サイン)を返します。返される角度の範囲は、 -π/2 から π/2 です。               |
+|   `cbrt`   |                                                   立方根を返します。                                                   |
+|   `ceil`   |              引数の値以上で、計算上の整数と等しい、最小の(負の無限大にもっとも近い) Float 値を返します。               |
+|   `cos`    |                                       指定された角度の余弦(コサイン)を返します。                                       |
+|   `cosh`   |                                            Float 値の双曲線余弦を返します。                                            |
+|   `exp`    |                                    オイラー数 e を Float 値で累乗した値を返します。                                    |
+|  `expm1`   |                                                   e^x -1を返します。                                                   |
+|  `floor`   |              引数の値以下で、計算上の整数と等しい、最大の(正の無限大にもっとも近い) Float 値を返します。               |
+|   `log`    |                                    指定された Float 値の自然対数(底はe)を返します。                                    |
+|  `log10`   |                                         Float 値の10を底とする対数を返します。                                         |
+| `nextDown` |                                          引数と1の合計の自然対数を返します。                                           |
+|  `nextUp`  |                                  負の無限大方向でxに隣接する浮動小数点値を返します。                                   |
+|   `rint`   |                                  正の無限大方向でxに隣接する浮動小数点値を返します。                                   |
+|  `round`   |                       引数にもっとも近い Int を返します。同数の場合は正の無限大方向に丸めます。                        |
+|  `signum`  | 引数の符号要素を返します。引数がゼロの場合はゼロ、引数がゼロより大きい場合は1.0、引数がゼロより小さい場合は -1.0です。 |
+|   `sin`    |                                        指定された角度の正弦(サイン)を返します。                                        |
+|   `sinh`   |                                            Float 値の双曲線正弦を返します。                                            |
+|   `sqrt`   |                                      Float 値の正しく丸めた正の平方根を返します。                                      |
+|   `tan`    |                                     指定された角度の正接(タンジェント)を返します。                                     |
+|   `tanh`   |                                            Float 値の双曲線正接を返します。                                            |
+| `degrees`  |                                   ラジアンで計測した角度を、相当する度に変換します。                                   |
+| `radians`  |                                   度で計測した角度を、相当するラジアンに変換します。                                   |
+|   `ulp`    |                                             引数のulpのサイズを返します。                                              |
 
 ### 制御構文演算子
 
@@ -182,7 +220,7 @@ end
 `false` のときは else-ブロックが実行されます。
 実行されたブロックの最後の式の値が戻り値になります。
 
-#### if-ifelse-else 句
+#### if-elseif-else 句
 
 ```jl
 if "条件式"
@@ -213,8 +251,8 @@ end
 `if-elseif-else` 句の使用例を下に示します。
 
 ```jl
-Input  => x = 0.1 + 0.2
-          y = 0.3
+Input  => x = e^π
+          y = π^e
           if x < y
               "x is less than y"
           elseif x > y
@@ -237,162 +275,144 @@ Input  => i = 1
           while 1 <= i <= 10
             sum = sum + i
             i = i + 1
-            sum
           end
+          sum
 Output => 55
 ```
 
 上に示した計算式は `while` 演算子を使って、 1 から 10 までの和を求める式です。
-これらの三つの計算式は以下のように計算されます。
+これらの 4 つの計算式は以下のように計算されます。
 
 ```jl
 $1 = (i = 1)
    = 1
 $2 = (sum = 0)
    = 0
-$3 = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while ((1 <= 1) <= 10); ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while (1 <= 10); ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (0 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (0 + 1)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 1); (i = (i + 1)); sum) end)
-   = (while true; (1; (i = (i + 1)); sum) end)
-   = (while true; (1; (i = (1 + 1)); sum) end)
-   = (while true; (1; (i = 2); sum) end)
-   = (while true; (1; 2; sum) end)
-   = (while true; (12; 1) end)
-   = (while true; 1 end)
-   = (while ((1 <= i) <= 10); 1 end)
-   = (while ((1 <= i) <= 10); 1 end)
-   = (while ((1 <= i) <= 10); 1 end)
-   = (while true; 1 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (1 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (1 + 2)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 3); (i = (i + 1)); sum) end)
-   = (while true; (3; (i = (i + 1)); sum) end)
-   = (while true; (3; (i = (2 + 1)); sum) end)
-   = (while true; (3; (i = 3); sum) end)
-   = (while true; (3; 3; sum) end)
-   = (while true; (33; 3) end)
+$3 = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 1) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (1 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (0 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (0 + 1)); (i = (i + 1))) end)
+   = (while true; ((sum = 1); (i = (i + 1))) end)
+   = (while true; (1; (i = (i + 1))) end)
+   = (while true; (1; (i = (1 + 1))) end)
+   = (while true; (1; (i = 2)) end)
+   = (while true; (1; 2) end)
+   = (while true; 2 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 2) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (2 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (1 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (1 + 2)); (i = (i + 1))) end)
+   = (while true; ((sum = 3); (i = (i + 1))) end)
+   = (while true; (3; (i = (i + 1))) end)
+   = (while true; (3; (i = (2 + 1))) end)
+   = (while true; (3; (i = 3)) end)
+   = (while true; (3; 3) end)
    = (while true; 3 end)
-   = (while ((1 <= i) <= 10); 3 end)
-   = (while ((1 <= i) <= 10); 3 end)
-   = (while ((1 <= i) <= 10); 3 end)
-   = (while true; 3 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (3 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (3 + 3)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 6); (i = (i + 1)); sum) end)
-   = (while true; (6; (i = (i + 1)); sum) end)
-   = (while true; (6; (i = (3 + 1)); sum) end)
-   = (while true; (6; (i = 4); sum) end)
-   = (while true; (6; 4; sum) end)
-   = (while true; (64; 6) end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 3) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (3 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (3 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (3 + 3)); (i = (i + 1))) end)
+   = (while true; ((sum = 6); (i = (i + 1))) end)
+   = (while true; (6; (i = (i + 1))) end)
+   = (while true; (6; (i = (3 + 1))) end)
+   = (while true; (6; (i = 4)) end)
+   = (while true; (6; 4) end)
+   = (while true; 4 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 4) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (4 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (6 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (6 + 4)); (i = (i + 1))) end)
+   = (while true; ((sum = 10); (i = (i + 1))) end)
+   = (while true; (10; (i = (i + 1))) end)
+   = (while true; (10; (i = (4 + 1))) end)
+   = (while true; (10; (i = 5)) end)
+   = (while true; (10; 5) end)
+   = (while true; 5 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 5) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (5 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (10 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (10 + 5)); (i = (i + 1))) end)
+   = (while true; ((sum = 15); (i = (i + 1))) end)
+   = (while true; (15; (i = (i + 1))) end)
+   = (while true; (15; (i = (5 + 1))) end)
+   = (while true; (15; (i = 6)) end)
+   = (while true; (15; 6) end)
    = (while true; 6 end)
-   = (while ((1 <= i) <= 10); 6 end)
-   = (while ((1 <= i) <= 10); 6 end)
-   = (while ((1 <= i) <= 10); 6 end)
-   = (while true; 6 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (6 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (6 + 4)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 10); (i = (i + 1)); sum) end)
-   = (while true; (10; (i = (i + 1)); sum) end)
-   = (while true; (10; (i = (4 + 1)); sum) end)
-   = (while true; (10; (i = 5); sum) end)
-   = (while true; (10; 5; sum) end)
-   = (while true; (105; 10) end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 6) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (6 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (15 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (15 + 6)); (i = (i + 1))) end)
+   = (while true; ((sum = 21); (i = (i + 1))) end)
+   = (while true; (21; (i = (i + 1))) end)
+   = (while true; (21; (i = (6 + 1))) end)
+   = (while true; (21; (i = 7)) end)
+   = (while true; (21; 7) end)
+   = (while true; 7 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 7) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (7 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (21 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (21 + 7)); (i = (i + 1))) end)
+   = (while true; ((sum = 28); (i = (i + 1))) end)
+   = (while true; (28; (i = (i + 1))) end)
+   = (while true; (28; (i = (7 + 1))) end)
+   = (while true; (28; (i = 8)) end)
+   = (while true; (28; 8) end)
+   = (while true; 8 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 8) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (8 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (28 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (28 + 8)); (i = (i + 1))) end)
+   = (while true; ((sum = 36); (i = (i + 1))) end)
+   = (while true; (36; (i = (i + 1))) end)
+   = (while true; (36; (i = (8 + 1))) end)
+   = (while true; (36; (i = 9)) end)
+   = (while true; (36; 9) end)
+   = (while true; 9 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 9) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (9 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (36 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (36 + 9)); (i = (i + 1))) end)
+   = (while true; ((sum = 45); (i = (i + 1))) end)
+   = (while true; (45; (i = (i + 1))) end)
+   = (while true; (45; (i = (9 + 1))) end)
+   = (while true; (45; (i = 10)) end)
+   = (while true; (45; 10) end)
    = (while true; 10 end)
-   = (while ((1 <= i) <= 10); 10 end)
-   = (while ((1 <= i) <= 10); 10 end)
-   = (while ((1 <= i) <= 10); 10 end)
-   = (while true; 10 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (10 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (10 + 5)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 15); (i = (i + 1)); sum) end)
-   = (while true; (15; (i = (i + 1)); sum) end)
-   = (while true; (15; (i = (5 + 1)); sum) end)
-   = (while true; (15; (i = 6); sum) end)
-   = (while true; (15; 6; sum) end)
-   = (while true; (156; 15) end)
-   = (while true; 15 end)
-   = (while ((1 <= i) <= 10); 15 end)
-   = (while ((1 <= i) <= 10); 15 end)
-   = (while ((1 <= i) <= 10); 15 end)
-   = (while true; 15 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (15 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (15 + 6)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 21); (i = (i + 1)); sum) end)
-   = (while true; (21; (i = (i + 1)); sum) end)
-   = (while true; (21; (i = (6 + 1)); sum) end)
-   = (while true; (21; (i = 7); sum) end)
-   = (while true; (21; 7; sum) end)
-   = (while true; (217; 21) end)
-   = (while true; 21 end)
-   = (while ((1 <= i) <= 10); 21 end)
-   = (while ((1 <= i) <= 10); 21 end)
-   = (while ((1 <= i) <= 10); 21 end)
-   = (while true; 21 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (21 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (21 + 7)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 28); (i = (i + 1)); sum) end)
-   = (while true; (28; (i = (i + 1)); sum) end)
-   = (while true; (28; (i = (7 + 1)); sum) end)
-   = (while true; (28; (i = 8); sum) end)
-   = (while true; (28; 8; sum) end)
-   = (while true; (288; 28) end)
-   = (while true; 28 end)
-   = (while ((1 <= i) <= 10); 28 end)
-   = (while ((1 <= i) <= 10); 28 end)
-   = (while ((1 <= i) <= 10); 28 end)
-   = (while true; 28 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (28 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (28 + 8)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 36); (i = (i + 1)); sum) end)
-   = (while true; (36; (i = (i + 1)); sum) end)
-   = (while true; (36; (i = (8 + 1)); sum) end)
-   = (while true; (36; (i = 9); sum) end)
-   = (while true; (36; 9; sum) end)
-   = (while true; (369; 36) end)
-   = (while true; 36 end)
-   = (while ((1 <= i) <= 10); 36 end)
-   = (while ((1 <= i) <= 10); 36 end)
-   = (while ((1 <= i) <= 10); 36 end)
-   = (while true; 36 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (36 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (36 + 9)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 45); (i = (i + 1)); sum) end)
-   = (while true; (45; (i = (i + 1)); sum) end)
-   = (while true; (45; (i = (9 + 1)); sum) end)
-   = (while true; (45; (i = 10); sum) end)
-   = (while true; (45; 10; sum) end)
-   = (while true; (4510; 45) end)
-   = (while true; 45 end)
-   = (while ((1 <= i) <= 10); 45 end)
-   = (while ((1 <= i) <= 10); 45 end)
-   = (while ((1 <= i) <= 10); 45 end)
-   = (while true; 45 end)
-   = (while true; ((sum = (sum + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (45 + i)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = (45 + 10)); (i = (i + 1)); sum) end)
-   = (while true; ((sum = 55); (i = (i + 1)); sum) end)
-   = (while true; (55; (i = (i + 1)); sum) end)
-   = (while true; (55; (i = (10 + 1)); sum) end)
-   = (while true; (55; (i = 11); sum) end)
-   = (while true; (55; 11; sum) end)
-   = (while true; (5511; 55) end)
-   = (while true; 55 end)
-   = (while ((1 <= i) <= 10); 55 end)
-   = (while ((1 <= i) <= 10); 55 end)
-   = (while ((1 <= i) <= 10); 55 end)
-   = (while false; 55 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 10) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (10 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (45 + i)); (i = (i + 1))) end)
+   = (while true; ((sum = (45 + 10)); (i = (i + 1))) end)
+   = (while true; ((sum = 55); (i = (i + 1))) end)
+   = (while true; (55; (i = (i + 1))) end)
+   = (while true; (55; (i = (10 + 1))) end)
+   = (while true; (55; (i = 11)) end)
+   = (while true; (55; 11) end)
+   = (while true; 11 end)
+   = (while ((1 <= i) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while ((1 <= 11) <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while (11 <= 10); ((sum = (sum + i)); (i = (i + 1))) end)
+   = (while false; ((sum = (sum + i)); (i = (i + 1))) end)
+   = 11
+$4 = sum
    = 55
 ```

@@ -166,7 +166,11 @@ public class JTextPaneColorizer {
                     insertColorText("\"", colors.get("punctuation"));
                     break;
                 case ID:
-                    insertColorText(token.name, colors.get("foreground"));
+                    if (Calculator.definedFunctions.contains(token.name)) {
+                        insertColorText(token.name, colors.get("function"));
+                    } else {
+                        insertColorText(token.name, colors.get("foreground"));
+                    }
                     break;
                 case ASSAIGNMENT:
                 case EQ:
@@ -180,6 +184,7 @@ public class JTextPaneColorizer {
                 case NOT:
                 case POWER:
                 case BIT_AND:
+                case BIT_XOR:
                 case BIT_OR:
                 case BIT_NOT:
                 case PLUS:
@@ -187,6 +192,7 @@ public class JTextPaneColorizer {
                 case MULTIPLICATION:
                 case DIVISION:
                 case MOD:
+                case PARCENT:
                 case BAREMODULE:
                 case BEGIN:
                 case BREAK:

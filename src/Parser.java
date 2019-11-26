@@ -41,7 +41,28 @@ public class Parser {
                 || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
             return new Operand(next());
         } else if (peek().type == TokenType.ID) {
-            return new Variable(next().name, "Variable", null);
+            Variable variable = new Variable(next().name, "Variable", null);
+            if (peek().type == TokenType.LPAR) {
+                next();
+                ArrayList<Expression> arguments = new ArrayList<Expression>();
+                while (true) {
+                    arguments.add(parseExpression());
+                    if (peek().type == TokenType.COMMA) {
+                        next();
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (peek().type == TokenType.RPAR) {
+                    next();
+                    return new Function(variable.name, arguments, null);
+                } else {
+                    throw new Exception();
+                }
+            } else {
+                return variable;
+            }
         } else if (peek().type == TokenType.LPAR) {
             next();
             Expression expression = parseBlock();
@@ -81,7 +102,8 @@ public class Parser {
     protected Expression parseTimes() throws Exception {
         Expression left = parseSign();
         while (peek().type == TokenType.MULTIPLICATION || peek().type == TokenType.DIVISION
-                || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD) {
+                || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD
+                || peek().type == TokenType.PARCENT) {
             Token operator = next();
             skipNewLine();
             Expression right = parseSign();
@@ -94,11 +116,12 @@ public class Parser {
 
     protected Expression parsePlus() throws Exception {
         Expression left = parseTimes();
-        while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR) {
+        while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR
+                || peek().type == TokenType.BIT_XOR) {
             Token operator = next();
             skipNewLine();
             Expression right = parseTimes();
-            Expression parent = new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            Expression parent = new Operator(operator.type.toString(), new ArrayList<Expression>(Arrays.asList(left, right)));
             left = parent;
         }
         return left;
@@ -111,7 +134,7 @@ public class Parser {
             Token operator = next();
             skipNewLine();
             Expression right = parsePlus();
-            Expression parent = new Operator(operator.name, new ArrayList<Expression>(Arrays.asList(left, right)));
+            Expression parent = new Operator(operator.type.toString(), new ArrayList<Expression>(Arrays.asList(left, right)));
             left = parent;
         }
         return left;

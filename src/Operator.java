@@ -99,7 +99,7 @@ public class Operator extends Expression {
             s.append(arguments.get(1).toString());
             s.append(" end)");
             return s.toString();
-        } else if (name.matches("[\\^*/&%+\\-|]|==|!=|<=|<|>|>=|&&|\\|\\||=") && arguments.size() == 2) {
+        } else if (name.matches("[\\^*/&$%+\\-|]|==|!=|<=|<|>|>=|&&|\\|\\||=") && arguments.size() == 2) {
             StringBuilder s = new StringBuilder("(");
             s.append(arguments.get(0).toString());
             s.append(" " + name + " ");

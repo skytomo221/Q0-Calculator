@@ -1,15 +1,45 @@
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 public class Calculator {
     public Map<String, Variable> variables;
     public Operand answer;
     List<Expression> expressions;
     List<EnumeratedType> enumeratedTypes;
+    public static List<String> definedFunctions = new ArrayList<String>(Arrays.asList(
+            "acos",
+            "asin",
+            "atan",
+            "cbrt",
+            "ceil",
+            "cos",
+            "cosh",
+            "exp",
+            "expm1",
+            "floor",
+            "log",
+            "log10",
+            "nextDown",
+            "nextUp",
+            "rint",
+            "round",
+            "signum",
+            "sin",
+            "sinh",
+            "sqrt",
+            "tan",
+            "tanh",
+            "degrees",
+            "radians",
+            "ulp"
+    ));
+
     protected long logNumber = 0;
     /**
      * 解析中の式を選択します。
@@ -178,141 +208,166 @@ public class Calculator {
     }
 
     protected Operand calculateMultiplication(Operator operator) throws Exception {
-        Operand answer = new Operand("Int", 1L);
-        for (int i = 0; i < operator.arguments.size(); i++) {
-            Expression expression = operator.arguments.get(i);
-            Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression.getClass() == Operand.class)) {
-                operator.arguments.set(i, operand);
-                pushLog();
-            }
-            if (answer.getType().equals("Int") && operand.getType().equals("Int")) {
-                answer = new Operand("Int", (long) answer.getValue() * (long) operand.getValue());
-            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
-                answer = promoteToBigDecimal(answer);
-                operand = promoteToBigDecimal(operand);
-                answer = new Operand("BigDecimal",
-                        ((BigDecimal) answer.getValue()).multiply((BigDecimal) operand.getValue()));
-            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
-                answer = promoteToFloat(answer);
-                operand = promoteToFloat(operand);
-                answer = new Operand("Float", (double) answer.getValue() * (double) operand.getValue());
-            } else {
-                throw new Exception(answer.getType() + " 型 * " + operand.getType() + " 型は未定義です。\n");
-            }
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
         }
-        return answer;
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().equals("Int") && right.getType().equals("Int")) {
+            left = new Operand("Int", (long) left.getValue() * (long) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).multiply((BigDecimal) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", (double) left.getValue() * (double) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 * " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
     }
 
     protected Operand calculateDivision(Operator operator) throws Exception {
-        Operand answer = new Operand("Float", 1.0);
-        for (int i = 0; i < operator.arguments.size(); i++) {
-            Expression expression = operator.arguments.get(i);
-            Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression.getClass() == Operand.class)) {
-                operator.arguments.set(i, operand);
-                pushLog();
-            }
-            if (answer.getType().matches("Int|Float") || operand.getType().matches("Int|Float")) {
-                answer = promoteToFloat(answer);
-                operand = promoteToFloat(operand);
-                answer = new Operand("Float", (double) answer.getValue() / (double) operand.getValue());
-            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
-                answer = promoteToBigDecimal(answer);
-                operand = promoteToBigDecimal(operand);
-                answer = new Operand("BigDecimal",
-                        ((BigDecimal) answer.getValue()).divide((BigDecimal) operand.getValue()));
-            } else {
-                throw new Exception(answer.getType() + " 型 / " + operand.getType() + " 型は未定義です。\n");
-            }
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
         }
-        return answer;
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Int|Float") || right.getType().matches("Int|Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", (double) left.getValue() / (double) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).divide((BigDecimal) right.getValue()));
+        } else {
+            throw new Exception(left.getType() + " 型 / " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
     }
 
     protected Operand calculateBitAnd(Operator operator) throws Exception {
-        Operand answer = null;
-        Operand operand = (Operand) calculateExpression(operator.arguments.get(0));
-        if (operand.getType().matches("Bool")) {
-            answer = new Operand("Bool", true);
-        } else if (operand.getType().matches("Int")) {
-            answer = new Operand("Int", -1L);
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Bool") && right.getType().matches("Bool")) {
+            left = new Operand("Bool", (boolean) left.getValue() & (boolean) right.getValue());
+        } else if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Int", (long) left.getValue() & (long) right.getValue());
         } else {
-            throw new Exception(operand.getType() + " 型 & 任意型は未定義です。\n");
+            throw new Exception(left.getType() + " 型 & " + right.getType() + " 型は未定義です。\n");
         }
-        for (int i = 0; i < operator.arguments.size(); i++) {
-            Expression expression = operator.arguments.get(i);
-            operand = (Operand) calculateExpression(expression);
-            if (!(expression.getClass() == Operand.class)) {
-                operator.arguments.set(i, operand);
-                pushLog();
-            }
-            if (answer.getType().matches("Bool") && operand.getType().matches("Bool")) {
-                answer = new Operand("Bool", (boolean) answer.getValue() & (boolean) operand.getValue());
-            } else if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
-                answer = new Operand("Int", (long) answer.getValue() & (long) operand.getValue());
-            } else {
-                throw new Exception(answer.getType() + " 型 & " + operand.getType() + " 型は未定義です。\n");
-            }
-        }
-        return answer;
+        return left;
     }
 
     protected Operand calculateRemainder(Operator operator) throws Exception {
-        Operand answer = new Operand("Int", 1L);
-        for (int i = 0; i < operator.arguments.size(); i++) {
-            Expression expression = operator.arguments.get(i);
-            Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression.getClass() == Operand.class)) {
-                operator.arguments.set(i, operand);
-                pushLog();
-            }
-            if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
-                answer = new Operand("Int", (long) answer.getValue() % (long) operand.getValue());
-            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
-                answer = promoteToBigDecimal(answer);
-                operand = promoteToBigDecimal(operand);
-                answer = new Operand("BigDecimal",
-                        ((BigDecimal) answer.getValue()).remainder((BigDecimal) operand.getValue()));
-            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
-                answer = promoteToFloat(answer);
-                operand = promoteToFloat(operand);
-                answer = new Operand("Float", (double) answer.getValue() % (double) operand.getValue());
-            } else {
-                throw new Exception(answer.getType() + " 型 % " + operand.getType() + " 型は未定義です。\n");
-            }
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
         }
-        return answer;
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Int", (long) left.getValue() % (long) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).remainder((BigDecimal) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", (double) left.getValue() % (double) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 % " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
+    }
+
+    protected Operand calculateParcent(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Float", (double) (long) left.getValue() * 0.01 * (double) (long) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).multiply(new BigDecimal(0.01)).multiply((BigDecimal) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", (double) left.getValue() * 0.01 * (double) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 % " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
     }
 
     protected Operand calculateAddition(Operator operator) throws Exception {
-        Operand answer = new Operand("Int", 0L);
-        for (int i = 0; i < operator.arguments.size(); i++) {
-            Expression expression = operator.arguments.get(i);
-            Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression.getClass() == Operand.class)) {
-                operator.arguments.set(i, operand);
-                pushLog();
-            }
-            if (answer.getType().equals("Char") && operand.getType().equals("Int")) {
-                answer = new Operand("Char", (char) ((char) answer.getValue()) + (long) operand.getValue());
-            } else if (answer.getType().equals("Int") && operand.getType().equals("Char")) {
-                answer = new Operand("Char", (char) ((long) answer.getValue()) + (char) operand.getValue());
-            } else if (answer.getType().equals("Int") && operand.getType().equals("Int")) {
-                answer = new Operand("Int", (long) answer.getValue() + (long) operand.getValue());
-            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
-                answer = promoteToBigDecimal(answer);
-                operand = promoteToBigDecimal(operand);
-                answer = new Operand("BigDecimal",
-                        ((BigDecimal) answer.getValue()).add((BigDecimal) operand.getValue()));
-            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
-                answer = promoteToFloat(answer);
-                operand = promoteToFloat(operand);
-                answer = new Operand("Float", (double) answer.getValue() + (double) operand.getValue());
-            } else {
-                throw new Exception(answer.getType() + " 型 + " + operand.getType() + " 型は未定義です。\n");
-            }
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
         }
-        return answer;
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().equals("Char") && right.getType().equals("Int")) {
+            left = new Operand("Char", (char) ((char) left.getValue()) + (long) right.getValue());
+        } else if (left.getType().equals("Int") && right.getType().equals("Char")) {
+            left = new Operand("Char", (char) ((long) left.getValue()) + (char) right.getValue());
+        } else if (left.getType().equals("Int") && right.getType().equals("Int")) {
+            left = new Operand("Int", (long) left.getValue() + (long) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).add((BigDecimal) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", (double) left.getValue() + (double) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 + " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
     }
 
     protected Operand nagete(Operand operand) throws Exception {
@@ -329,66 +384,77 @@ public class Calculator {
     }
 
     protected Operand calculateSubtraction(Operator operator) throws Exception {
-        Operand answer = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
         if (!(operator.arguments.get(0).getClass() == Operand.class)) {
-            operator.arguments.set(0, answer);
+            operator.arguments.set(0, left);
             pushLog();
         }
-        for (int i = 1; i < operator.arguments.size(); i++) {
-            Expression expression = operator.arguments.get(i);
-            Operand operand = (Operand) calculateExpression(expression);
-            if (!(expression.getClass() == Operand.class)) {
-                operator.arguments.set(i, operand);
-                pushLog();
-            }
-            if (answer.getType().equals("Char") && operand.getType().equals("Int")) {
-                answer = new Operand("Char", (char) ((char) answer.getValue()) - (long) operand.getValue());
-            } else if (answer.getType().equals("Int") && operand.getType().equals("Char")) {
-                answer = new Operand("Char", (char) ((long) answer.getValue()) - (char) operand.getValue());
-            } else if (answer.getType().equals("Int") && operand.getType().equals("Int")) {
-                answer = new Operand("Int", (long) answer.getValue() - (long) operand.getValue());
-            } else if (answer.getType().equals("BigDecimal") || operand.getType().equals("BigDecimal")) {
-                answer = promoteToBigDecimal(answer);
-                operand = promoteToBigDecimal(operand);
-                answer = new Operand("BigDecimal",
-                        ((BigDecimal) answer.getValue()).subtract((BigDecimal) operand.getValue()));
-            } else if (answer.getType().equals("Float") || operand.getType().equals("Float")) {
-                answer = promoteToFloat(answer);
-                operand = promoteToFloat(operand);
-                answer = new Operand("Float", (double) answer.getValue() - (double) operand.getValue());
-            } else {
-                throw new Exception(answer.getType() + " 型 - " + operand.getType() + " 型は未定義です。\n");
-            }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
         }
-        return answer;
+        if (left.getType().equals("Char") && right.getType().equals("Int")) {
+            left = new Operand("Char", (char) ((char) left.getValue()) - (long) right.getValue());
+        } else if (left.getType().equals("Int") && right.getType().equals("Char")) {
+            left = new Operand("Char", (char) ((long) left.getValue()) - (char) right.getValue());
+        } else if (left.getType().equals("Int") && right.getType().equals("Int")) {
+            left = new Operand("Int", (long) left.getValue() - (long) right.getValue());
+        } else if (left.getType().equals("BigDecimal") || right.getType().equals("BigDecimal")) {
+            left = promoteToBigDecimal(left);
+            right = promoteToBigDecimal(right);
+            left = new Operand("BigDecimal",
+                    ((BigDecimal) left.getValue()).subtract((BigDecimal) right.getValue()));
+        } else if (left.getType().equals("Float") || right.getType().equals("Float")) {
+            left = promoteToFloat(left);
+            right = promoteToFloat(right);
+            left = new Operand("Float", (double) left.getValue() - (double) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 - " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
     }
 
     protected Operand calculateBitOr(Operator operator) throws Exception {
-        Operand answer = null;
-        Operand operand = (Operand) calculateExpression(operator.arguments.get(0));
-        if (operand.getType().matches("Bool")) {
-            answer = new Operand("Bool", false);
-        } else if (operand.getType().matches("Int")) {
-            answer = new Operand("Int", 0L);
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
+        }
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Bool") && right.getType().matches("Bool")) {
+            left = new Operand("Bool", (boolean) left.getValue() | (boolean) right.getValue());
+        } else if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Int", (long) left.getValue() | (long) right.getValue());
         } else {
-            throw new Exception(operand.getType() + " 型 & 任意型は未定義です。\n");
+            throw new Exception(left.getType() + " 型 | " + right.getType() + " 型は未定義です。\n");
         }
-        for (int i = 0; i < operator.arguments.size(); i++) {
-            Expression expression = operator.arguments.get(i);
-            operand = (Operand) calculateExpression(expression);
-            if (!(expression.getClass() == Operand.class)) {
-                operator.arguments.set(i, operand);
-                pushLog();
-            }
-            if (answer.getType().matches("Bool") && operand.getType().matches("Bool")) {
-                answer = new Operand("Bool", (boolean) answer.getValue() | (boolean) operand.getValue());
-            } else if (answer.getType().matches("Int") && operand.getType().matches("Int")) {
-                answer = new Operand("Int", (long) answer.getValue() | (long) operand.getValue());
-            } else {
-                throw new Exception(answer.getType() + " 型 | " + operand.getType() + " 型は未定義です。\n");
-            }
+        return left;
+    }
+
+    protected Operand calculateBitXor(Operator operator) throws Exception {
+        Operand left = (Operand) calculateExpression(operator.arguments.get(0));
+        Operand right = (Operand) calculateExpression(operator.arguments.get(1));
+        if (!(operator.arguments.get(0).getClass() == Operand.class)) {
+            operator.arguments.set(0, left);
+            pushLog();
         }
-        return answer;
+        if (!(operator.arguments.get(1).getClass() == Operand.class)) {
+            operator.arguments.set(1, right);
+            pushLog();
+        }
+        if (left.getType().matches("Bool") && right.getType().matches("Bool")) {
+            left = new Operand("Bool", (boolean) left.getValue() ^ (boolean) right.getValue());
+        } else if (left.getType().matches("Int") && right.getType().matches("Int")) {
+            left = new Operand("Int", (long) left.getValue() ^ (long) right.getValue());
+        } else {
+            throw new Exception(left.getType() + " 型 $ " + right.getType() + " 型は未定義です。\n");
+        }
+        return left;
     }
 
     protected Operand calculateComparison(Operator operator) throws Exception {
@@ -605,18 +671,22 @@ public class Calculator {
             Operand block = new Operand("Bool", false);
             Expression cache = operator.arguments.get(1).copy();
             operator.arguments.set(0, isContinue);
+            operator.arguments.set(1, cache.copy());
             pushLog();
             while ((boolean) isContinue.value) {
-                operator.arguments.set(1, cache.copy());
-                pushLog();
                 block = (Operand) calculateExpression(operator.arguments.get(1));
-                operator.arguments.set(1, block);
-                pushLog();
+                if (!(cache.getClass() == Operand.class)) {
+                    operator.arguments.set(1, block);
+                    pushLog();
+                }
+                operator.arguments.set(1, cache.copy());
                 operator.arguments.set(0, conditional.copy());
                 pushLog();
-                isContinue = (Operand) calculateExpression(conditional.copy());
-                operator.arguments.set(0, isContinue);
-                pushLog();
+                isContinue = (Operand) calculateExpression(operator.arguments.get(0));
+                if (!(conditional.getClass() == Operand.class)) {
+                    operator.arguments.set(0, isContinue);
+                    pushLog();
+                }
                 if (!(isContinue.value instanceof Boolean)) {
                     throw new Exception("条件文は Bool 型である必要があります。");
                 }
@@ -627,7 +697,84 @@ public class Calculator {
         }
     }
 
+    protected Operand calculateFunction(Function function) throws Exception {
+        if (function.arguments.size() == 1) {
+            Operand operand = (Operand) calculateExpression(function.arguments.get(0));
+            BiFunction<java.util.function.Function<Double, Double>, Operand, Operand> biFunction = (f, x) -> {
+                x = promoteToFloat(x);
+                if (!(function.arguments.get(0).getClass() == Operand.class)) {
+                    function.arguments.set(0, x);
+                    pushLog();
+                }
+                return new Operand("Float", f.apply((double) x.getValue()));
+            };
+            if (function.getName().equals("acos")) {
+                return biFunction.apply(Math::acos, operand);
+            } else if (function.getName().equals("asin")) {
+                return biFunction.apply(Math::asin, operand);
+            } else if (function.getName().equals("atan")) {
+                return biFunction.apply(Math::atan, operand);
+            } else if (function.getName().equals("cbrt")) {
+                return biFunction.apply(Math::cbrt, operand);
+            } else if (function.getName().equals("ceil")) {
+                return biFunction.apply(Math::ceil, operand);
+            } else if (function.getName().equals("cos")) {
+                return biFunction.apply(Math::cos, operand);
+            } else if (function.getName().equals("cosh")) {
+                return biFunction.apply(Math::cosh, operand);
+            } else if (function.getName().equals("exp")) {
+                return biFunction.apply(Math::exp, operand);
+            } else if (function.getName().equals("expm1")) {
+                return biFunction.apply(Math::expm1, operand);
+            } else if (function.getName().equals("floor")) {
+                return biFunction.apply(Math::floor, operand);
+            } else if (function.getName().equals("log")) {
+                return biFunction.apply(Math::log, operand);
+            } else if (function.getName().equals("log10")) {
+                return biFunction.apply(Math::log10, operand);
+            } else if (function.getName().equals("nextDown")) {
+                return biFunction.apply(Math::nextDown, operand);
+            } else if (function.getName().equals("nextUp")) {
+                return biFunction.apply(Math::nextUp, operand);
+            } else if (function.getName().equals("rint")) {
+                return biFunction.apply(Math::rint, operand);
+            } else if (function.getName().equals("round")) {
+                operand = promoteToFloat(operand);
+                if (!(function.arguments.get(0).getClass() == Operand.class)) {
+                    function.arguments.set(0, operand);
+                    pushLog();
+                }
+                return new Operand("Float", Math.round((double) operand.getValue()));
+            } else if (function.getName().equals("signum")) {
+                return biFunction.apply(Math::signum, operand);
+            } else if (function.getName().equals("sin")) {
+                return biFunction.apply(Math::sin, operand);
+            } else if (function.getName().equals("sinh")) {
+                return biFunction.apply(Math::sinh, operand);
+            } else if (function.getName().equals("sqrt")) {
+                return biFunction.apply(Math::sqrt, operand);
+            } else if (function.getName().equals("tan")) {
+                return biFunction.apply(Math::tan, operand);
+            } else if (function.getName().equals("tanh")) {
+                return biFunction.apply(Math::tanh, operand);
+            } else if (function.getName().equals("degrees")) {
+                return biFunction.apply(Math::toDegrees, operand);
+            } else if (function.getName().equals("radians")) {
+                return biFunction.apply(Math::toRadians, operand);
+            } else if (function.getName().equals("ulp")) {
+                return biFunction.apply(Math::ulp, operand);
+            } else {
+                throw new Exception(function.getName() + "(x) は未定義の関数です。");
+            }
+        } else {
+            throw new Exception(function.getName() + " は未定義の関数です。");
+        }
+    }
+
     protected Expression calculateExpression(Expression expression) throws Exception {
+        if (System.currentTimeMillis() - calculateStartTime > 3000) {
+            throw new Exception("計算時間が制限時間3秒を超過したため、要求がタイムアウトしました。\n");
+        }
         if (expression instanceof Operand) {
             return getOperand(expression);
         } else if (expression instanceof Operator) {
@@ -650,6 +797,8 @@ public class Calculator {
                 return calculateBitAnd(operator);
             } else if (operator.getName().equals("%")) {
                 return calculateRemainder(operator);
+            } else if (operator.getName().equals("% of")) {
+                return calculateParcent(operator);
             } else if (operator.getName().equals("+")) {
                 return calculateAddition(operator);
             } else if (operator.getName().equals("-")) {
@@ -660,6 +809,8 @@ public class Calculator {
                 }
             } else if (operator.getName().equals("|")) {
                 return calculateBitOr(operator);
+            } else if (operator.getName().equals("$")) {
+                return calculateBitXor(operator);
             } else if (operator.getName().matches("==|!=|<=|<|>|>=")) {
                 return calculateComparison(operator);
             } else if (operator.getName().equals("&&")) {
@@ -676,6 +827,8 @@ public class Calculator {
                 return calculateIfElse(operator);
             } else if (operator.getName().equals("while ... ... end")) {
                 return calculateWhile(operator);
+            } else if (operator instanceof Function) {
+                return calculateFunction((Function) operator);
             } else {
                 throw new Exception("演算子 " + operator.getName() + " は未定義です。\n");
             }
@@ -684,7 +837,10 @@ public class Calculator {
         }
     }
 
+    long calculateStartTime;
+
     public Operand calculate(List<Expression> expressions) throws Exception {
+        calculateStartTime = System.currentTimeMillis();
         this.expressions = expressions;
         for (int i = 0; i < this.expressions.size(); i++) {
             Expression expression = this.expressions.get(i);
