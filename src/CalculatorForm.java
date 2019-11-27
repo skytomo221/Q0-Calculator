@@ -373,11 +373,11 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             }
             for (JButton jButton : buttons) {
                 if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton)jButton).getMeaning() + ".png");
+                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton) jButton).getMeaning() + ".png");
                     double width = jButton.getWidth();
                     double height = jButton.getHeight();
                     double imagemax = Math.max(icon.getIconWidth(), icon.getIconHeight()) * 1.2;
-                    double ratio = Math.max(icon.getIconWidth()* 1.2/width, icon.getIconHeight()* 1.2/height);
+                    double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);
                     width = icon.getIconWidth() / ratio;
                     height = icon.getIconHeight() / ratio;
                     jButton.setIcon(new ImageIcon(icon.getImage().
@@ -390,10 +390,10 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             }
             for (JButton jButton : functionButtons) {
                 if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton)jButton).getMeaning() + ".png");
+                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton) jButton).getMeaning() + ".png");
                     double width = jButton.getWidth();
                     double height = jButton.getHeight();
-                    double ratio = Math.max(icon.getIconWidth()* 1.2/width, icon.getIconHeight()* 1.2/height);
+                    double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);
                     width = icon.getIconWidth() / ratio;
                     height = icon.getIconHeight() / ratio;
                     jButton.setIcon(new ImageIcon(icon.getImage().
@@ -406,10 +406,10 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
             }
             for (JButton jButton : fuButtons) {
                 if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton)jButton).getMeaning() + ".png");
+                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton) jButton).getMeaning() + ".png");
                     double width = jButton.getWidth();
                     double height = jButton.getHeight();
-                    double ratio = Math.max(icon.getIconWidth()* 1.2/width, icon.getIconHeight()* 1.2/height);
+                    double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);
                     width = icon.getIconWidth() / ratio;
                     height = icon.getIconHeight() / ratio;
                     jButton.setIcon(new ImageIcon(icon.getImage().

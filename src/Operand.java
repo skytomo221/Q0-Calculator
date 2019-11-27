@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 /**
  * 被演算子を表します。
  */

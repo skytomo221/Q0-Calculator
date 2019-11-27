@@ -57,7 +57,7 @@ public class Parser {
         StringBuilder s = new StringBuilder();
         s.append(text, begin, end);
         s.append("\n");
-        s.append(String.join("", Collections.nCopies(getRawCharacter() + getIndex() - begin , " ")));
+        s.append(String.join("", Collections.nCopies(getRawCharacter() + getIndex() - begin, " ")));
         s.append(String.join("", Collections.nCopies(peekLength, "‾")));
         s.append("\n");
         return s.toString();
@@ -106,8 +106,7 @@ public class Parser {
                     arguments.add(parseExpression());
                     if (peek().type == TokenType.COMMA) {
                         next();
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 }
@@ -264,8 +263,7 @@ public class Parser {
                 next();
                 return new Operator("if ... ... else ... end",
                         new ArrayList<>(Arrays.asList(conditional, ifExpression, elseExpression)));
-            }
-            else {
+            } else {
                 throw new ParserException(getExceptionMessage("else 句の後に end が必要です。"));
             }
         } else if (peek().type == TokenType.ELSEIF) {

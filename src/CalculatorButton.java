@@ -10,6 +10,7 @@ public class CalculatorButton extends JButton {
 
     /**
      * ボタンの意味を取得します。
+     *
      * @return ボタンの意味
      */
     public String getMeaning() {
@@ -18,6 +19,7 @@ public class CalculatorButton extends JButton {
 
     /**
      * ボタンの意味を設定します。
+     *
      * @param meaning 設定するボタンの意味
      */
     public void setMeaning(String meaning) {
@@ -27,6 +29,7 @@ public class CalculatorButton extends JButton {
     /**
      * テキスト付きのボタンを生成します。
      * ボタンの意味はボタンのテキストと同じになります。
+     *
      * @param text ボタンのテキスト
      */
     public CalculatorButton(String text) {
@@ -36,7 +39,8 @@ public class CalculatorButton extends JButton {
 
     /**
      * アイコン付きのボタンを生成します。
-     * @param icon ボタン上に表示するアイコン・イメージ
+     *
+     * @param icon    ボタン上に表示するアイコン・イメージ
      * @param meaning ボタンを押したときに取得するボタンの意味
      */
     public CalculatorButton(Icon icon, String meaning) {
