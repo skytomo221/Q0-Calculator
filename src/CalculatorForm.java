@@ -332,17 +332,26 @@ class CalculatorForm extends JFrame implements ActionListener, ComponentListener
                     logTextPaneColorizer.insertColorText("\n\n", JTextPaneColorizer.colors.get("foreground"));
                     logTextPaneColorizer.setCaretToBottom();
                     inputTextPane.setText(calculator.getAnswerToString());
-                } catch (Exception ex) {
+                } catch (ParserException ex) {
                     logTextPaneColorizer.insertColorText("Input  => ", JTextPaneColorizer.colors.get("foreground"));
                     logTextPaneColorizer.insertColorText(inputTextPane.getText(), JTextPaneColorizer.colors.get("foreground"));
                     logTextPaneColorizer.insertColorText("\n", JTextPaneColorizer.colors.get("foreground"));
-                    logTextPaneColorizer.insertColorText("[Error]\n" + ex.getLocalizedMessage(), JTextPaneColorizer.colors.get("error"));
+                    logTextPaneColorizer.insertColorText("[Parser Error]\n" + ex.getLocalizedMessage(), JTextPaneColorizer.colors.get("error"));
+                    logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
+                    logTextPaneColorizer.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", JTextPaneColorizer.colors.get("info"));
+                    logTextPaneColorizer.setCaretToBottom();
+                } catch (CalculatorException ex) {
+                    logTextPaneColorizer.insertColorText("Input  => ", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertColorText(inputTextPane.getText(), JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertColorText("\n", JTextPaneColorizer.colors.get("foreground"));
+                    logTextPaneColorizer.insertColorText("[Calculator Error]\n" + ex.getLocalizedMessage(), JTextPaneColorizer.colors.get("error"));
                     logTextPaneColorizer.insertColorText(calculator.getLog(), JTextPaneColorizer.colors.get("error"));
                     logTextPaneColorizer.insertColorText(calculator.getLogNumber().replaceAll(".", " ")
                             + " → throw new Exception(...);\n", JTextPaneColorizer.colors.get("error"));
                     logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
                     logTextPaneColorizer.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", JTextPaneColorizer.colors.get("info"));
                     logTextPaneColorizer.setCaretToBottom();
+                } catch (Exception ex) {
                 } finally {
                 }
             } else if (b.getText().equals("+") || b.getText().equals("-") || b.getText().equals("×")
