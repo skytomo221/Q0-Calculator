@@ -1,8 +1,8 @@
-import javax.swing.JFrame;
-
 class Q0 {
     public static void main(String args[]) {
-        JFrame a = new CalculatorForm();
-        a.setVisible(true);
+        Q0Controller controller = new Q0Controller();
+        Q0Viewer viewer = new Q0Viewer(controller);
+        controller.setViewer(viewer);
+        viewer.setVisible(true);
     }
 }
