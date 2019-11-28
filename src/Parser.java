@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Parser {
-    protected int index;
-    protected int rawCharacter = 0;
-    protected int character = 1;
-    protected int line = 1;
-    protected List<Token> tokens;
+    private int index = 0;
+    private int rawCharacter = 0;
+    private int character = 1;
+    private int line = 1;
+    private List<Token> tokens;
 
     public Parser() {
     }
@@ -34,43 +34,15 @@ public class Parser {
         return tokens;
     }
 
-    public String getExceptionMessage(String message) {
-        StringBuilder s = new StringBuilder();
-        s.append(getLine());
-        s.append("行目");
-        s.append(getCharacter());
-        s.append("文字目： ");
-        s.append(message);
-        s.append("\n");
-        s.append(getParserExceptionLog());
-        return s.toString();
-    }
-
-    public String getParserExceptionLog() {
-        String text = tokens.stream().map(token -> token.name).collect(Collectors.joining(" "));
-        int textLength = text.length();
-        int peekLength = peek().name.length();
-        int lineLength = 50;
-        int p = (lineLength - peekLength) / 2;
-        int begin = Math.max(0, getRawCharacter() + getIndex() - p);
-        int end = Math.min(textLength, begin + lineLength);
-        StringBuilder s = new StringBuilder();
-        s.append(text, begin, end);
-        s.append("\n");
-        s.append(String.join("", Collections.nCopies(getRawCharacter() + getIndex() - begin, " ")));
-        s.append(String.join("", Collections.nCopies(peekLength, "‾")));
-        s.append("\n");
-        return s.toString();
-    }
 
     protected Token peek() throws ParserException {
         if (tokens.size() <= index) {
-            throw new ParserException("No more token");
+            throw new ParserException(this, "構文解析中に文字列が終了しました。");
         }
         return tokens.get(index);
     }
 
-    protected Token next() throws ParserException {
+    private Token next() throws ParserException {
         Token expression = peek();
         rawCharacter += peek().name.length();
         character += peek().name.length();
@@ -78,7 +50,7 @@ public class Parser {
         return expression;
     }
 
-    protected void skipNewLine() throws ParserException {
+    private void skipNewLine() throws ParserException {
         while (peek().type != TokenType.END_OF_STRING && peek().type == TokenType.NEW_LINE) {
             line++;
             index = 1;
@@ -86,13 +58,13 @@ public class Parser {
         }
     }
 
-    protected void skipSemicolon() throws ParserException {
+    private void skipSemicolon() throws ParserException {
         if (peek().type == TokenType.SEMICOLON) {
             next();
         }
     }
 
-    protected Expression parseFactor() throws ParserException {
+    private Expression parseFactor() throws ParserException {
         if (peek().type == TokenType.INT || peek().type == TokenType.FLOAT
                 || peek().type == TokenType.BIG_DECIMAL || peek().type == TokenType.BOOL
                 || peek().type == TokenType.CHAR || peek().type == TokenType.STRING) {
@@ -114,7 +86,7 @@ public class Parser {
                     next();
                     return new Function(variable.name, arguments, null);
                 } else {
-                    throw new ParserException(getExceptionMessage("')'が必要です。"));
+                    throw new ParserException(this, "')'が必要です。");
                 }
             } else {
                 return variable;
@@ -126,14 +98,14 @@ public class Parser {
                 next();
                 return expression;
             } else {
-                throw new ParserException(getExceptionMessage("')'が必要です。"));
+                throw new ParserException(this, "')'が必要です。");
             }
         } else {
-            throw new ParserException(getExceptionMessage("ここに即値または変数ではないトークンを置くことはできません。"));
+            throw new ParserException(this, "ここに即値または変数ではないトークンを置くことはできません。");
         }
     }
 
-    protected Expression parsePower() throws ParserException {
+    private Expression parsePower() throws ParserException {
         Expression left = parseFactor();
         if (peek().type == TokenType.POWER) {
             Token operator = next();
@@ -145,7 +117,7 @@ public class Parser {
         }
     }
 
-    protected Expression parseSign() throws ParserException {
+    private Expression parseSign() throws ParserException {
         if (peek().type == TokenType.MINUS || peek().type == TokenType.PLUS) {
             Token operator = next();
             Expression right = parsePower();
@@ -155,7 +127,7 @@ public class Parser {
         }
     }
 
-    protected Expression parseTimes() throws ParserException {
+    private Expression parseTimes() throws ParserException {
         Expression left = parseSign();
         while (peek().type == TokenType.MULTIPLICATION || peek().type == TokenType.DIVISION
                 || peek().type == TokenType.BIT_AND || peek().type == TokenType.MOD
@@ -170,7 +142,7 @@ public class Parser {
         return left;
     }
 
-    protected Expression parsePlus() throws ParserException {
+    private Expression parsePlus() throws ParserException {
         Expression left = parseTimes();
         while (peek().type == TokenType.PLUS || peek().type == TokenType.MINUS || peek().type == TokenType.BIT_OR
                 || peek().type == TokenType.BIT_XOR) {
@@ -183,7 +155,7 @@ public class Parser {
         return left;
     }
 
-    protected Expression parseComparsionExpression() throws ParserException {
+    private Expression parseComparsionExpression() throws ParserException {
         Expression left = parsePlus();
         while (peek().type == TokenType.EQ || peek().type == TokenType.NE || peek().type == TokenType.LE
                 || peek().type == TokenType.LT || peek().type == TokenType.GE || peek().type == TokenType.GT) {
@@ -196,7 +168,7 @@ public class Parser {
         return left;
     }
 
-    protected Expression parseAnd() throws ParserException {
+    private Expression parseAnd() throws ParserException {
         Expression left = parseComparsionExpression();
         if (peek().type == TokenType.AND) {
             Token operator = next();
@@ -208,7 +180,7 @@ public class Parser {
         }
     }
 
-    protected Expression parseOr() throws ParserException {
+    private Expression parseOr() throws ParserException {
         Expression left = parseAnd();
         if (peek().type == TokenType.OR) {
             Token operator = next();
@@ -220,7 +192,7 @@ public class Parser {
         }
     }
 
-    protected Expression parseAssignmentExpression() throws ParserException {
+    private Expression parseAssignmentExpression() throws ParserException {
         Expression left = parseOr();
         if (peek().type == TokenType.ASSAIGNMENT) {
             Token operator = next();
@@ -232,7 +204,7 @@ public class Parser {
         }
     }
 
-    protected Expression parseBlock() throws ParserException {
+    private Expression parseBlock() throws ParserException {
         Operator operator = new Operator("begin ... end", new ArrayList<>());
         while (peek().type != TokenType.END &&
                 peek().type != TokenType.ELSE &&
@@ -245,7 +217,7 @@ public class Parser {
         return operator;
     }
 
-    protected Expression parseIf() throws ParserException {
+    private Expression parseIf() throws ParserException {
         next();
         Expression conditional = parseControlFlow();
         skipSemicolon();
@@ -264,17 +236,17 @@ public class Parser {
                 return new Operator("if ... ... else ... end",
                         new ArrayList<>(Arrays.asList(conditional, ifExpression, elseExpression)));
             } else {
-                throw new ParserException(getExceptionMessage("else 句の後に end が必要です。"));
+                throw new ParserException(this, "else 句の後に end が必要です。");
             }
         } else if (peek().type == TokenType.ELSEIF) {
             Expression elseifExpression = parseIf();
             return new Operator("if ... ... else ... end",
                     new ArrayList<>(Arrays.asList(conditional, ifExpression, elseifExpression)));
         }
-        throw new ParserException("Elseif error\n");
+        throw new ParserException(this, "if 演算子の後に else, end または elseif が必要です。");
     }
 
-    protected Expression parseControlFlow() throws ParserException {
+    private Expression parseControlFlow() throws ParserException {
         if (peek().type == TokenType.BEGIN) {
             next();
             skipSemicolon();
@@ -284,7 +256,7 @@ public class Parser {
                 next();
                 return block;
             } else {
-                throw new ParserException(getExceptionMessage("begin 句の後に end が必要です。"));
+                throw new ParserException(this, "begin 句の後に end が必要です。");
             }
         } else if (peek().type == TokenType.IF) {
             return parseIf();
@@ -303,7 +275,7 @@ public class Parser {
                     return new Operator("for ... in ... ... end",
                             new ArrayList<>(Arrays.asList(i, list, block)));
                 } else {
-                    throw new ParserException(getExceptionMessage("while 句の後に end が必要です。"));
+                    throw new ParserException(this, "while 句の後に end が必要です。");
                 }
             }
         } else if (peek().type == TokenType.WHILE) {
@@ -317,7 +289,7 @@ public class Parser {
                 return new Operator("while ... ... end",
                         new ArrayList<>(Arrays.asList(conditionalStatement, block)));
             } else {
-                throw new ParserException(getExceptionMessage("while 句の後に end が必要です。"));
+                throw new ParserException(this, "while 句の後に end が必要です。");
             }
         }
         return parseAssignmentExpression();

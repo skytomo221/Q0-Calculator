@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Lexer {
 
-    protected String text;
-    protected int index;
+    private String text = "";
+    private int index = 0;
+    private int line = 1;
     protected Map<String, TokenType> keywords = new HashMap<String, TokenType>() {
         {
             put("baremodule", TokenType.BAREMODULE);
@@ -106,13 +108,26 @@ public class Lexer {
         }
     };
 
+    public String getText() {
+        return text;
+    }
+    public int getIndex() {
+        return index;
+    }
+
+    public LexerException getLexerException(String message) {
+        return new LexerException(this, message);
+    }
+
+
+
     private boolean isEndOfString() {
         return text.length() <= index;
     }
 
     private char peek() throws LexerException {
         if (isEndOfString()) {
-            throw new LexerException("No more character");
+            throw new LexerException(this, "字句解析中に文字列が終了しました。");
         }
         return text.charAt(index);
     }
@@ -213,9 +228,9 @@ public class Lexer {
             } else if (c == '¬') {
                 ans -= 1;
             } else if (c == '9') {
-                throw new LexerException("フ界には 9 がありません。");
+                throw new LexerException(this, "フ界には 9 がありません。");
             } else {
-                throw new LexerException("フ界にて未知のトークンが発見されました。");
+                throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
             }
         }
         return ans;
@@ -234,9 +249,9 @@ public class Lexer {
                 } else if (c == '¬') {
                     ans -= 1 * weight;
                 } else if (c == '9') {
-                    throw new LexerException("フ界には 9 がありません。");
+                    throw new LexerException(this, "フ界には 9 がありません。");
                 } else {
-                    throw new LexerException("フ界にて未知のトークンが発見されました。");
+                    throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
                 }
             } else {
                 ans *= 10;
@@ -248,9 +263,9 @@ public class Lexer {
                     ans /= 10; // 小数点は 10 倍しないので、もとに戻す。
                     isLess1 = true;
                 } else if (c == '9') {
-                    throw new LexerException("フ界には 9 がありません。");
+                    throw new LexerException(this, "フ界には 9 がありません。");
                 } else {
-                    throw new LexerException("フ界にて未知のトークンが発見されました。");
+                    throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
                 }
             }
         }
@@ -267,15 +282,15 @@ public class Lexer {
             } else if (c == '¬') {
                 ans = ans.subtract(BigDecimal.ONE);
             } else if (c == '9') {
-                throw new LexerException("フ界には 9 がありません。");
+                throw new LexerException(this, "フ界には 9 がありません。");
             } else {
-                throw new LexerException("フ界にて未知のトークンが発見されました。");
+                throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
             }
         }
         return ans;
     }
 
-    public Token nextToken() throws LexerException {
+    private Token nextToken() throws LexerException {
         StringBuilder b = new StringBuilder();
         if (isEndOfString()) { // 文字列の終了
             return new Token(TokenType.END_OF_STRING, null);
@@ -298,7 +313,7 @@ public class Lexer {
                 b.append(next());
                 while (!isEndOfString() && Character.isDigit(peek())) {
                     if (peek() != '0' && peek() != '1') {
-                        throw new LexerException("2進数は 0 または 1 のみで表現します。");
+                        throw new LexerException(this, "2進数は 0 または 1 のみで表現します。");
                     }
                     b.append(next());
                 }
@@ -307,7 +322,7 @@ public class Lexer {
                 b.append(next());
                 while (!isEndOfString() && Character.isDigit(peek())) {
                     if (peek() == '8' || peek() == '9') {
-                        throw new LexerException("8進数は 0 から 7 の数字のみで表現します。");
+                        throw new LexerException(this, "8進数は 0 から 7 の数字のみで表現します。");
                     }
                     b.append(next());
                 }
@@ -412,7 +427,7 @@ public class Lexer {
                     b.append(next());
                     return new Token(TokenType.CHAR, b.toString(), b.toString().charAt(2));
                 } else {
-                    throw new LexerException("不正な文字です。");
+                    throw new LexerException(this, "不正な文字です。");
                 }
             }
             b.append(next());
@@ -420,7 +435,7 @@ public class Lexer {
                 b.append(next());
                 return new Token(TokenType.CHAR, b.toString(), b.toString().charAt(1));
             } else {
-                throw new LexerException("不正な文字です。");
+                throw new LexerException(this, "不正な文字です。");
             }
         } else if (peek() == '\"') { // "..."
             b.append(next());
@@ -435,8 +450,9 @@ public class Lexer {
                     b.append(next());
                 }
             }
-            throw new LexerException("\" が閉じられていません。");
+            throw new LexerException(this, "\" が閉じられていません。");
         } else if (peek() == '\n') {
+            line++;
             return new Token(TokenType.NEW_LINE, Character.toString(next()));
         } else {
             Object obj = null;
