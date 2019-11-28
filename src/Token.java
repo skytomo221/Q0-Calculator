@@ -2,18 +2,45 @@
  * 字句解析するときにトークンはこの {@code Token} クラスによって格納されます。
  */
 public class Token {
+
     /**
      * トークンの種類
      */
-    public TokenType type;
+    private TokenType type;
+
     /**
      * トークンの名前
      */
-    public String name;
+    private String name;
+
     /**
      * トークンの値
      */
-    public Object value;
+    private Object value;
+
+    public TokenType getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (name != null) {
+            this.name = name;
+        } else {
+            throw new NullPointerException();
+        }
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public int getLength() {
+        return name.length();
+    }
 
     /**
      * トークンを初期化します。

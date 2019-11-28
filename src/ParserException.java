@@ -32,9 +32,9 @@ public class ParserException extends IllegalArgumentException {
     }
 
     private String getParserExceptionLog() {
-        String text = parser.getTokens().stream().map(token -> token.name).collect(Collectors.joining(" "));
+        String text = parser.getTokens().stream().map(token -> token.getName()).collect(Collectors.joining(" "));
         int textLength = text.length();
-        int peekLength = parser.peek().name.length();
+        int peekLength = parser.peek().getLength();
         int lineLength = 50;
         int p = (lineLength - peekLength) / 2;
         int begin = Math.max(0, parser.getRawCharacter() + parser.getIndex() - p);

@@ -78,9 +78,9 @@ public class Operand extends Expression {
      * @param token 対象のトークン
      */
     public Operand(Token token) {
-        setName(token.name);
-        setType(token.type.toString());
-        setValue(token.value);
+        setName(token.getName());
+        setType(token.getType().toString());
+        setValue(token.getValue());
     }
 
     @Override

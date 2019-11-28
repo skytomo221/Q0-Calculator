@@ -111,6 +111,7 @@ public class Lexer {
     public String getText() {
         return text;
     }
+
     public int getIndex() {
         return index;
     }
@@ -118,7 +119,6 @@ public class Lexer {
     public LexerException getLexerException(String message) {
         return new LexerException(this, message);
     }
-
 
 
     private boolean isEndOfString() {
@@ -471,10 +471,10 @@ public class Lexer {
         List<Token> tokens = new ArrayList<>();
         index = 0;
         this.text = text;
-        Token t = nextToken();
-        while (t.type != TokenType.END_OF_STRING) {
-            tokens.add(t);
-            t = nextToken();
+        Token token = nextToken();
+        while (token.getType() != TokenType.END_OF_STRING) {
+            tokens.add(token);
+            token = nextToken();
         }
         return tokens;
     }
@@ -488,7 +488,7 @@ public class Lexer {
     public static List<Token> removeWhitespace(List<Token> list) {
         List<Token> new_list = new ArrayList<>();
         for (Token token : list) {
-            if (token.type != TokenType.WHITESPACE) {
+            if (token.getType() != TokenType.WHITESPACE) {
                 new_list.add(token);
             }
         }
