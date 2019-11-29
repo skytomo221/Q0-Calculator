@@ -79,7 +79,9 @@ public class Calculator {
         return "$" + Long.toString(logNumber + index);
     }
 
-    public static  List<String> getDefinedFunctions() {return definedFunctions;}
+    public static List<String> getDefinedFunctions() {
+        return definedFunctions;
+    }
 
     protected void setLog(Expression currentExpression) {
         logNumber++;

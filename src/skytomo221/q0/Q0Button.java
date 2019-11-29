@@ -1,7 +1,8 @@
 package skytomo221.q0;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import java.io.File;
 
 /**
  * 電卓で使用するボタンの定義です。
@@ -29,24 +30,19 @@ public class Q0Button extends JButton {
     }
 
     /**
-     * テキスト付きのボタンを生成します。
+     * パスを指定するとアイコンつきのボタンを生成します。
+     * ただし、アイコンのパスが存在しない場合、テキスト付きのボタンを生成します。
      * ボタンの意味はボタンのテキストと同じになります。
      *
      * @param text ボタンのテキスト
      */
     public Q0Button(String text) {
         super(text);
+        File file = new File("./images/" + text + ".png");
+        if (file.exists()) {
+            setText("");
+            setIcon(new ImageIcon(text));
+        }
         setMeaning(text);
-    }
-
-    /**
-     * アイコン付きのボタンを生成します。
-     *
-     * @param icon    ボタン上に表示するアイコン・イメージ
-     * @param meaning ボタンを押したときに取得するボタンの意味
-     */
-    public Q0Button(Icon icon, String meaning) {
-        super(icon);
-        setMeaning(meaning);
     }
 }
