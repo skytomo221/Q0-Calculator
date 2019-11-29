@@ -1,8 +1,6 @@
 package skytomo221.q0;
 
-import skytomo221.q0.calculator.Calculator;
 import skytomo221.q0.lexer.Lexer;
-import skytomo221.q0.parser.Parser;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -25,6 +23,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -34,13 +33,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, KeyListener {
-    /**
-     *
-     */
+class Q0Viewer extends JFrame implements ComponentListener {
     private static final long serialVersionUID = 1L;
 
     protected List<Q0Button> buttons = Arrays.asList(
@@ -128,20 +125,15 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
     protected JScrollPane inputScrollPane = new JScrollPane(inputTextPane);
     protected JScrollPane logScrollPane = new JScrollPane(logTextPane);
 
-
-    protected Lexer lexer = new Lexer();
-    protected Parser parser = new Parser();
-    protected Calculator calculator = new Calculator();
-
-    protected Q0Colorize inputTextPaneColorizer;
-    protected Q0Colorize logTextPaneColorizer;
+    protected Q0Colorize inputTextPaneColorize;
+    protected Q0Colorize logTextPaneColorize;
 
     public static HashMap<String, Color> colors = new HashMap<>() {
         private static final long serialVersionUID = 1L;
 
         {
             put("black", new Color(0x111111));
-            put("selected", new Color(0xff8c00));
+            put("selected", new Color(0x696969));
             put("background", new Color(0x2d2a2e));
             put("foreground", new Color(0xeeeeee));
             put("info", new Color(0x6796e6));
@@ -159,7 +151,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
         }
     };
 
-    Q0Viewer(Q0Controller controller) {
+    public Q0Viewer() {
         super("Q0 Calculator");
         setSize(800, 500);
         setBackground(colors.get("black"));
@@ -189,8 +181,8 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
-        p1.setBackground(new Color(17, 17, 17));
-        p2.setBackground(new Color(17, 17, 17));
+        p1.setBackground(colors.get("black"));
+        p2.setBackground(colors.get("black"));
         p1.setLayout(new GridLayout(1, 2, 5, 0));
         p2.setLayout(new GridLayout(2, 1, 5, 0));
         p1.setBorder(null);
@@ -203,54 +195,50 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
 
         for (Q0Button button : buttons) {
             buttonPanel.add(button);
-            button.addActionListener(controller);
-            button.setBackground(Q0Colorize.colors.get("background"));
+            button.setBackground(colors.get("background"));
             button.setBorder(null);
             if (button.getText().equals("AC") || button.getText().equals("C")) {
-                button.setForeground(Q0Colorize.colors.get("operator"));
+                button.setForeground(colors.get("operator"));
             } else {
-                button.setForeground(Q0Colorize.colors.get("foreground"));
+                button.setForeground(colors.get("foreground"));
             }
         }
         buttonPanel.setLayout(new GridLayout(5, 4));
         for (Q0Button button : functionButtons) {
             functionButtonPanel.add(button);
-            button.addActionListener(controller);
-            button.setBackground(Q0Colorize.colors.get("background"));
-            button.setForeground(Q0Colorize.colors.get("foreground"));
+            button.setBackground(colors.get("background"));
+            button.setForeground(colors.get("foreground"));
             button.setBorder(null);
         }
         functionButtonPanel.setLayout(new GridLayout(5, 6));
         for (Q0Button button : fuButtons) {
             fuButtonPanel.add(button);
-            button.addActionListener(controller);
-            button.setBackground(Q0Colorize.colors.get("background"));
+            button.setBackground(colors.get("background"));
             button.setBorder(null);
             if (button.getText().equals("AC") || button.getText().equals("C")) {
-                button.setForeground(Q0Colorize.colors.get("operator"));
+                button.setForeground(colors.get("operator"));
             } else {
-                button.setForeground(Q0Colorize.colors.get("foreground"));
+                button.setForeground(colors.get("foreground"));
             }
         }
         fuButtonPanel.setLayout(new GridLayout(5, 4));
-        tabbedPane.setBackground(Q0Colorize.colors.get("background"));
-        tabbedPane.setForeground(Q0Colorize.colors.get("foreground"));
-        inputTextPane.setBackground(Q0Colorize.colors.get("background"));
-        inputTextPane.setForeground(Q0Colorize.colors.get("foreground"));
-        inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 36));
-        inputTextPane.addKeyListener(this);
-        inputTextPane.setCaretColor(Q0Colorize.colors.get("foreground"));
-        inputTextPaneColorizer = new Q0Colorize(inputTextPane, lexer);
-        logTextPane.setBackground(Q0Colorize.colors.get("background"));
-        logTextPane.setForeground(Q0Colorize.colors.get("foreground"));
-        logTextPane.setFont(new Font("Consolas", Font.PLAIN, 18));
+        tabbedPane.setBackground(colors.get("background"));
+        tabbedPane.setForeground(colors.get("foreground"));
+        inputTextPane.setBackground(colors.get("background"));
+        inputTextPane.setForeground(colors.get("foreground"));
+        inputTextPane.setFont(new Font("Bahnschrift", Font.PLAIN, 36));
+        inputTextPane.setCaretColor(colors.get("foreground"));
+        inputTextPaneColorize = new Q0Colorize(inputTextPane, new Lexer());
+        logTextPane.setBackground(colors.get("background"));
+        logTextPane.setForeground(colors.get("foreground"));
+        logTextPane.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
         logTextPane.setEditable(false);
-        logTextPaneColorizer = new Q0Colorize(logTextPane, lexer);
+        logTextPaneColorize = new Q0Colorize(logTextPane, new Lexer());
         inputScrollPane.setBorder(null);
-        inputScrollPane.getHorizontalScrollBar().setBackground(Q0Colorize.colors.get("background"));
-        inputScrollPane.getHorizontalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
-        inputScrollPane.getVerticalScrollBar().setBackground(Q0Colorize.colors.get("background"));
-        inputScrollPane.getVerticalScrollBar().setForeground(Q0Colorize.colors.get("selected"));
+        inputScrollPane.getHorizontalScrollBar().setBackground(colors.get("background"));
+        inputScrollPane.getHorizontalScrollBar().setForeground(colors.get("punctuation"));
+        inputScrollPane.getVerticalScrollBar().setBackground(colors.get("background"));
+        inputScrollPane.getVerticalScrollBar().setForeground(colors.get("selected"));
         inputScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
@@ -266,10 +254,10 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             }
         });
         logScrollPane.setBorder(null);
-        logScrollPane.getHorizontalScrollBar().setBackground(Q0Colorize.colors.get("background"));
-        logScrollPane.getHorizontalScrollBar().setForeground(Q0Colorize.colors.get("selected"));
-        logScrollPane.getVerticalScrollBar().setBackground(Q0Colorize.colors.get("background"));
-        logScrollPane.getVerticalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
+        logScrollPane.getHorizontalScrollBar().setBackground(colors.get("background"));
+        logScrollPane.getHorizontalScrollBar().setForeground(colors.get("selected"));
+        logScrollPane.getVerticalScrollBar().setBackground(colors.get("background"));
+        logScrollPane.getVerticalScrollBar().setForeground(colors.get("punctuation"));
         logScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
@@ -285,12 +273,31 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             }
         });
         inputStyledDocument = inputTextPane.getStyledDocument();
-        inputStyledDocument.addDocumentListener(this);
-        inputTextPaneColorizer.insertColorText("0", Q0Colorize.colors.get("constant"));
-        logTextPaneColorizer.insertColorText("Q0 Calculator へようこそ！\n", Q0Colorize.colors.get("info"));
-        logTextPaneColorizer.insertColorText("詳細な説明書は ", Q0Colorize.colors.get("info"));
-        logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
-        logTextPaneColorizer.insertColorText(" をクリックしてください。\n\n", Q0Colorize.colors.get("info"));
+        inputTextPaneColorize.insertColorText("0", colors.get("constant"));
+        logTextPaneColorize.insertColorText("Q0 Calculator へようこそ！\n", colors.get("info"));
+        logTextPaneColorize.insertColorText("詳細な説明書は ", colors.get("info"));
+        logTextPaneColorize.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
+        logTextPaneColorize.insertColorText(" をクリックしてください。\n\n", colors.get("info"));
+    }
+
+    public void addActionListener(ActionListener l) {
+        for (Q0Button button : buttons) {
+            button.addActionListener(l);
+        }
+        for (Q0Button button : functionButtons) {
+            button.addActionListener(l);
+        }
+        for (Q0Button button : fuButtons) {
+            button.addActionListener(l);
+        }
+    }
+
+    public void addKeyListener(KeyListener l) {
+        inputTextPane.addKeyListener(l);
+    }
+
+    public void addDocumentListener(DocumentListener l) {
+        inputStyledDocument.addDocumentListener(l);
     }
 
     public boolean isTextOfInput0() {
@@ -349,41 +356,42 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
     }
 
     public void setCaretOfLogToBottom() {
-        logTextPaneColorizer.setCaretToBottom();
+        logTextPaneColorize.setCaretToBottom();
     }
 
     public void insertResultToLog(String answer) throws Exception {
-        logTextPaneColorizer.insertColorText("Input  => ", colors.get("foreground"));
-        logTextPaneColorizer.insertCode(inputTextPane.getText().replaceAll("\n", "\n          "));
-        logTextPaneColorizer.insertColorText("\n", colors.get("foreground"));
-        logTextPaneColorizer.insertColorText("Output => ", colors.get("foreground"));
-        logTextPaneColorizer.insertCode(answer);
-        logTextPaneColorizer.insertColorText("\n\n", colors.get("foreground"));
-        inputTextPane.setText(calculator.getAnswerToString());
+        logTextPaneColorize.insertColorText("Input  => ", colors.get("foreground"));
+        logTextPaneColorize.insertCode(inputTextPane.getText().replaceAll("\n", "\n          "));
+        logTextPaneColorize.insertColorText("\n", colors.get("foreground"));
+        logTextPaneColorize.insertColorText("Output => ", colors.get("foreground"));
+        logTextPaneColorize.insertCode(answer);
+        logTextPaneColorize.insertColorText("\n\n", colors.get("foreground"));
+        inputTextPane.setText(answer);
     }
 
     public void insertErrorToLog(String kind, String message) {
-        logTextPaneColorizer.insertColorText("Input  => ", colors.get("foreground"));
-        logTextPaneColorizer.insertColorText(inputTextPane.getText(), colors.get("foreground"));
-        logTextPaneColorizer.insertColorText("\n", colors.get("foreground"));
-        logTextPaneColorizer.insertColorText(kind + "\n" + message, colors.get("error"));
+        logTextPaneColorize.insertColorText("Input  => ", colors.get("foreground"));
+        logTextPaneColorize.insertColorText(inputTextPane.getText(), colors.get("foreground"));
+        logTextPaneColorize.insertColorText("\n", colors.get("foreground"));
+        logTextPaneColorize.insertColorText(kind + "\n" + message, colors.get("error"));
     }
 
     public void insertInstructionsHyperlinkToLog() {
-        logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
-        logTextPaneColorizer.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", Q0Colorize.colors.get("info"));
+        logTextPaneColorize.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
+        logTextPaneColorize.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", colors.get("info"));
     }
 
     public void setHighlighted(boolean highlighted) {
-        inputTextPaneColorizer.highlighted = highlighted;
+        inputTextPaneColorize.highlighted = highlighted;
     }
 
     @Override
     public void componentResized(ComponentEvent e) {
+        BiFunction<Integer, Integer, Integer> getFontSize = (width, length) -> (int) (width / (3 * (length + 12)));
         if (e.getSource() == this) {
             for (JButton jButton : buttons) {
-                jButton.setFont(new Font("Arial", Font.BOLD,
-                        (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
+                jButton.setFont(new Font("Bahnschrift", Font.BOLD,
+                        getFontSize.apply(getWidth(),jButton.getText().length())));
             }
             for (JButton jButton : buttons) {
                 if (jButton.getIcon() != null) {
@@ -399,8 +407,8 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
                 }
             }
             for (JButton jButton : functionButtons) {
-                jButton.setFont(new Font("Arial", Font.BOLD,
-                        (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
+                jButton.setFont(new Font("Bahnschrift", Font.BOLD,
+                        getFontSize.apply(getWidth(),jButton.getText().length())));
             }
             for (JButton jButton : functionButtons) {
                 if (jButton.getIcon() != null) {
@@ -415,8 +423,8 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
                 }
             }
             for (JButton jButton : fuButtons) {
-                jButton.setFont(new Font("Arial", Font.BOLD,
-                        (int) (getWidth() / (9 * (jButton.getText().length() / 1.5 + 4)))));
+                jButton.setFont(new Font("Bahnschrift", Font.BOLD,
+                        getFontSize.apply(getWidth(),jButton.getText().length())));
             }
             for (JButton jButton : fuButtons) {
                 if (jButton.getIcon() != null) {
@@ -445,29 +453,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
     public void componentHidden(ComponentEvent e) {
     }
 
-    @Override
-    public void insertUpdate(DocumentEvent e) {
-        inputTextPaneColorizer.colorizeCode();
-    }
-
-    @Override
-    public void removeUpdate(DocumentEvent e) {
-    }
-
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-        inputTextPaneColorizer.highlighted = false;
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
+    public void colorizeCode() {
+        inputTextPaneColorize.colorizeCode();
     }
 }

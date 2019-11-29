@@ -9,11 +9,15 @@ import skytomo221.q0.parser.Parser;
 import skytomo221.q0.parser.ParserException;
 import skytomo221.q0.token.Token;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 
-public class Q0Controller implements ActionListener {
+public class Q0Controller implements ActionListener, DocumentListener, KeyListener {
     protected Q0Viewer viewer;
 
     protected Lexer lexer = new Lexer();
@@ -29,6 +33,9 @@ public class Q0Controller implements ActionListener {
 
     public void setViewer(Q0Viewer viewer) {
         this.viewer = viewer;
+        viewer.addActionListener(this);
+        viewer.addDocumentListener(this);
+        viewer.addKeyListener(this);
     }
 
     @Override
@@ -82,7 +89,6 @@ public class Q0Controller implements ActionListener {
                         System.out.println(calculator.getLog());
                     }
                     viewer.insertResultToLog(calculator.getAnswerToString());
-                    viewer.setTextOfInput(calculator.getAnswerToString());
                 } catch (LexerException ex) {
                     viewer.insertErrorToLog("[Lexer Error]", ex.getLexerErrorMessage());
                     viewer.insertInstructionsHyperlinkToLog();
@@ -93,6 +99,7 @@ public class Q0Controller implements ActionListener {
                     viewer.insertErrorToLog("[Calculator Error]", ex.getCalculatorErrorMessage());
                     viewer.insertInstructionsHyperlinkToLog();
                 } catch (Exception ex) {
+                    viewer.insertErrorToLog("[Java Error]", ex.getMessage() + "\n\n");
                 } finally {
                     viewer.setCaretOfLogToBottom();
                 }
@@ -104,5 +111,34 @@ public class Q0Controller implements ActionListener {
             }
         }
         viewer.setHighlighted(false);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+        viewer.setHighlighted(false);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+    }
+
+    @Override
+    public void insertUpdate(DocumentEvent documentEvent) {
+        viewer.colorizeCode();
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent documentEvent) {
+        viewer.colorizeCode();
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent documentEvent) {
+
     }
 }

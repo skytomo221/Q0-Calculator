@@ -9,6 +9,10 @@ import java.io.File;
  * Jbutton に加えてボタンに意味を追加しました。
  */
 public class Q0Button extends JButton {
+    /**
+     * ボタンの意味を表します。
+     * 電卓のボタンを押したときの文字列に変換されます。
+     */
     protected String meaning;
 
     /**
@@ -30,7 +34,7 @@ public class Q0Button extends JButton {
     }
 
     /**
-     * パスを指定するとアイコンつきのボタンを生成します。
+     * アイコンのパスを指定するとアイコンつきのボタンを生成します。
      * ただし、アイコンのパスが存在しない場合、テキスト付きのボタンを生成します。
      * ボタンの意味はボタンのテキストと同じになります。
      *
