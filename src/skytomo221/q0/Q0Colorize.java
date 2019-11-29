@@ -36,20 +36,20 @@ public class Q0Colorize {
         private static final long serialVersionUID = 1L;
 
         {
-            put("background", Color.decode("#2d2a2e"));
-            put("foreground", Color.decode("#eeeeee"));
-            put("info", Color.decode("#6796e6"));
-            put("warn", Color.decode("#cd9731"));
-            put("error", Color.decode("#f44747"));
-            put("debug", Color.decode("#b267e6"));
-            put("argument", Color.decode("#2d2a2e"));
-            put("constant", Color.decode("#ab9df2"));
-            put("function", Color.decode("#a9dc76"));
-            put("number", Color.decode("#ab9df2"));
-            put("operator", Color.decode("#ff6188"));
-            put("punctuation", Color.decode("#939293"));
-            put("string", Color.decode("#ffd866"));
-            put("getType()", Color.decode("#78dce8"));
+            put("background", new Color(0x2d2a2e));
+            put("foreground", new Color(0xeeeeee));
+            put("info", new Color(0x6796e6));
+            put("warn", new Color(0xcd9731));
+            put("error", new Color(0xf44747));
+            put("debug", new Color(0xb267e6));
+            put("argument", new Color(0xfc9867));
+            put("constant", new Color(0xab9df2));
+            put("function", new Color(0xa9dc76));
+            put("number", new Color(0xab9df2));
+            put("operator", new Color(0xff6188));
+            put("punctuation", new Color(0x939293));
+            put("string", new Color(0xffd866));
+            put("type", new Color(0x78dce8));
         }
     };
 

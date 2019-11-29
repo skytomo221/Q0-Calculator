@@ -140,27 +140,29 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
         private static final long serialVersionUID = 1L;
 
         {
-            put("background", Color.decode("#2d2a2e"));
-            put("foreground", Color.decode("#eeeeee"));
-            put("info", Color.decode("#6796e6"));
-            put("warn", Color.decode("#cd9731"));
-            put("error", Color.decode("#f44747"));
-            put("debug", Color.decode("#b267e6"));
-            put("argument", Color.decode("#2d2a2e"));
-            put("constant", Color.decode("#ab9df2"));
-            put("function", Color.decode("#a9dc76"));
-            put("number", Color.decode("#ab9df2"));
-            put("operator", Color.decode("#ff6188"));
-            put("punctuation", Color.decode("#939293"));
-            put("string", Color.decode("#ffd866"));
-            put("getType()", Color.decode("#78dce8"));
+            put("black", new Color(0x111111));
+            put("selected", new Color(0xff8c00));
+            put("background", new Color(0x2d2a2e));
+            put("foreground", new Color(0xeeeeee));
+            put("info", new Color(0x6796e6));
+            put("warn", new Color(0xcd9731));
+            put("error", new Color(0xf44747));
+            put("debug", new Color(0xb267e6));
+            put("argument", new Color(0xfc9867));
+            put("constant", new Color(0xab9df2));
+            put("function", new Color(0xa9dc76));
+            put("number", new Color(0xab9df2));
+            put("operator", new Color(0xff6188));
+            put("punctuation", new Color(0x939293));
+            put("string", new Color(0xffd866));
+            put("type", new Color(0x78dce8));
         }
     };
 
     Q0Viewer(Q0Controller controller) {
         super("Q0 Calculator");
         setSize(800, 500);
-        setBackground(new Color(17, 17, 17));
+        setBackground(colors.get("black"));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(this);
 
@@ -170,20 +172,20 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             exc.printStackTrace();
         }
 
-        UIManager.put("TabbedPane.borderHightlightColor", new Color(17, 17, 17));
-        UIManager.put("TabbedPane.darkShadow", new Color(17, 17, 17));
-        UIManager.put("TabbedPane.focus", Q0Colorize.colors.get("punctuation"));
-        UIManager.put("TabbedPane.selected", Q0Colorize.colors.get("punctuation"));
+        UIManager.put("TabbedPane.borderHightlightColor", colors.get("black"));
+        UIManager.put("TabbedPane.darkShadow", colors.get("black"));
+        UIManager.put("TabbedPane.focus", colors.get("selected"));
+        UIManager.put("TabbedPane.selected", colors.get("selected"));
         UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
-        UIManager.put("Button.select", Q0Colorize.colors.get("punctuation"));
+        UIManager.put("Button.select", colors.get("selected"));
 
         tabbedPane = new JTabbedPane();
         tabbedPane.add("標準", buttonPanel);
         tabbedPane.add("関数", functionButtonPanel);
         tabbedPane.add("フ界", fuButtonPanel);
-        buttonPanel.setBorder(new LineBorder(Q0Colorize.colors.get("punctuation"), 3));
-        functionButtonPanel.setBorder(new LineBorder(Q0Colorize.colors.get("punctuation"), 3));
-        fuButtonPanel.setBorder(new LineBorder(Q0Colorize.colors.get("punctuation"), 3));
+        buttonPanel.setBorder(new LineBorder(colors.get("selected"), 3));
+        functionButtonPanel.setBorder(new LineBorder(colors.get("selected"), 3));
+        fuButtonPanel.setBorder(new LineBorder(colors.get("selected"), 3));
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
@@ -248,7 +250,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
         inputScrollPane.getHorizontalScrollBar().setBackground(Q0Colorize.colors.get("background"));
         inputScrollPane.getHorizontalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
         inputScrollPane.getVerticalScrollBar().setBackground(Q0Colorize.colors.get("background"));
-        inputScrollPane.getVerticalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
+        inputScrollPane.getVerticalScrollBar().setForeground(Q0Colorize.colors.get("selected"));
         inputScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
@@ -265,7 +267,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
         });
         logScrollPane.setBorder(null);
         logScrollPane.getHorizontalScrollBar().setBackground(Q0Colorize.colors.get("background"));
-        logScrollPane.getHorizontalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
+        logScrollPane.getHorizontalScrollBar().setForeground(Q0Colorize.colors.get("selected"));
         logScrollPane.getVerticalScrollBar().setBackground(Q0Colorize.colors.get("background"));
         logScrollPane.getVerticalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
         logScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
@@ -351,20 +353,20 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
     }
 
     public void insertResultToLog(String answer) throws Exception {
-        logTextPaneColorizer.insertColorText("Input  => ", Q0Colorize.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("Input  => ", colors.get("foreground"));
         logTextPaneColorizer.insertCode(inputTextPane.getText().replaceAll("\n", "\n          "));
-        logTextPaneColorizer.insertColorText("\n", Q0Colorize.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText("Output => ", Q0Colorize.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("\n", colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("Output => ", colors.get("foreground"));
         logTextPaneColorizer.insertCode(answer);
-        logTextPaneColorizer.insertColorText("\n\n", Q0Colorize.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("\n\n", colors.get("foreground"));
         inputTextPane.setText(calculator.getAnswerToString());
     }
 
     public void insertErrorToLog(String kind, String message) {
-        logTextPaneColorizer.insertColorText("Input  => ", Q0Colorize.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText(inputTextPane.getText(), Q0Colorize.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText("\n", Q0Colorize.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText(kind + "\n" + message, Q0Colorize.colors.get("error"));
+        logTextPaneColorizer.insertColorText("Input  => ", colors.get("foreground"));
+        logTextPaneColorizer.insertColorText(inputTextPane.getText(), colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("\n", colors.get("foreground"));
+        logTextPaneColorizer.insertColorText(kind + "\n" + message, colors.get("error"));
     }
 
     public void insertInstructionsHyperlinkToLog() {
