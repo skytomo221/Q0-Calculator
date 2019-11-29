@@ -1,3 +1,14 @@
+package skytomo221.q0;
+
+import skytomo221.q0.calculator.Calculator;
+import skytomo221.q0.calculator.CalculatorException;
+import skytomo221.q0.expression.Expression;
+import skytomo221.q0.lexer.Lexer;
+import skytomo221.q0.lexer.LexerException;
+import skytomo221.q0.parser.Parser;
+import skytomo221.q0.parser.ParserException;
+import skytomo221.q0.token.Token;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -10,8 +21,8 @@ public class Q0Controller implements ActionListener {
     protected Calculator calculator = new Calculator();
 
     protected boolean displayLexerResult = true;
-    protected boolean displayPerserResult = true;
-    protected boolean displayCalclatorResult = true;
+    protected boolean displayParserResult = true;
+    protected boolean displayCalculatorResult = true;
 
     public Q0Controller() {
     }
@@ -22,8 +33,8 @@ public class Q0Controller implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof CalculatorButton) {
-            CalculatorButton b = (CalculatorButton) e.getSource();
+        if (e.getSource() instanceof Q0Button) {
+            Q0Button b = (Q0Button) e.getSource();
             if (viewer.isTextOfInput0() &&
                     b.getMeaning().matches("\\d|¬|(?!or)(?!xor)(?!and)(?!mod)[A-Za-z]+")) {
                 viewer.emptyInput();
@@ -58,7 +69,7 @@ public class Q0Controller implements ActionListener {
                         System.out.println("");
                     }
                     List<Expression> expressions = parser.parse(tokens);
-                    if (displayPerserResult) {
+                    if (displayParserResult) {
                         System.out.println("[Parser Log]");
                         for (Expression expression : expressions) {
                             System.out.println(expression.toString());
@@ -66,7 +77,7 @@ public class Q0Controller implements ActionListener {
                         System.out.println("");
                     }
                     calculator.calculate(expressions);
-                    if (displayCalclatorResult) {
+                    if (displayCalculatorResult) {
                         System.out.println("[Calculator Log]");
                         System.out.println(calculator.getLog());
                     }

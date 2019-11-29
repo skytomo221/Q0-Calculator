@@ -1,3 +1,10 @@
+package skytomo221.q0.parser;
+
+import skytomo221.q0.expression.*;
+import skytomo221.q0.lexer.Lexer;
+import skytomo221.q0.token.Token;
+import skytomo221.q0.token.TokenType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +75,7 @@ public class Parser {
                 || peek().getType() == TokenType.CHAR || peek().getType() == TokenType.STRING) {
             return new Operand(next());
         } else if (peek().getType() == TokenType.ID) {
-            Variable variable = new Variable(next().getName(), "Variable", null);
+            Variable variable = new Variable(next().getName(), "skytomo221.Q0Calculator.Variable", null);
             if (peek().getType() == TokenType.LPAR) {
                 next();
                 ArrayList<Expression> arguments = new ArrayList<Expression>();
@@ -208,7 +215,7 @@ public class Parser {
                 peek().getType() != TokenType.ELSE &&
                 peek().getType() != TokenType.ELSEIF &&
                 peek().getType() != TokenType.RPAR) {
-            operator.arguments.add(parseExpression());
+            operator.getArguments().add(parseExpression());
             skipSemicolon();
             skipNewLine();
         }

@@ -1,3 +1,5 @@
+package skytomo221.q0.lexer;
+
 import java.util.Collections;
 
 public class LexerException extends IllegalArgumentException {

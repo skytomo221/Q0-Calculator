@@ -1,3 +1,5 @@
+package skytomo221.q0;
+
 import javax.swing.Icon;
 import javax.swing.JButton;
 
@@ -5,7 +7,7 @@ import javax.swing.JButton;
  * 電卓で使用するボタンの定義です。
  * Jbutton に加えてボタンに意味を追加しました。
  */
-public class CalculatorButton extends JButton {
+public class Q0Button extends JButton {
     protected String meaning;
 
     /**
@@ -32,7 +34,7 @@ public class CalculatorButton extends JButton {
      *
      * @param text ボタンのテキスト
      */
-    public CalculatorButton(String text) {
+    public Q0Button(String text) {
         super(text);
         setMeaning(text);
     }
@@ -43,7 +45,7 @@ public class CalculatorButton extends JButton {
      * @param icon    ボタン上に表示するアイコン・イメージ
      * @param meaning ボタンを押したときに取得するボタンの意味
      */
-    public CalculatorButton(Icon icon, String meaning) {
+    public Q0Button(Icon icon, String meaning) {
         super(icon);
         setMeaning(meaning);
     }

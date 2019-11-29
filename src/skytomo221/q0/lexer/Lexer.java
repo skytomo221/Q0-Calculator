@@ -1,3 +1,8 @@
+package skytomo221.q0.lexer;
+
+import skytomo221.q0.token.Token;
+import skytomo221.q0.token.TokenType;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;

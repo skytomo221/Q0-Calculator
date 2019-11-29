@@ -1,3 +1,5 @@
+package skytomo221.q0.expression;
+
 /**
  * 式を表します。
  */

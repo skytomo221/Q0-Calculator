@@ -1,3 +1,7 @@
+package skytomo221.q0.expression;
+
+import skytomo221.q0.token.Token;
+
 /**
  * 被演算子を表します。
  */

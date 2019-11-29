@@ -1,3 +1,5 @@
+package skytomo221.q0.parser;
+
 import java.util.Collections;
 import java.util.stream.Collectors;
 

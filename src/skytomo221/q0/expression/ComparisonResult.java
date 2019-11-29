@@ -1,5 +1,9 @@
+package skytomo221.q0.expression;
+
+import skytomo221.q0.expression.Operand;
+
 /**
- * ComparisonResult 比較結果を保存するためのクラスです。
+ * skytomo221.Q0Calculator.ComparisonResult 比較結果を保存するためのクラスです。
  */
 public class ComparisonResult extends Operand {
     protected Operand comparison;
@@ -28,8 +32,8 @@ public class ComparisonResult extends Operand {
      * @param comparison 比較対象を指定します。
      * @param result     比較結果を指定します。
      */
-    ComparisonResult(Operand comparison, boolean value) {
-        super(Boolean.toString(value), "ComparisonResult", value);
+    public ComparisonResult(Operand comparison, boolean value) {
+        super(Boolean.toString(value), "skytomo221.Q0Calculator.ComparisonResult", value);
         this.comparison = comparison;
     }
 

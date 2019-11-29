@@ -1,3 +1,5 @@
+package skytomo221.q0.calculator;
+
 public class CalculatorException extends IllegalArgumentException {
     private Calculator calculator;
 

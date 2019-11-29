@@ -1,3 +1,9 @@
+package skytomo221.q0;
+
+import skytomo221.q0.calculator.Calculator;
+import skytomo221.q0.lexer.Lexer;
+import skytomo221.q0.token.Token;
+
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
@@ -21,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JTextPaneColorizer {
+public class Q0Colorize {
     protected JTextPane textPane;
     protected Document doc;
     protected Lexer lexer;
@@ -47,7 +53,7 @@ public class JTextPaneColorizer {
         }
     };
 
-    JTextPaneColorizer(JTextPane textPane, Lexer lexer) {
+    Q0Colorize(JTextPane textPane, Lexer lexer) {
         this.textPane = textPane;
         this.lexer = lexer;
         this.textPane.addHyperlinkListener(new HyperlinkListener() {
@@ -69,7 +75,7 @@ public class JTextPaneColorizer {
 
     public void insertHyperlink(String hyperlink) {
         JLabel label = new JLabel(hyperlink);
-        label.setForeground(JTextPaneColorizer.colors.get("info"));
+        label.setForeground(Q0Colorize.colors.get("info"));
         label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         label.setFont(new Font("Consolas", Font.PLAIN, 18));
         Font font = label.getFont();

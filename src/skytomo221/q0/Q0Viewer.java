@@ -1,3 +1,9 @@
+package skytomo221.q0;
+
+import skytomo221.q0.calculator.Calculator;
+import skytomo221.q0.lexer.Lexer;
+import skytomo221.q0.parser.Parser;
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -37,80 +43,80 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
      */
     private static final long serialVersionUID = 1L;
 
-    private List<CalculatorButton> buttons = Arrays.asList(
-            new CalculatorButton("AC"),
-            new CalculatorButton("C"),
-            new CalculatorButton(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
-            new CalculatorButton("÷"),
-            new CalculatorButton("7"),
-            new CalculatorButton("8"),
-            new CalculatorButton("9"),
-            new CalculatorButton("×"),
-            new CalculatorButton("4"),
-            new CalculatorButton("5"),
-            new CalculatorButton("6"),
-            new CalculatorButton("-"),
-            new CalculatorButton("1"),
-            new CalculatorButton("2"),
-            new CalculatorButton("3"),
-            new CalculatorButton("+"),
-            new CalculatorButton(new ImageIcon("./images/plus-and-minus.png"), "plus-and-minus"),
+    private List<Q0Button> buttons = Arrays.asList(
+            new Q0Button("AC"),
+            new Q0Button("C"),
+            new Q0Button(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
+            new Q0Button("÷"),
+            new Q0Button("7"),
+            new Q0Button("8"),
+            new Q0Button("9"),
+            new Q0Button("×"),
+            new Q0Button("4"),
+            new Q0Button("5"),
+            new Q0Button("6"),
+            new Q0Button("-"),
+            new Q0Button("1"),
+            new Q0Button("2"),
+            new Q0Button("3"),
+            new Q0Button("+"),
+            new Q0Button(new ImageIcon("./images/plus-and-minus.png"), "plus-and-minus"),
             // <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-            new CalculatorButton("0"),
-            new CalculatorButton("."),
-            new CalculatorButton("="));
-    private List<CalculatorButton> functionButtons = Arrays.asList(
-            new CalculatorButton("or"),
-            new CalculatorButton("xor"),
-            new CalculatorButton("not"),
-            new CalculatorButton("and"),
-            new CalculatorButton("mod"),
-            new CalculatorButton("%"),
-            new CalculatorButton("2nd"),
-            new CalculatorButton(new ImageIcon("./images/^2.png"), "^2"),
-            new CalculatorButton(new ImageIcon("./images/^3.png"), "^3"),
-            new CalculatorButton(new ImageIcon("./images/^.png"), "^"),
-            new CalculatorButton(new ImageIcon("./images/e^.png"), "e^"),
-            new CalculatorButton(new ImageIcon("./images/10^.png"), "10^"),
-            new CalculatorButton(new ImageIcon("./images/reciprocal.png"), "reciprocal"),
-            new CalculatorButton(new ImageIcon("./images/sqrt.png"), "sqrt"),
-            new CalculatorButton(new ImageIcon("./images/cbrt.png"), "cbrt"),
-            new CalculatorButton(new ImageIcon("./images/radical-symbol.png"), "radical-symbol"),
-            new CalculatorButton(new ImageIcon("./images/ln.png"), "ln"),
-            new CalculatorButton(new ImageIcon("./images/log10.png"), "log10"),
-            new CalculatorButton("x!"),
-            new CalculatorButton(new ImageIcon("./images/sin.png"), "sin"),
-            new CalculatorButton(new ImageIcon("./images/cos.png"), "cos"),
-            new CalculatorButton(new ImageIcon("./images/tan.png"), "tan"),
-            new CalculatorButton("e"),
-            new CalculatorButton("π"),
-            new CalculatorButton("rand()"),
-            new CalculatorButton(new ImageIcon("./images/sinh.png"), "sinh"),
-            new CalculatorButton(new ImageIcon("./images/cosh.png"), "cosh"),
-            new CalculatorButton(new ImageIcon("./images/tanh.png"), "tanh"),
-            new CalculatorButton("("),
-            new CalculatorButton(")"));
-    private List<CalculatorButton> fuButtons = Arrays.asList(
-            new CalculatorButton("AC"),
-            new CalculatorButton("C"),
-            new CalculatorButton(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
-            new CalculatorButton("÷"),
-            new CalculatorButton("7"),
-            new CalculatorButton("8"),
-            new CalculatorButton("¬"),
-            new CalculatorButton("×"),
-            new CalculatorButton("4"),
-            new CalculatorButton("5"),
-            new CalculatorButton("6"),
-            new CalculatorButton("-"),
-            new CalculatorButton("1"),
-            new CalculatorButton("2"),
-            new CalculatorButton("3"),
-            new CalculatorButton("+"),
-            new CalculatorButton(new ImageIcon("./images/plus-and-minus.png"), "plus-and-minus"),
-            new CalculatorButton("0"),
-            new CalculatorButton("."),
-            new CalculatorButton("="));
+            new Q0Button("0"),
+            new Q0Button("."),
+            new Q0Button("="));
+    private List<Q0Button> functionButtons = Arrays.asList(
+            new Q0Button("or"),
+            new Q0Button("xor"),
+            new Q0Button("not"),
+            new Q0Button("and"),
+            new Q0Button("mod"),
+            new Q0Button("%"),
+            new Q0Button("2nd"),
+            new Q0Button(new ImageIcon("./images/^2.png"), "^2"),
+            new Q0Button(new ImageIcon("./images/^3.png"), "^3"),
+            new Q0Button(new ImageIcon("./images/^.png"), "^"),
+            new Q0Button(new ImageIcon("./images/e^.png"), "e^"),
+            new Q0Button(new ImageIcon("./images/10^.png"), "10^"),
+            new Q0Button(new ImageIcon("./images/reciprocal.png"), "reciprocal"),
+            new Q0Button(new ImageIcon("./images/sqrt.png"), "sqrt"),
+            new Q0Button(new ImageIcon("./images/cbrt.png"), "cbrt"),
+            new Q0Button(new ImageIcon("./images/radical-symbol.png"), "radical-symbol"),
+            new Q0Button(new ImageIcon("./images/ln.png"), "ln"),
+            new Q0Button(new ImageIcon("./images/log10.png"), "log10"),
+            new Q0Button("x!"),
+            new Q0Button(new ImageIcon("./images/sin.png"), "sin"),
+            new Q0Button(new ImageIcon("./images/cos.png"), "cos"),
+            new Q0Button(new ImageIcon("./images/tan.png"), "tan"),
+            new Q0Button("e"),
+            new Q0Button("π"),
+            new Q0Button("rand()"),
+            new Q0Button(new ImageIcon("./images/sinh.png"), "sinh"),
+            new Q0Button(new ImageIcon("./images/cosh.png"), "cosh"),
+            new Q0Button(new ImageIcon("./images/tanh.png"), "tanh"),
+            new Q0Button("("),
+            new Q0Button(")"));
+    private List<Q0Button> fuButtons = Arrays.asList(
+            new Q0Button("AC"),
+            new Q0Button("C"),
+            new Q0Button(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
+            new Q0Button("÷"),
+            new Q0Button("7"),
+            new Q0Button("8"),
+            new Q0Button("¬"),
+            new Q0Button("×"),
+            new Q0Button("4"),
+            new Q0Button("5"),
+            new Q0Button("6"),
+            new Q0Button("-"),
+            new Q0Button("1"),
+            new Q0Button("2"),
+            new Q0Button("3"),
+            new Q0Button("+"),
+            new Q0Button(new ImageIcon("./images/plus-and-minus.png"), "plus-and-minus"),
+            new Q0Button("0"),
+            new Q0Button("."),
+            new Q0Button("="));
 
     private JTabbedPane tabbedPane;
     private JPanel buttonPanel = new JPanel();
@@ -127,8 +133,8 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
     protected Parser parser = new Parser();
     protected Calculator calculator = new Calculator();
 
-    private JTextPaneColorizer inputTextPaneColorizer;
-    private JTextPaneColorizer logTextPaneColorizer;
+    private Q0Colorize inputTextPaneColorizer;
+    private Q0Colorize logTextPaneColorizer;
 
     public static HashMap<String, Color> colors = new HashMap<>() {
         private static final long serialVersionUID = 1L;
@@ -166,18 +172,18 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
 
         UIManager.put("TabbedPane.borderHightlightColor", new Color(17, 17, 17));
         UIManager.put("TabbedPane.darkShadow", new Color(17, 17, 17));
-        UIManager.put("TabbedPane.focus", JTextPaneColorizer.colors.get("punctuation"));
-        UIManager.put("TabbedPane.selected", JTextPaneColorizer.colors.get("punctuation"));
+        UIManager.put("TabbedPane.focus", Q0Colorize.colors.get("punctuation"));
+        UIManager.put("TabbedPane.selected", Q0Colorize.colors.get("punctuation"));
         UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
-        UIManager.put("Button.select", JTextPaneColorizer.colors.get("punctuation"));
+        UIManager.put("Button.select", Q0Colorize.colors.get("punctuation"));
 
         tabbedPane = new JTabbedPane();
         tabbedPane.add("標準", buttonPanel);
         tabbedPane.add("関数", functionButtonPanel);
         tabbedPane.add("フ界", fuButtonPanel);
-        buttonPanel.setBorder(new LineBorder(JTextPaneColorizer.colors.get("punctuation"), 3));
-        functionButtonPanel.setBorder(new LineBorder(JTextPaneColorizer.colors.get("punctuation"), 3));
-        fuButtonPanel.setBorder(new LineBorder(JTextPaneColorizer.colors.get("punctuation"), 3));
+        buttonPanel.setBorder(new LineBorder(Q0Colorize.colors.get("punctuation"), 3));
+        functionButtonPanel.setBorder(new LineBorder(Q0Colorize.colors.get("punctuation"), 3));
+        fuButtonPanel.setBorder(new LineBorder(Q0Colorize.colors.get("punctuation"), 3));
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
@@ -193,56 +199,56 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
         p2.add(tabbedPane);
         getContentPane().add(p1, BorderLayout.CENTER);
 
-        for (CalculatorButton button : buttons) {
+        for (Q0Button button : buttons) {
             buttonPanel.add(button);
             button.addActionListener(controller);
-            button.setBackground(JTextPaneColorizer.colors.get("background"));
+            button.setBackground(Q0Colorize.colors.get("background"));
             button.setBorder(null);
             if (button.getText().equals("AC") || button.getText().equals("C")) {
-                button.setForeground(JTextPaneColorizer.colors.get("operator"));
+                button.setForeground(Q0Colorize.colors.get("operator"));
             } else {
-                button.setForeground(JTextPaneColorizer.colors.get("foreground"));
+                button.setForeground(Q0Colorize.colors.get("foreground"));
             }
         }
         buttonPanel.setLayout(new GridLayout(5, 4));
-        for (CalculatorButton button : functionButtons) {
+        for (Q0Button button : functionButtons) {
             functionButtonPanel.add(button);
             button.addActionListener(controller);
-            button.setBackground(JTextPaneColorizer.colors.get("background"));
-            button.setForeground(JTextPaneColorizer.colors.get("foreground"));
+            button.setBackground(Q0Colorize.colors.get("background"));
+            button.setForeground(Q0Colorize.colors.get("foreground"));
             button.setBorder(null);
         }
         functionButtonPanel.setLayout(new GridLayout(5, 6));
-        for (CalculatorButton button : fuButtons) {
+        for (Q0Button button : fuButtons) {
             fuButtonPanel.add(button);
             button.addActionListener(controller);
-            button.setBackground(JTextPaneColorizer.colors.get("background"));
+            button.setBackground(Q0Colorize.colors.get("background"));
             button.setBorder(null);
             if (button.getText().equals("AC") || button.getText().equals("C")) {
-                button.setForeground(JTextPaneColorizer.colors.get("operator"));
+                button.setForeground(Q0Colorize.colors.get("operator"));
             } else {
-                button.setForeground(JTextPaneColorizer.colors.get("foreground"));
+                button.setForeground(Q0Colorize.colors.get("foreground"));
             }
         }
         fuButtonPanel.setLayout(new GridLayout(5, 4));
-        tabbedPane.setBackground(JTextPaneColorizer.colors.get("background"));
-        tabbedPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
-        inputTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
-        inputTextPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
+        tabbedPane.setBackground(Q0Colorize.colors.get("background"));
+        tabbedPane.setForeground(Q0Colorize.colors.get("foreground"));
+        inputTextPane.setBackground(Q0Colorize.colors.get("background"));
+        inputTextPane.setForeground(Q0Colorize.colors.get("foreground"));
         inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 36));
         inputTextPane.addKeyListener(this);
-        inputTextPane.setCaretColor(JTextPaneColorizer.colors.get("foreground"));
-        inputTextPaneColorizer = new JTextPaneColorizer(inputTextPane, lexer);
-        logTextPane.setBackground(JTextPaneColorizer.colors.get("background"));
-        logTextPane.setForeground(JTextPaneColorizer.colors.get("foreground"));
+        inputTextPane.setCaretColor(Q0Colorize.colors.get("foreground"));
+        inputTextPaneColorizer = new Q0Colorize(inputTextPane, lexer);
+        logTextPane.setBackground(Q0Colorize.colors.get("background"));
+        logTextPane.setForeground(Q0Colorize.colors.get("foreground"));
         logTextPane.setFont(new Font("Consolas", Font.PLAIN, 18));
         logTextPane.setEditable(false);
-        logTextPaneColorizer = new JTextPaneColorizer(logTextPane, lexer);
+        logTextPaneColorizer = new Q0Colorize(logTextPane, lexer);
         inputScrollPane.setBorder(null);
-        inputScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-        inputScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
-        inputScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-        inputScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        inputScrollPane.getHorizontalScrollBar().setBackground(Q0Colorize.colors.get("background"));
+        inputScrollPane.getHorizontalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
+        inputScrollPane.getVerticalScrollBar().setBackground(Q0Colorize.colors.get("background"));
+        inputScrollPane.getVerticalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
         inputScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
@@ -258,10 +264,10 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             }
         });
         logScrollPane.setBorder(null);
-        logScrollPane.getHorizontalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-        logScrollPane.getHorizontalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
-        logScrollPane.getVerticalScrollBar().setBackground(JTextPaneColorizer.colors.get("background"));
-        logScrollPane.getVerticalScrollBar().setForeground(JTextPaneColorizer.colors.get("punctuation"));
+        logScrollPane.getHorizontalScrollBar().setBackground(Q0Colorize.colors.get("background"));
+        logScrollPane.getHorizontalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
+        logScrollPane.getVerticalScrollBar().setBackground(Q0Colorize.colors.get("background"));
+        logScrollPane.getVerticalScrollBar().setForeground(Q0Colorize.colors.get("punctuation"));
         logScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
@@ -278,11 +284,11 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
         });
         inputStyledDocument = inputTextPane.getStyledDocument();
         inputStyledDocument.addDocumentListener(this);
-        inputTextPaneColorizer.insertColorText("0", JTextPaneColorizer.colors.get("constant"));
-        logTextPaneColorizer.insertColorText("Q0 Calculator へようこそ！\n", JTextPaneColorizer.colors.get("info"));
-        logTextPaneColorizer.insertColorText("詳細な説明書は ", JTextPaneColorizer.colors.get("info"));
+        inputTextPaneColorizer.insertColorText("0", Q0Colorize.colors.get("constant"));
+        logTextPaneColorizer.insertColorText("Q0 Calculator へようこそ！\n", Q0Colorize.colors.get("info"));
+        logTextPaneColorizer.insertColorText("詳細な説明書は ", Q0Colorize.colors.get("info"));
         logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
-        logTextPaneColorizer.insertColorText(" をクリックしてください。\n\n", JTextPaneColorizer.colors.get("info"));
+        logTextPaneColorizer.insertColorText(" をクリックしてください。\n\n", Q0Colorize.colors.get("info"));
     }
 
     public boolean isTextOfInput0() {
@@ -345,25 +351,25 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
     }
 
     public void insertResultToLog(String answer) throws Exception {
-        logTextPaneColorizer.insertColorText("Input  => ", JTextPaneColorizer.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("Input  => ", Q0Colorize.colors.get("foreground"));
         logTextPaneColorizer.insertCode(inputTextPane.getText().replaceAll("\n", "\n          "));
-        logTextPaneColorizer.insertColorText("\n", JTextPaneColorizer.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText("Output => ", JTextPaneColorizer.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("\n", Q0Colorize.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("Output => ", Q0Colorize.colors.get("foreground"));
         logTextPaneColorizer.insertCode(answer);
-        logTextPaneColorizer.insertColorText("\n\n", JTextPaneColorizer.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("\n\n", Q0Colorize.colors.get("foreground"));
         inputTextPane.setText(calculator.getAnswerToString());
     }
 
     public void insertErrorToLog(String kind, String message) {
-        logTextPaneColorizer.insertColorText("Input  => ", JTextPaneColorizer.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText(inputTextPane.getText(), JTextPaneColorizer.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText("\n", JTextPaneColorizer.colors.get("foreground"));
-        logTextPaneColorizer.insertColorText(kind + "\n" + message, JTextPaneColorizer.colors.get("error"));
+        logTextPaneColorizer.insertColorText("Input  => ", Q0Colorize.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText(inputTextPane.getText(), Q0Colorize.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText("\n", Q0Colorize.colors.get("foreground"));
+        logTextPaneColorizer.insertColorText(kind + "\n" + message, Q0Colorize.colors.get("error"));
     }
 
     public void insertInstructionsHyperlinkToLog() {
         logTextPaneColorizer.insertHyperlink("https://github.com/skytomo221/Q0-Calculator");
-        logTextPaneColorizer.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", JTextPaneColorizer.colors.get("info"));
+        logTextPaneColorizer.insertColorText(" からこの電卓の説明書を見ることができます。\n\n", Q0Colorize.colors.get("info"));
     }
 
     public void setHighlighted(boolean highlighted) {
@@ -379,7 +385,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             }
             for (JButton jButton : buttons) {
                 if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton) jButton).getMeaning() + ".png");
+                    ImageIcon icon = new ImageIcon("images/" + ((Q0Button) jButton).getMeaning() + ".png");
                     double width = jButton.getWidth();
                     double height = jButton.getHeight();
                     double imagemax = Math.max(icon.getIconWidth(), icon.getIconHeight()) * 1.2;
@@ -396,7 +402,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             }
             for (JButton jButton : functionButtons) {
                 if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton) jButton).getMeaning() + ".png");
+                    ImageIcon icon = new ImageIcon("images/" + ((Q0Button) jButton).getMeaning() + ".png");
                     double width = jButton.getWidth();
                     double height = jButton.getHeight();
                     double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);
@@ -412,7 +418,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             }
             for (JButton jButton : fuButtons) {
                 if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((CalculatorButton) jButton).getMeaning() + ".png");
+                    ImageIcon icon = new ImageIcon("images/" + ((Q0Button) jButton).getMeaning() + ".png");
                     double width = jButton.getWidth();
                     double height = jButton.getHeight();
                     double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);

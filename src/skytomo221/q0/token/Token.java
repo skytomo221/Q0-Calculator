@@ -1,5 +1,7 @@
+package skytomo221.q0.token;
+
 /**
- * 字句解析するときにトークンはこの {@code Token} クラスによって格納されます。
+ * 字句解析するときにトークンはこの {@code skytomo221.Q0Calculator.Token} クラスによって格納されます。
  */
 public class Token {
 
@@ -49,7 +51,7 @@ public class Token {
      * @param type トークンの種類
      * @param name トークンの名前
      */
-    Token(TokenType type, String name) {
+    public Token(TokenType type, String name) {
         this.type = type;
         this.name = name;
     }
@@ -61,7 +63,7 @@ public class Token {
      * @param name  トークンの名前
      * @param value トークンの値
      */
-    Token(TokenType type, String name, Object value) {
+    public Token(TokenType type, String name, Object value) {
         this.type = type;
         this.name = name;
         this.value = value;
