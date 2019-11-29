@@ -12,8 +12,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.StyledDocument;
@@ -25,112 +23,119 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Q0Viewer extends JFrame implements ComponentListener {
-    private static final long serialVersionUID = 1L;
+class Q0Viewer extends JFrame {
 
-    protected List<Q0Button> buttons = Arrays.asList(
-            new Q0Button("AC"),
-            new Q0Button("C"),
-            new Q0Button("clear-symbol"),
-            new Q0Button("÷"),
-            new Q0Button("7"),
-            new Q0Button("8"),
-            new Q0Button("9"),
-            new Q0Button("×"),
-            new Q0Button("4"),
-            new Q0Button("5"),
-            new Q0Button("6"),
-            new Q0Button("-"),
-            new Q0Button("1"),
-            new Q0Button("2"),
-            new Q0Button("3"),
-            new Q0Button("+"),
-            new Q0Button("plus-and-minus"),
-            // Icons made by Google (https://www.flaticon.com/authors/google) from https://www.flaticon.com/
-            new Q0Button("0"),
-            new Q0Button("."),
-            new Q0Button("="));
-    protected List<Q0Button> functionButtons = Arrays.asList(
-            new Q0Button("or"),
-            new Q0Button("xor"),
-            new Q0Button("not"),
-            new Q0Button("and"),
-            new Q0Button("mod"),
-            new Q0Button("%"),
-            new Q0Button("2nd"),
-            new Q0Button("^2"),
-            new Q0Button("^3"),
-            new Q0Button("^"),
-            new Q0Button("e^"),
-            new Q0Button("10^"),
-            new Q0Button("reciprocal"),
-            new Q0Button("sqrt"),
-            new Q0Button("cbrt"),
-            new Q0Button("radical-symbol"),
-            new Q0Button("ln"),
-            new Q0Button("log10"),
-            new Q0Button("x!"),
-            new Q0Button("sin"),
-            new Q0Button("cos"),
-            new Q0Button("tan"),
-            new Q0Button("e"),
-            new Q0Button("π"),
-            new Q0Button("rand()"),
-            new Q0Button("sinh"),
-            new Q0Button("cosh"),
-            new Q0Button("tanh"),
-            new Q0Button("("),
-            new Q0Button(")"));
-    protected List<Q0Button> fuButtons = Arrays.asList(
-            new Q0Button("AC"),
-            new Q0Button("C"),
-            new Q0Button("clear-symbol"),
-            new Q0Button("÷"),
-            new Q0Button("7"),
-            new Q0Button("8"),
-            new Q0Button("¬"),
-            new Q0Button("×"),
-            new Q0Button("4"),
-            new Q0Button("5"),
-            new Q0Button("6"),
-            new Q0Button("-"),
-            new Q0Button("1"),
-            new Q0Button("2"),
-            new Q0Button("3"),
-            new Q0Button("+"),
-            new Q0Button("plus-and-minus"),
-            new Q0Button("0"),
-            new Q0Button("."),
-            new Q0Button("="));
-
+    protected Map<String, List<Q0Button>> buttons = new HashMap<>() {
+        {
+            put("標準", Arrays.asList(
+                    new Q0Button("AC"),
+                    new Q0Button("C"),
+                    new Q0Button("clear-symbol"),
+                    new Q0Button("÷"),
+                    new Q0Button("7"),
+                    new Q0Button("8"),
+                    new Q0Button("9"),
+                    new Q0Button("×"),
+                    new Q0Button("4"),
+                    new Q0Button("5"),
+                    new Q0Button("6"),
+                    new Q0Button("-"),
+                    new Q0Button("1"),
+                    new Q0Button("2"),
+                    new Q0Button("3"),
+                    new Q0Button("+"),
+                    new Q0Button("plus-and-minus"),
+                    // Icons made by Google (https://www.flaticon.com/authors/google) from https://www.flaticon.com/
+                    new Q0Button("0"),
+                    new Q0Button("."),
+                    new Q0Button("="))
+            );
+            put("関数", Arrays.asList(
+                    new Q0Button("or"),
+                    new Q0Button("xor"),
+                    new Q0Button("not"),
+                    new Q0Button("and"),
+                    new Q0Button("mod"),
+                    new Q0Button("%"),
+                    new Q0Button("2nd"),
+                    new Q0Button("^2"),
+                    new Q0Button("^3"),
+                    new Q0Button("^"),
+                    new Q0Button("e^"),
+                    new Q0Button("10^"),
+                    new Q0Button("reciprocal"),
+                    new Q0Button("sqrt"),
+                    new Q0Button("cbrt"),
+                    new Q0Button("radical-symbol"),
+                    new Q0Button("ln"),
+                    new Q0Button("log10"),
+                    new Q0Button("x!"),
+                    new Q0Button("sin"),
+                    new Q0Button("cos"),
+                    new Q0Button("tan"),
+                    new Q0Button("e"),
+                    new Q0Button("π"),
+                    new Q0Button("rand()"),
+                    new Q0Button("sinh"),
+                    new Q0Button("cosh"),
+                    new Q0Button("tanh"),
+                    new Q0Button("("),
+                    new Q0Button(")"))
+            );
+            put("フ界", Arrays.asList(
+                    new Q0Button("AC"),
+                    new Q0Button("C"),
+                    new Q0Button("clear-symbol"),
+                    new Q0Button("÷"),
+                    new Q0Button("7"),
+                    new Q0Button("8"),
+                    new Q0Button("¬"),
+                    new Q0Button("×"),
+                    new Q0Button("4"),
+                    new Q0Button("5"),
+                    new Q0Button("6"),
+                    new Q0Button("-"),
+                    new Q0Button("1"),
+                    new Q0Button("2"),
+                    new Q0Button("3"),
+                    new Q0Button("+"),
+                    new Q0Button("plus-and-minus"),
+                    new Q0Button("0"),
+                    new Q0Button("."),
+                    new Q0Button("="))
+            );
+        }
+    };
+    protected Map<String, JPanel> panels = new HashMap<>() {
+        {
+            put("標準", new JPanel());
+            put("関数", new JPanel());
+            put("フ界", new JPanel());
+        }
+    };
     protected JTabbedPane tabbedPane;
-    protected JPanel buttonPanel = new JPanel();
-    protected JPanel functionButtonPanel = new JPanel();
-    protected JPanel fuButtonPanel = new JPanel();
     protected JTextPane inputTextPane = new JTextPane();
     protected JTextPane logTextPane = new JTextPane();
-    protected StyledDocument inputStyledDocument;
     protected JScrollPane inputScrollPane = new JScrollPane(inputTextPane);
     protected JScrollPane logScrollPane = new JScrollPane(logTextPane);
+    protected StyledDocument inputStyledDocument;
 
     protected Q0Colorize inputTextPaneColorize;
     protected Q0Colorize logTextPaneColorize;
 
     public static HashMap<String, Color> colors = new HashMap<>() {
-        private static final long serialVersionUID = 1L;
-
         {
             put("black", new Color(0x111111));
             put("selected", new Color(0x696969));
@@ -156,122 +161,77 @@ class Q0Viewer extends JFrame implements ComponentListener {
         setSize(800, 500);
         setBackground(colors.get("black"));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        addComponentListener(this);
-
         try {
             setIconImage(ImageIO.read(new File("images/icon.png")));
-        } catch (IOException exc) {
-            exc.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+        UIManager.put("Button.select", colors.get("selected"));
         UIManager.put("TabbedPane.borderHightlightColor", colors.get("black"));
         UIManager.put("TabbedPane.darkShadow", colors.get("black"));
         UIManager.put("TabbedPane.focus", colors.get("selected"));
         UIManager.put("TabbedPane.selected", colors.get("selected"));
         UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
-        UIManager.put("Button.select", colors.get("selected"));
-
         tabbedPane = new JTabbedPane();
-        tabbedPane.add("標準", buttonPanel);
-        tabbedPane.add("関数", functionButtonPanel);
-        tabbedPane.add("フ界", fuButtonPanel);
-        buttonPanel.setBorder(new LineBorder(colors.get("selected"), 3));
-        functionButtonPanel.setBorder(new LineBorder(colors.get("selected"), 3));
-        fuButtonPanel.setBorder(new LineBorder(colors.get("selected"), 3));
+
+        panels.get("標準").setLayout(new GridLayout(5, 4));
+        panels.get("関数").setLayout(new GridLayout(5, 6));
+        panels.get("フ界").setLayout(new GridLayout(5, 4));
+        for (String name : panels.keySet()) {
+            tabbedPane.add(name, panels.get(name));
+            for (Q0Button button : buttons.get(name)) {
+                panels.get(name).add(button);
+                button.setBackground(colors.get("background"));
+                button.setForeground(colors.get("foreground"));
+                button.setBorder(null);
+                if (button.getText().equals("AC") || button.getText().equals("C")) {
+                    button.setForeground(colors.get("operator"));
+                }
+            }
+        }
 
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
-        p1.setBackground(colors.get("black"));
-        p2.setBackground(colors.get("black"));
         p1.setLayout(new GridLayout(1, 2, 5, 0));
         p2.setLayout(new GridLayout(2, 1, 5, 0));
-        p1.setBorder(null);
-        p2.setBorder(null);
         p1.add(p2);
         p1.add(logScrollPane);
         p2.add(inputScrollPane);
         p2.add(tabbedPane);
         getContentPane().add(p1, BorderLayout.CENTER);
-
-        for (Q0Button button : buttons) {
-            buttonPanel.add(button);
-            button.setBackground(colors.get("background"));
-            button.setBorder(null);
-            if (button.getText().equals("AC") || button.getText().equals("C")) {
-                button.setForeground(colors.get("operator"));
-            } else {
-                button.setForeground(colors.get("foreground"));
-            }
+        for (JPanel panel : Arrays.asList(p1, p2)) {
+            panel.setBackground(colors.get("black"));
+            panel.setBorder(null);
         }
-        buttonPanel.setLayout(new GridLayout(5, 4));
-        for (Q0Button button : functionButtons) {
-            functionButtonPanel.add(button);
-            button.setBackground(colors.get("background"));
-            button.setForeground(colors.get("foreground"));
-            button.setBorder(null);
+        for (JTextPane pane : Arrays.asList(inputTextPane, logTextPane)) {
+            pane.setBackground(colors.get("background"));
+            pane.setForeground(colors.get("foreground"));
         }
-        functionButtonPanel.setLayout(new GridLayout(5, 6));
-        for (Q0Button button : fuButtons) {
-            fuButtonPanel.add(button);
-            button.setBackground(colors.get("background"));
-            button.setBorder(null);
-            if (button.getText().equals("AC") || button.getText().equals("C")) {
-                button.setForeground(colors.get("operator"));
-            } else {
-                button.setForeground(colors.get("foreground"));
-            }
-        }
-        fuButtonPanel.setLayout(new GridLayout(5, 4));
         tabbedPane.setBackground(colors.get("background"));
         tabbedPane.setForeground(colors.get("foreground"));
-        inputTextPane.setBackground(colors.get("background"));
-        inputTextPane.setForeground(colors.get("foreground"));
-        inputTextPane.setFont(new Font("Bahnschrift", Font.PLAIN, 36));
+        inputTextPane.setFont(new Font("Consolas", Font.PLAIN, 36));
         inputTextPane.setCaretColor(colors.get("foreground"));
-        inputTextPaneColorize = new Q0Colorize(inputTextPane, new Lexer());
-        logTextPane.setBackground(colors.get("background"));
-        logTextPane.setForeground(colors.get("foreground"));
-        logTextPane.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        inputTextPaneColorize = new Q0Colorize(inputTextPane, new Lexer(), colors);
+        logTextPane.setFont(new Font("Consolas", Font.PLAIN, 18));
         logTextPane.setEditable(false);
-        logTextPaneColorize = new Q0Colorize(logTextPane, new Lexer());
-        inputScrollPane.setBorder(null);
-        inputScrollPane.getHorizontalScrollBar().setBackground(colors.get("background"));
-        inputScrollPane.getHorizontalScrollBar().setForeground(colors.get("punctuation"));
-        inputScrollPane.getVerticalScrollBar().setBackground(colors.get("background"));
-        inputScrollPane.getVerticalScrollBar().setForeground(colors.get("selected"));
-        inputScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
-                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
-            }
-        });
-        inputScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
-                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
-            }
-        });
-        logScrollPane.setBorder(null);
-        logScrollPane.getHorizontalScrollBar().setBackground(colors.get("background"));
-        logScrollPane.getHorizontalScrollBar().setForeground(colors.get("selected"));
-        logScrollPane.getVerticalScrollBar().setBackground(colors.get("background"));
-        logScrollPane.getVerticalScrollBar().setForeground(colors.get("punctuation"));
-        logScrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
-                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
-            }
-        });
-        logScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
-                this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
-            }
-        });
+        logTextPaneColorize = new Q0Colorize(logTextPane, new Lexer(), colors);
+        for (JScrollPane pane : Arrays.asList(inputScrollPane, logScrollPane)) {
+            pane.setBorder(null);
+            pane.getHorizontalScrollBar().setBackground(colors.get("background"));
+            pane.getHorizontalScrollBar().setForeground(colors.get("punctuation"));
+            pane.getVerticalScrollBar().setBackground(colors.get("background"));
+            pane.getVerticalScrollBar().setForeground(colors.get("selected"));
+            Supplier<BasicScrollBarUI> getBasicScrollBarUI = () -> new BasicScrollBarUI() {
+                @Override
+                protected void configureScrollBarColors() {
+                    this.trackColor = new Color(0x2d, 0x2a, 0x2e, 0x12);
+                    this.thumbColor = new Color(0xfc, 0xfc, 0xfa, 0x12);
+                }
+            };
+            pane.getHorizontalScrollBar().setUI(getBasicScrollBarUI.get());
+            pane.getVerticalScrollBar().setUI(getBasicScrollBarUI.get());
+        }
         inputStyledDocument = inputTextPane.getStyledDocument();
         inputTextPaneColorize.insertColorText("0", colors.get("constant"));
         logTextPaneColorize.insertColorText("Q0 Calculator へようこそ！\n", colors.get("info"));
@@ -281,14 +241,10 @@ class Q0Viewer extends JFrame implements ComponentListener {
     }
 
     public void addActionListener(ActionListener l) {
-        for (Q0Button button : buttons) {
-            button.addActionListener(l);
-        }
-        for (Q0Button button : functionButtons) {
-            button.addActionListener(l);
-        }
-        for (Q0Button button : fuButtons) {
-            button.addActionListener(l);
+        for (String key : buttons.keySet()) {
+            for (Q0Button button : buttons.get(key)) {
+                button.addActionListener(l);
+            }
         }
     }
 
@@ -385,72 +341,26 @@ class Q0Viewer extends JFrame implements ComponentListener {
         inputTextPaneColorize.highlighted = highlighted;
     }
 
-    @Override
     public void componentResized(ComponentEvent e) {
         BiFunction<Integer, Integer, Integer> getFontSize = (width, length) -> (int) (width / (3 * (length + 12)));
         if (e.getSource() == this) {
-            for (JButton jButton : buttons) {
-                jButton.setFont(new Font("Bahnschrift", Font.BOLD,
-                        getFontSize.apply(getWidth(),jButton.getText().length())));
-            }
-            for (JButton jButton : buttons) {
-                if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((Q0Button) jButton).getMeaning() + ".png");
-                    double width = jButton.getWidth();
-                    double height = jButton.getHeight();
-                    double imagemax = Math.max(icon.getIconWidth(), icon.getIconHeight()) * 1.2;
-                    double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);
-                    width = icon.getIconWidth() / ratio;
-                    height = icon.getIconHeight() / ratio;
-                    jButton.setIcon(new ImageIcon(icon.getImage().
-                            getScaledInstance((int) width, (int) height, Image.SCALE_DEFAULT)));
-                }
-            }
-            for (JButton jButton : functionButtons) {
-                jButton.setFont(new Font("Bahnschrift", Font.BOLD,
-                        getFontSize.apply(getWidth(),jButton.getText().length())));
-            }
-            for (JButton jButton : functionButtons) {
-                if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((Q0Button) jButton).getMeaning() + ".png");
-                    double width = jButton.getWidth();
-                    double height = jButton.getHeight();
-                    double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);
-                    width = icon.getIconWidth() / ratio;
-                    height = icon.getIconHeight() / ratio;
-                    jButton.setIcon(new ImageIcon(icon.getImage().
-                            getScaledInstance((int) width, (int) height, Image.SCALE_DEFAULT)));
-                }
-            }
-            for (JButton jButton : fuButtons) {
-                jButton.setFont(new Font("Bahnschrift", Font.BOLD,
-                        getFontSize.apply(getWidth(),jButton.getText().length())));
-            }
-            for (JButton jButton : fuButtons) {
-                if (jButton.getIcon() != null) {
-                    ImageIcon icon = new ImageIcon("images/" + ((Q0Button) jButton).getMeaning() + ".png");
-                    double width = jButton.getWidth();
-                    double height = jButton.getHeight();
-                    double ratio = Math.max(icon.getIconWidth() * 1.2 / width, icon.getIconHeight() * 1.2 / height);
-                    width = icon.getIconWidth() / ratio;
-                    height = icon.getIconHeight() / ratio;
-                    jButton.setIcon(new ImageIcon(icon.getImage().
-                            getScaledInstance((int) width, (int) height, Image.SCALE_DEFAULT)));
+            for (String key : buttons.keySet()) {
+                for (JButton button : buttons.get(key)) {
+                    button.setFont(new Font("Bahnschrift", Font.BOLD,
+                            getFontSize.apply(getWidth(), button.getText().length())));
+                    if (button.getIcon() != null) {
+                        ImageIcon icon = new ImageIcon("images/" + ((Q0Button) button).getMeaning() + ".png");
+                        double ratio = Math.max(
+                                icon.getIconWidth() * 1.2 / button.getWidth(),
+                                icon.getIconHeight() * 1.2 / button.getHeight());
+                        double width = icon.getIconWidth() / ratio;
+                        double height = icon.getIconHeight() / ratio;
+                        button.setIcon(new ImageIcon(icon.getImage().
+                                getScaledInstance((int) width, (int) height, Image.SCALE_DEFAULT)));
+                    }
                 }
             }
         }
-    }
-
-    @Override
-    public void componentMoved(ComponentEvent e) {
-    }
-
-    @Override
-    public void componentShown(ComponentEvent e) {
-    }
-
-    @Override
-    public void componentHidden(ComponentEvent e) {
     }
 
     public void colorizeCode() {

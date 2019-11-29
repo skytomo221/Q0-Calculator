@@ -32,30 +32,12 @@ public class Q0Colorize {
     protected Document doc;
     protected Lexer lexer;
     protected Boolean highlighted = false;
-    public static HashMap<String, Color> colors = new HashMap<>() {
-        private static final long serialVersionUID = 1L;
+    protected HashMap<String, Color> colors;
 
-        {
-            put("background", new Color(0x2d2a2e));
-            put("foreground", new Color(0xeeeeee));
-            put("info", new Color(0x6796e6));
-            put("warn", new Color(0xcd9731));
-            put("error", new Color(0xf44747));
-            put("debug", new Color(0xb267e6));
-            put("argument", new Color(0xfc9867));
-            put("constant", new Color(0xab9df2));
-            put("function", new Color(0xa9dc76));
-            put("number", new Color(0xab9df2));
-            put("operator", new Color(0xff6188));
-            put("punctuation", new Color(0x939293));
-            put("string", new Color(0xffd866));
-            put("type", new Color(0x78dce8));
-        }
-    };
-
-    Q0Colorize(JTextPane textPane, Lexer lexer) {
+    Q0Colorize(JTextPane textPane, Lexer lexer, HashMap<String, Color> colors) {
         this.textPane = textPane;
         this.lexer = lexer;
+        this.colors = colors;
         this.textPane.addHyperlinkListener(new HyperlinkListener() {
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -75,7 +57,7 @@ public class Q0Colorize {
 
     public void insertHyperlink(String hyperlink) {
         JLabel label = new JLabel(hyperlink);
-        label.setForeground(Q0Colorize.colors.get("info"));
+        label.setForeground(colors.get("info"));
         label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         label.setFont(new Font("Consolas", Font.PLAIN, 18));
         Font font = label.getFont();

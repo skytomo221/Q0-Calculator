@@ -13,11 +13,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.List;
 
-public class Q0Controller implements ActionListener, DocumentListener, KeyListener {
+public class Q0Controller implements ActionListener, ComponentListener, DocumentListener, KeyListener {
     protected Q0Viewer viewer;
 
     protected Lexer lexer = new Lexer();
@@ -34,14 +36,15 @@ public class Q0Controller implements ActionListener, DocumentListener, KeyListen
     public void setViewer(Q0Viewer viewer) {
         this.viewer = viewer;
         viewer.addActionListener(this);
+        viewer.addComponentListener(this);
         viewer.addDocumentListener(this);
         viewer.addKeyListener(this);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof Q0Button) {
-            Q0Button b = (Q0Button) e.getSource();
+    public void actionPerformed(ActionEvent actionEvent) {
+        if (actionEvent.getSource() instanceof Q0Button) {
+            Q0Button b = (Q0Button) actionEvent.getSource();
             if (viewer.isTextOfInput0() &&
                     b.getMeaning().matches("\\d|¬|(?!or)(?!xor)(?!and)(?!mod)[A-Za-z]+")) {
                 viewer.emptyInput();
@@ -114,17 +117,23 @@ public class Q0Controller implements ActionListener, DocumentListener, KeyListen
     }
 
     @Override
-    public void keyTyped(KeyEvent keyEvent) {
-        viewer.setHighlighted(false);
+    public void componentResized(ComponentEvent componentEvent) {
+        viewer.componentResized(componentEvent);
     }
 
     @Override
-    public void keyPressed(KeyEvent keyEvent) {
+    public void componentMoved(ComponentEvent componentEvent) {
 
     }
 
     @Override
-    public void keyReleased(KeyEvent keyEvent) {
+    public void componentShown(ComponentEvent componentEvent) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent componentEvent) {
+
     }
 
     @Override
@@ -140,5 +149,19 @@ public class Q0Controller implements ActionListener, DocumentListener, KeyListen
     @Override
     public void changedUpdate(DocumentEvent documentEvent) {
 
+    }
+
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+        viewer.setHighlighted(false);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
     }
 }
