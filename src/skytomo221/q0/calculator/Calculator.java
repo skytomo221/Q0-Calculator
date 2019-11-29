@@ -1,6 +1,12 @@
 package skytomo221.q0.calculator;
 
-import skytomo221.q0.expression.*;
+import skytomo221.q0.expression.ComparisonResult;
+import skytomo221.q0.expression.EnumeratedType;
+import skytomo221.q0.expression.Expression;
+import skytomo221.q0.expression.Function;
+import skytomo221.q0.expression.Operand;
+import skytomo221.q0.expression.Operator;
+import skytomo221.q0.expression.Variable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,11 +18,11 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public class Calculator {
-    private Map<String, Variable> variables;
-    private Operand answer;
-    private List<Expression> expressions;
-    private List<EnumeratedType> enumeratedTypes;
-    public static final List<String> definedFunctions = new ArrayList<String>(Arrays.asList(
+    protected Map<String, Variable> variables;
+    protected Operand answer;
+    protected List<Expression> expressions;
+    protected List<EnumeratedType> enumeratedTypes;
+    protected static final List<String> definedFunctions = new ArrayList<String>(Arrays.asList(
             "acos",
             "asin",
             "atan",
@@ -44,15 +50,15 @@ public class Calculator {
             "ulp"
     ));
 
-    private long logNumber = 0;
+    protected long logNumber = 0;
     /**
      * 解析中の式を選択します。
      */
-    private Expression currentExpression = null;
+    protected Expression currentExpression = null;
     /**
      * ログを残します。
      */
-    private String log = null;
+    protected String log = null;
 
     public Calculator() {
         variables = new HashMap<String, Variable>();
@@ -72,6 +78,8 @@ public class Calculator {
     protected String getLogNumber(long index) {
         return "$" + Long.toString(logNumber + index);
     }
+
+    public static  List<String> getDefinedFunctions() {return definedFunctions;}
 
     protected void setLog(Expression currentExpression) {
         logNumber++;
@@ -138,7 +146,7 @@ public class Calculator {
         return null;
     }
 
-    private Operand getOperand(Expression expression) {
+    protected Operand getOperand(Expression expression) {
         if (expression instanceof Variable && variables.containsKey(expression.getName())) {
             expression = variables.get(expression.getName());
         } else if (includeEnumeratedType(expression.getName())) {
@@ -147,7 +155,7 @@ public class Calculator {
         return (Operand) expression;
     }
 
-    private Operand repeatString(Operator operator) throws CalculatorException {
+    protected Operand repeatString(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -162,7 +170,7 @@ public class Calculator {
                 String.join("", Collections.nCopies((int) (long) right.getValue(), (String) left.getValue())));
     }
 
-    private Operand calculatePower(Operator operator) throws CalculatorException {
+    protected Operand calculatePower(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -192,7 +200,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand stringConcatenation(Operator operator) throws CalculatorException {
+    protected Operand stringConcatenation(Operator operator) throws CalculatorException {
         Operand answer = new Operand("String", "");
         for (int i = 0; i < operator.getArguments().size(); i++) {
             Expression expression = operator.getArguments().get(i);
@@ -211,7 +219,7 @@ public class Calculator {
         return answer;
     }
 
-    private Operand calculateMultiplication(Operator operator) throws CalculatorException {
+    protected Operand calculateMultiplication(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -239,7 +247,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateDivision(Operator operator) throws CalculatorException {
+    protected Operand calculateDivision(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -265,7 +273,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateBitAnd(Operator operator) throws CalculatorException {
+    protected Operand calculateBitAnd(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -286,7 +294,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateRemainder(Operator operator) throws CalculatorException {
+    protected Operand calculateRemainder(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -314,7 +322,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateParcent(Operator operator) throws CalculatorException {
+    protected Operand calculateParcent(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -342,7 +350,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateAddition(Operator operator) throws CalculatorException {
+    protected Operand calculateAddition(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -374,7 +382,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand nagete(Operand operand) throws CalculatorException {
+    protected Operand nagete(Operand operand) throws CalculatorException {
         if (operand.getType().equals("Int")) {
             return new Operand("Int", -(long) operand.getValue());
         } else if (operand.getType().equals("Float")) {
@@ -387,7 +395,7 @@ public class Calculator {
         }
     }
 
-    private Operand calculateSubtraction(Operator operator) throws CalculatorException {
+    protected Operand calculateSubtraction(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -419,7 +427,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateBitOr(Operator operator) throws CalculatorException {
+    protected Operand calculateBitOr(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -440,7 +448,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateBitXor(Operator operator) throws CalculatorException {
+    protected Operand calculateBitXor(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
@@ -461,12 +469,12 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateComparison(Operator operator) throws CalculatorException {
+    protected Operand calculateComparison(Operator operator) throws CalculatorException {
         ComparisonResult answer = getComparisonResult(operator);
         return new Operand(answer.getName(), "Bool", answer.getValue());
     }
 
-    private ComparisonResult getComparisonResult(Operator operator) throws CalculatorException {
+    protected ComparisonResult getComparisonResult(Operator operator) throws CalculatorException {
         Operand left = null;
         Operand right = (Operand) calculateExpression(operator.getArguments().get(1));
         if (!(right.getClass() == Operand.class)) {
@@ -552,7 +560,7 @@ public class Calculator {
         throw new CalculatorException(this, "問題のある比較演算子です。\n");
     }
 
-    private Operand calcualteAnd(Operator operator) throws CalculatorException {
+    protected Operand calcualteAnd(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
             operator.getArguments().set(0, left);
@@ -578,7 +586,7 @@ public class Calculator {
         }
     }
 
-    private Operand calcualteOr(Operator operator) throws CalculatorException {
+    protected Operand calcualteOr(Operator operator) throws CalculatorException {
         Operand left = (Operand) calculateExpression(operator.getArguments().get(0));
         if (!(operator.getArguments().get(0).getClass() == Operand.class)) {
             operator.getArguments().set(0, left);
@@ -604,7 +612,7 @@ public class Calculator {
         }
     }
 
-    private Operand calcualteAssaignment(Operator operator) throws CalculatorException {
+    protected Operand calcualteAssaignment(Operator operator) throws CalculatorException {
         if (!(operator.getArguments().get(0) instanceof Variable)) {
             throw new CalculatorException(this, "左辺は変数である必要があります。\n");
         }
@@ -620,7 +628,7 @@ public class Calculator {
         return left;
     }
 
-    private Operand calculateBeginEnd(Operator operator) throws CalculatorException {
+    protected Operand calculateBeginEnd(Operator operator) throws CalculatorException {
         Operand operand = null;
         for (int i = 0; i < operator.getArguments().size(); i++) {
             Expression expression = operator.getArguments().get(i);
@@ -633,7 +641,7 @@ public class Calculator {
         return operand;
     }
 
-    private Operand calculateIf(Operator operator) throws CalculatorException {
+    protected Operand calculateIf(Operator operator) throws CalculatorException {
         Operand conditional = (Operand) calculateExpression(operator.getArguments().get(0));
         if (conditional.getValue() instanceof Boolean) {
             if ((boolean) conditional.getValue()) {
@@ -649,7 +657,7 @@ public class Calculator {
         }
     }
 
-    private Operand calculateIfElse(Operator operator) throws CalculatorException {
+    protected Operand calculateIfElse(Operator operator) throws CalculatorException {
         Operand conditional = (Operand) calculateExpression(operator.getArguments().get(0));
         if (conditional.getValue() instanceof Boolean) {
             if ((boolean) conditional.getValue()) {
@@ -668,7 +676,7 @@ public class Calculator {
         }
     }
 
-    private Operand calculateWhile(Operator operator) throws CalculatorException {
+    protected Operand calculateWhile(Operator operator) throws CalculatorException {
         Expression conditional = operator.getArguments().get(0).copy();
         Operand isContinue = (Operand) calculateExpression(operator.getArguments().get(0));
         if (isContinue.getValue() instanceof Boolean) {
@@ -701,7 +709,7 @@ public class Calculator {
         }
     }
 
-    private Operand calculateFunction(Function function) throws CalculatorException {
+    protected Operand calculateFunction(Function function) throws CalculatorException {
         if (function.getArguments().size() == 1) {
             Operand operand = (Operand) calculateExpression(function.getArguments().get(0));
             BiFunction<java.util.function.Function<Double, Double>, Operand, Operand> biFunction = (f, x) -> {
@@ -775,7 +783,7 @@ public class Calculator {
         }
     }
 
-    private Expression calculateExpression(Expression expression) throws CalculatorException {
+    protected Expression calculateExpression(Expression expression) throws CalculatorException {
         if (System.currentTimeMillis() - calculateStartTime > 3000) {
             throw new CalculatorException(this, "計算時間が制限時間3秒を超過したため、要求がタイムアウトしました。\n");
         }
@@ -841,7 +849,7 @@ public class Calculator {
         }
     }
 
-    private long calculateStartTime;
+    protected long calculateStartTime;
 
     public Operand calculate(List<Expression> expressions) throws CalculatorException {
         calculateStartTime = System.currentTimeMillis();

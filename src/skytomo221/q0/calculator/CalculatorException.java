@@ -1,7 +1,7 @@
 package skytomo221.q0.calculator;
 
 public class CalculatorException extends IllegalArgumentException {
-    private Calculator calculator;
+    protected Calculator calculator;
 
     public Calculator getCalculator() {
         return calculator;

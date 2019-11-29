@@ -1,7 +1,5 @@
 package skytomo221.q0.expression;
 
-import skytomo221.q0.expression.Operand;
-
 import java.util.Map;
 
 /**

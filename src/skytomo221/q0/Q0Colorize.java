@@ -172,7 +172,7 @@ public class Q0Colorize {
                     insertColorText("\"", colors.get("punctuation"));
                     break;
                 case ID:
-                    if (Calculator.definedFunctions.contains(token.getName())) {
+                    if (Calculator.getDefinedFunctions().contains(token.getName())) {
                         insertColorText(token.getName(), colors.get("function"));
                     } else {
                         insertColorText(token.getName(), colors.get("foreground"));

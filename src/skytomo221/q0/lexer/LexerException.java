@@ -3,8 +3,8 @@ package skytomo221.q0.lexer;
 import java.util.Collections;
 
 public class LexerException extends IllegalArgumentException {
-    private Lexer lexer;
-    private String lexerErrorMessage;
+    protected Lexer lexer;
+    protected String lexerErrorMessage;
 
     public Lexer getLexer() {
         return lexer;
@@ -20,7 +20,7 @@ public class LexerException extends IllegalArgumentException {
         lexerErrorMessage = getLexerErrorMessage(message);
     }
 
-    private String getLexerErrorMessage(String message) {
+    protected String getLexerErrorMessage(String message) {
         StringBuilder s = new StringBuilder();
         s.append(lexer.getIndex());
         s.append("文字目： ");
@@ -30,7 +30,7 @@ public class LexerException extends IllegalArgumentException {
         return s.toString();
     }
 
-    private String getLexerExceptionLog() {
+    protected String getLexerExceptionLog() {
         int peekLength = 1;
         int lineLength = 50;
         int p = (lineLength - peekLength) / 2;

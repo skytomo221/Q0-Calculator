@@ -1,6 +1,10 @@
 package skytomo221.q0.parser;
 
-import skytomo221.q0.expression.*;
+import skytomo221.q0.expression.Expression;
+import skytomo221.q0.expression.Function;
+import skytomo221.q0.expression.Operand;
+import skytomo221.q0.expression.Operator;
+import skytomo221.q0.expression.Variable;
 import skytomo221.q0.lexer.Lexer;
 import skytomo221.q0.token.Token;
 import skytomo221.q0.token.TokenType;
@@ -10,11 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Parser {
-    private int index = 0;
-    private int rawCharacter = 0;
-    private int character = 1;
-    private int line = 1;
-    private List<Token> tokens;
+    protected int index = 0;
+    protected int rawCharacter = 0;
+    protected int character = 1;
+    protected int line = 1;
+    protected List<Token> tokens;
 
     public Parser() {
     }
@@ -47,7 +51,7 @@ public class Parser {
         return tokens.get(index);
     }
 
-    private Token next() throws ParserException {
+    protected Token next() throws ParserException {
         Token expression = peek();
         rawCharacter += peek().getLength();
         character += peek().getLength();
@@ -55,7 +59,7 @@ public class Parser {
         return expression;
     }
 
-    private void skipNewLine() throws ParserException {
+    protected void skipNewLine() throws ParserException {
         while (peek().getType() != TokenType.END_OF_STRING && peek().getType() == TokenType.NEW_LINE) {
             line++;
             index = 1;
@@ -63,13 +67,13 @@ public class Parser {
         }
     }
 
-    private void skipSemicolon() throws ParserException {
+    protected void skipSemicolon() throws ParserException {
         if (peek().getType() == TokenType.SEMICOLON) {
             next();
         }
     }
 
-    private Expression parseFactor() throws ParserException {
+    protected Expression parseFactor() throws ParserException {
         if (peek().getType() == TokenType.INT || peek().getType() == TokenType.FLOAT
                 || peek().getType() == TokenType.BIG_DECIMAL || peek().getType() == TokenType.BOOL
                 || peek().getType() == TokenType.CHAR || peek().getType() == TokenType.STRING) {
@@ -110,7 +114,7 @@ public class Parser {
         }
     }
 
-    private Expression parsePower() throws ParserException {
+    protected Expression parsePower() throws ParserException {
         Expression left = parseFactor();
         if (peek().getType() == TokenType.POWER) {
             Token operator = next();
@@ -122,7 +126,7 @@ public class Parser {
         }
     }
 
-    private Expression parseSign() throws ParserException {
+    protected Expression parseSign() throws ParserException {
         if (peek().getType() == TokenType.MINUS || peek().getType() == TokenType.PLUS) {
             Token operator = next();
             Expression right = parsePower();
@@ -132,7 +136,7 @@ public class Parser {
         }
     }
 
-    private Expression parseTimes() throws ParserException {
+    protected Expression parseTimes() throws ParserException {
         Expression left = parseSign();
         while (peek().getType() == TokenType.MULTIPLICATION || peek().getType() == TokenType.DIVISION
                 || peek().getType() == TokenType.BIT_AND || peek().getType() == TokenType.MOD
@@ -147,7 +151,7 @@ public class Parser {
         return left;
     }
 
-    private Expression parsePlus() throws ParserException {
+    protected Expression parsePlus() throws ParserException {
         Expression left = parseTimes();
         while (peek().getType() == TokenType.PLUS || peek().getType() == TokenType.MINUS || peek().getType() == TokenType.BIT_OR
                 || peek().getType() == TokenType.BIT_XOR) {
@@ -160,7 +164,7 @@ public class Parser {
         return left;
     }
 
-    private Expression parseComparsionExpression() throws ParserException {
+    protected Expression parseComparsionExpression() throws ParserException {
         Expression left = parsePlus();
         while (peek().getType() == TokenType.EQ || peek().getType() == TokenType.NE || peek().getType() == TokenType.LE
                 || peek().getType() == TokenType.LT || peek().getType() == TokenType.GE || peek().getType() == TokenType.GT) {
@@ -173,7 +177,7 @@ public class Parser {
         return left;
     }
 
-    private Expression parseAnd() throws ParserException {
+    protected Expression parseAnd() throws ParserException {
         Expression left = parseComparsionExpression();
         if (peek().getType() == TokenType.AND) {
             Token operator = next();
@@ -185,7 +189,7 @@ public class Parser {
         }
     }
 
-    private Expression parseOr() throws ParserException {
+    protected Expression parseOr() throws ParserException {
         Expression left = parseAnd();
         if (peek().getType() == TokenType.OR) {
             Token operator = next();
@@ -197,7 +201,7 @@ public class Parser {
         }
     }
 
-    private Expression parseAssignmentExpression() throws ParserException {
+    protected Expression parseAssignmentExpression() throws ParserException {
         Expression left = parseOr();
         if (peek().getType() == TokenType.ASSAIGNMENT) {
             Token operator = next();
@@ -209,7 +213,7 @@ public class Parser {
         }
     }
 
-    private Expression parseBlock() throws ParserException {
+    protected Expression parseBlock() throws ParserException {
         Operator operator = new Operator("begin ... end", new ArrayList<>());
         while (peek().getType() != TokenType.END &&
                 peek().getType() != TokenType.ELSE &&
@@ -222,7 +226,7 @@ public class Parser {
         return operator;
     }
 
-    private Expression parseIf() throws ParserException {
+    protected Expression parseIf() throws ParserException {
         next();
         Expression conditional = parseControlFlow();
         skipSemicolon();
@@ -251,7 +255,7 @@ public class Parser {
         throw new ParserException(this, "if 演算子の後に else, end または elseif が必要です。");
     }
 
-    private Expression parseControlFlow() throws ParserException {
+    protected Expression parseControlFlow() throws ParserException {
         if (peek().getType() == TokenType.BEGIN) {
             next();
             skipSemicolon();

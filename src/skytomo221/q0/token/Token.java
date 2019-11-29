@@ -8,17 +8,17 @@ public class Token {
     /**
      * トークンの種類
      */
-    private TokenType type;
+    protected TokenType type;
 
     /**
      * トークンの名前
      */
-    private String name;
+    protected String name;
 
     /**
      * トークンの値
      */
-    private Object value;
+    protected Object value;
 
     public TokenType getType() {
         return type;

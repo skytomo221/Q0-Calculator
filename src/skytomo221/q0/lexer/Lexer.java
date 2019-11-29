@@ -14,9 +14,9 @@ import java.util.regex.Pattern;
 
 public class Lexer {
 
-    private String text = "";
-    private int index = 0;
-    private int line = 1;
+    protected String text = "";
+    protected int index = 0;
+    protected int line = 1;
     protected Map<String, TokenType> keywords = new HashMap<String, TokenType>() {
         {
             put("baremodule", TokenType.BAREMODULE);
@@ -125,24 +125,24 @@ public class Lexer {
     }
 
 
-    private boolean isEndOfString() {
+    protected boolean isEndOfString() {
         return text.length() <= index;
     }
 
-    private char peek() throws LexerException {
+    protected char peek() throws LexerException {
         if (isEndOfString()) {
             throw new LexerException(this, "字句解析中に文字列が終了しました。");
         }
         return text.charAt(index);
     }
 
-    private char next() throws LexerException {
+    protected char next() throws LexerException {
         char c = peek();
         index++;
         return c;
     }
 
-    private Object find_keywords() throws LexerException {
+    protected Object find_keywords() throws LexerException {
         for (String s : keywords.keySet()) {
             if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-\\/:->@\\[-`{-~]|$)((.|\\s)*)")) {
                 index += s.length();
@@ -222,7 +222,7 @@ public class Lexer {
         return true;
     }
 
-    private long parseFuToInt64(String s) throws LexerException {
+    protected long parseFuToInt64(String s) throws LexerException {
         long ans = 0;
         for (int i = 0; i < s.length(); i++) {
             Character c = s.charAt(i);
@@ -240,7 +240,7 @@ public class Lexer {
         return ans;
     }
 
-    private double parseFuToFloat64(String s) throws LexerException {
+    protected double parseFuToFloat64(String s) throws LexerException {
         double ans = 0;
         double weight = 1;
         boolean isLess1 = false;
@@ -276,7 +276,7 @@ public class Lexer {
         return ans;
     }
 
-    private BigDecimal parseFuToBigInt(String s) throws LexerException {
+    protected BigDecimal parseFuToBigInt(String s) throws LexerException {
         BigDecimal ans = BigDecimal.ZERO;
         for (int i = 0; i < s.length(); i++) {
             Character c = s.charAt(i);
@@ -294,7 +294,7 @@ public class Lexer {
         return ans;
     }
 
-    private Token nextToken() throws LexerException {
+    protected Token nextToken() throws LexerException {
         StringBuilder b = new StringBuilder();
         if (isEndOfString()) { // 文字列の終了
             return new Token(TokenType.END_OF_STRING, null);

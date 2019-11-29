@@ -43,7 +43,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
      */
     private static final long serialVersionUID = 1L;
 
-    private List<Q0Button> buttons = Arrays.asList(
+    protected List<Q0Button> buttons = Arrays.asList(
             new Q0Button("AC"),
             new Q0Button("C"),
             new Q0Button(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
@@ -61,11 +61,11 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             new Q0Button("3"),
             new Q0Button("+"),
             new Q0Button(new ImageIcon("./images/plus-and-minus.png"), "plus-and-minus"),
-            // <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+            // Icons made by Google (https://www.flaticon.com/authors/google) from https://www.flaticon.com/
             new Q0Button("0"),
             new Q0Button("."),
             new Q0Button("="));
-    private List<Q0Button> functionButtons = Arrays.asList(
+    protected List<Q0Button> functionButtons = Arrays.asList(
             new Q0Button("or"),
             new Q0Button("xor"),
             new Q0Button("not"),
@@ -96,7 +96,7 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             new Q0Button(new ImageIcon("./images/tanh.png"), "tanh"),
             new Q0Button("("),
             new Q0Button(")"));
-    private List<Q0Button> fuButtons = Arrays.asList(
+    protected List<Q0Button> fuButtons = Arrays.asList(
             new Q0Button("AC"),
             new Q0Button("C"),
             new Q0Button(new ImageIcon("./images/clear-symbol.png"), "clear-symbol"),
@@ -118,23 +118,23 @@ class Q0Viewer extends JFrame implements ComponentListener, DocumentListener, Ke
             new Q0Button("."),
             new Q0Button("="));
 
-    private JTabbedPane tabbedPane;
-    private JPanel buttonPanel = new JPanel();
-    private JPanel functionButtonPanel = new JPanel();
-    private JPanel fuButtonPanel = new JPanel();
-    private JTextPane inputTextPane = new JTextPane();
-    private JTextPane logTextPane = new JTextPane();
-    private StyledDocument inputStyledDocument;
-    private JScrollPane inputScrollPane = new JScrollPane(inputTextPane);
-    private JScrollPane logScrollPane = new JScrollPane(logTextPane);
+    protected JTabbedPane tabbedPane;
+    protected JPanel buttonPanel = new JPanel();
+    protected JPanel functionButtonPanel = new JPanel();
+    protected JPanel fuButtonPanel = new JPanel();
+    protected JTextPane inputTextPane = new JTextPane();
+    protected JTextPane logTextPane = new JTextPane();
+    protected StyledDocument inputStyledDocument;
+    protected JScrollPane inputScrollPane = new JScrollPane(inputTextPane);
+    protected JScrollPane logScrollPane = new JScrollPane(logTextPane);
 
 
     protected Lexer lexer = new Lexer();
     protected Parser parser = new Parser();
     protected Calculator calculator = new Calculator();
 
-    private Q0Colorize inputTextPaneColorizer;
-    private Q0Colorize logTextPaneColorizer;
+    protected Q0Colorize inputTextPaneColorizer;
+    protected Q0Colorize logTextPaneColorizer;
 
     public static HashMap<String, Color> colors = new HashMap<>() {
         private static final long serialVersionUID = 1L;

@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class ParserException extends IllegalArgumentException {
-    private Parser parser;
-    private String parserErrorMessage;
+    protected Parser parser;
+    protected String parserErrorMessage;
 
     public Parser getParser() {
         return parser;
@@ -21,7 +21,7 @@ public class ParserException extends IllegalArgumentException {
         parserErrorMessage = getParserExceptionLog(message);
     }
 
-    private String getParserExceptionLog(String message) {
+    protected String getParserExceptionLog(String message) {
         StringBuilder s = new StringBuilder();
         s.append(parser.getLine());
         s.append("行目");
@@ -33,7 +33,7 @@ public class ParserException extends IllegalArgumentException {
         return s.toString();
     }
 
-    private String getParserExceptionLog() {
+    protected String getParserExceptionLog() {
         String text = parser.getTokens().stream().map(token -> token.getName()).collect(Collectors.joining(" "));
         int textLength = text.length();
         int peekLength = parser.peek().getLength();

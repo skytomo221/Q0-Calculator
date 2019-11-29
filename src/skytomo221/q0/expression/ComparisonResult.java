@@ -1,7 +1,5 @@
 package skytomo221.q0.expression;
 
-import skytomo221.q0.expression.Operand;
-
 /**
  * skytomo221.Q0Calculator.ComparisonResult 比較結果を保存するためのクラスです。
  */
