@@ -1,3 +1,9 @@
+package skytomo221.q0;
+
+import skytomo221.q0.calculator.Calculator;
+import skytomo221.q0.lexer.Lexer;
+import skytomo221.q0.token.Token;
+
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
@@ -21,35 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JTextPaneColorizer {
+public class Q0Colorize {
     protected JTextPane textPane;
     protected Document doc;
     protected Lexer lexer;
     protected Boolean highlighted = false;
-    public static HashMap<String, Color> colors = new HashMap<>() {
-        private static final long serialVersionUID = 1L;
+    protected HashMap<String, Color> colors;
 
-        {
-            put("background", Color.decode("#2d2a2e"));
-            put("foreground", Color.decode("#eeeeee"));
-            put("info", Color.decode("#6796e6"));
-            put("warn", Color.decode("#cd9731"));
-            put("error", Color.decode("#f44747"));
-            put("debug", Color.decode("#b267e6"));
-            put("argument", Color.decode("#2d2a2e"));
-            put("constant", Color.decode("#ab9df2"));
-            put("function", Color.decode("#a9dc76"));
-            put("number", Color.decode("#ab9df2"));
-            put("operator", Color.decode("#ff6188"));
-            put("punctuation", Color.decode("#939293"));
-            put("string", Color.decode("#ffd866"));
-            put("type", Color.decode("#78dce8"));
-        }
-    };
-
-    JTextPaneColorizer(JTextPane textPane, Lexer lexer) {
+    Q0Colorize(JTextPane textPane, Lexer lexer, HashMap<String, Color> colors) {
         this.textPane = textPane;
         this.lexer = lexer;
+        this.colors = colors;
         this.textPane.addHyperlinkListener(new HyperlinkListener() {
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -69,7 +57,7 @@ public class JTextPaneColorizer {
 
     public void insertHyperlink(String hyperlink) {
         JLabel label = new JLabel(hyperlink);
-        label.setForeground(JTextPaneColorizer.colors.get("info"));
+        label.setForeground(colors.get("info"));
         label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         label.setFont(new Font("Consolas", Font.PLAIN, 18));
         Font font = label.getFont();
@@ -132,28 +120,28 @@ public class JTextPaneColorizer {
     public void insertCode(String code) throws Exception {
         List<Token> tokens = lexer.parse(code);
         for (Token token : tokens) {
-            token.name = token.name.replaceAll("\r", "");
-            switch (token.type) {
+            token.setName(token.getName().replaceAll("\r", ""));
+            switch (token.getType()) {
                 case INT:
                 case FLOAT:
                 case BIG_DECIMAL:
                 case BOOL:
-                    insertColorText(token.name, colors.get("constant"));
+                    insertColorText(token.getName(), colors.get("constant"));
                     break;
                 case CHAR:
-                    if (token.name.length() == 3) {
+                    if (token.getLength() == 3) {
                         insertColorText("\'", colors.get("punctuation"));
-                        insertColorText(token.value.toString(), colors.get("string"));
+                        insertColorText(token.getValue().toString(), colors.get("string"));
                         insertColorText("\'", colors.get("punctuation"));
                     } else {
                         insertColorText("\'", colors.get("punctuation"));
-                        insertColorText("\\" + token.value.toString(), colors.get("punctuation"));
+                        insertColorText("\\" + token.getValue().toString(), colors.get("punctuation"));
                         insertColorText("\'", colors.get("punctuation"));
                     }
                     break;
                 case STRING:
                     insertColorText("\"", colors.get("punctuation"));
-                    String s2 = token.value.toString();
+                    String s2 = token.getValue().toString();
                     for (int i = 0; i < s2.length(); i++) {
                         if (s2.charAt(i) == '\\') {
                             insertColorText("\\", colors.get("constant"));
@@ -166,10 +154,10 @@ public class JTextPaneColorizer {
                     insertColorText("\"", colors.get("punctuation"));
                     break;
                 case ID:
-                    if (Calculator.definedFunctions.contains(token.name)) {
-                        insertColorText(token.name, colors.get("function"));
+                    if (Calculator.getDefinedFunctions().contains(token.getName())) {
+                        insertColorText(token.getName(), colors.get("function"));
                     } else {
-                        insertColorText(token.name, colors.get("foreground"));
+                        insertColorText(token.getName(), colors.get("foreground"));
                     }
                     break;
                 case ASSAIGNMENT:
@@ -221,17 +209,17 @@ public class JTextPaneColorizer {
                 case TRY:
                 case USING:
                 case WHILE:
-                    insertColorText(token.name, colors.get("operator"));
+                    insertColorText(token.getName(), colors.get("operator"));
                     break;
                 case LPAR:
                 case RPAR:
                 case COMMA:
                 case COLON:
                 case SEMICOLON:
-                    insertColorText(token.name, colors.get("punctuation"));
+                    insertColorText(token.getName(), colors.get("punctuation"));
                     break;
                 default:
-                    insertColorText(token.name, colors.get("foreground"));
+                    insertColorText(token.getName(), colors.get("foreground"));
                     break;
             }
         }

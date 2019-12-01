@@ -1,3 +1,8 @@
+package skytomo221.q0.lexer;
+
+import skytomo221.q0.token.Token;
+import skytomo221.q0.token.TokenType;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,8 +14,9 @@ import java.util.regex.Pattern;
 
 public class Lexer {
 
-    protected String text;
-    protected int index;
+    protected String text = "";
+    protected int index = 0;
+    protected int line = 1;
     protected Map<String, TokenType> keywords = new HashMap<String, TokenType>() {
         {
             put("baremodule", TokenType.BAREMODULE);
@@ -106,24 +112,37 @@ public class Lexer {
         }
     };
 
-    private boolean isEndOfString() {
+    public String getText() {
+        return text;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public LexerException getLexerException(String message) {
+        return new LexerException(this, message);
+    }
+
+
+    protected boolean isEndOfString() {
         return text.length() <= index;
     }
 
-    private char peek() throws Exception {
+    protected char peek() throws LexerException {
         if (isEndOfString()) {
-            throw new Exception("No more character");
+            throw new LexerException(this, "字句解析中に文字列が終了しました。");
         }
         return text.charAt(index);
     }
 
-    private char next() throws Exception {
+    protected char next() throws LexerException {
         char c = peek();
         index++;
         return c;
     }
 
-    private Object find_keywords() throws Exception {
+    protected Object find_keywords() throws LexerException {
         for (String s : keywords.keySet()) {
             if (text.substring(index).matches("^(" + Pattern.quote(s) + ")(\\s|[\"-\\/:->@\\[-`{-~]|$)((.|\\s)*)")) {
                 index += s.length();
@@ -203,7 +222,7 @@ public class Lexer {
         return true;
     }
 
-    private long parseFuToInt64(String s) throws Exception {
+    protected long parseFuToInt64(String s) throws LexerException {
         long ans = 0;
         for (int i = 0; i < s.length(); i++) {
             Character c = s.charAt(i);
@@ -213,15 +232,15 @@ public class Lexer {
             } else if (c == '¬') {
                 ans -= 1;
             } else if (c == '9') {
-                throw new Exception("フ界には 9 がありません。");
+                throw new LexerException(this, "フ界には 9 がありません。");
             } else {
-                throw new Exception("フ界にて未知のトークンが発見されました。");
+                throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
             }
         }
         return ans;
     }
 
-    private double parseFuToFloat64(String s) throws Exception {
+    protected double parseFuToFloat64(String s) throws LexerException {
         double ans = 0;
         double weight = 1;
         boolean isLess1 = false;
@@ -234,9 +253,9 @@ public class Lexer {
                 } else if (c == '¬') {
                     ans -= 1 * weight;
                 } else if (c == '9') {
-                    throw new Exception("フ界には 9 がありません。");
+                    throw new LexerException(this, "フ界には 9 がありません。");
                 } else {
-                    throw new Exception("フ界にて未知のトークンが発見されました。");
+                    throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
                 }
             } else {
                 ans *= 10;
@@ -248,16 +267,16 @@ public class Lexer {
                     ans /= 10; // 小数点は 10 倍しないので、もとに戻す。
                     isLess1 = true;
                 } else if (c == '9') {
-                    throw new Exception("フ界には 9 がありません。");
+                    throw new LexerException(this, "フ界には 9 がありません。");
                 } else {
-                    throw new Exception("フ界にて未知のトークンが発見されました。");
+                    throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
                 }
             }
         }
         return ans;
     }
 
-    private BigDecimal parseFuToBigInt(String s) throws Exception {
+    protected BigDecimal parseFuToBigInt(String s) throws LexerException {
         BigDecimal ans = BigDecimal.ZERO;
         for (int i = 0; i < s.length(); i++) {
             Character c = s.charAt(i);
@@ -267,15 +286,15 @@ public class Lexer {
             } else if (c == '¬') {
                 ans = ans.subtract(BigDecimal.ONE);
             } else if (c == '9') {
-                throw new Exception("フ界には 9 がありません。");
+                throw new LexerException(this, "フ界には 9 がありません。");
             } else {
-                throw new Exception("フ界にて未知のトークンが発見されました。");
+                throw new LexerException(this, "フ界にて未知のトークンが発見されました。");
             }
         }
         return ans;
     }
 
-    public Token nextToken() throws Exception {
+    protected Token nextToken() throws LexerException {
         StringBuilder b = new StringBuilder();
         if (isEndOfString()) { // 文字列の終了
             return new Token(TokenType.END_OF_STRING, null);
@@ -298,7 +317,7 @@ public class Lexer {
                 b.append(next());
                 while (!isEndOfString() && Character.isDigit(peek())) {
                     if (peek() != '0' && peek() != '1') {
-                        throw new Exception("2進数は 0 または 1 のみで表現します。");
+                        throw new LexerException(this, "2進数は 0 または 1 のみで表現します。");
                     }
                     b.append(next());
                 }
@@ -307,7 +326,7 @@ public class Lexer {
                 b.append(next());
                 while (!isEndOfString() && Character.isDigit(peek())) {
                     if (peek() == '8' || peek() == '9') {
-                        throw new Exception("8進数は 0 から 7 の数字のみで表現します。");
+                        throw new LexerException(this, "8進数は 0 から 7 の数字のみで表現します。");
                     }
                     b.append(next());
                 }
@@ -412,7 +431,7 @@ public class Lexer {
                     b.append(next());
                     return new Token(TokenType.CHAR, b.toString(), b.toString().charAt(2));
                 } else {
-                    throw new Exception("不正な文字です。");
+                    throw new LexerException(this, "不正な文字です。");
                 }
             }
             b.append(next());
@@ -420,7 +439,7 @@ public class Lexer {
                 b.append(next());
                 return new Token(TokenType.CHAR, b.toString(), b.toString().charAt(1));
             } else {
-                throw new Exception("不正な文字です。");
+                throw new LexerException(this, "不正な文字です。");
             }
         } else if (peek() == '\"') { // "..."
             b.append(next());
@@ -435,8 +454,9 @@ public class Lexer {
                     b.append(next());
                 }
             }
-            throw new Exception("\" が閉じられていません。");
+            throw new LexerException(this, "\" が閉じられていません。");
         } else if (peek() == '\n') {
+            line++;
             return new Token(TokenType.NEW_LINE, Character.toString(next()));
         } else {
             Object obj = null;
@@ -451,14 +471,14 @@ public class Lexer {
         }
     }
 
-    public List<Token> parse(String text) throws Exception {
+    public List<Token> parse(String text) throws LexerException {
         List<Token> tokens = new ArrayList<>();
         index = 0;
         this.text = text;
-        Token t = nextToken();
-        while (t.type != TokenType.END_OF_STRING) {
-            tokens.add(t);
-            t = nextToken();
+        Token token = nextToken();
+        while (token.getType() != TokenType.END_OF_STRING) {
+            tokens.add(token);
+            token = nextToken();
         }
         return tokens;
     }
@@ -472,7 +492,7 @@ public class Lexer {
     public static List<Token> removeWhitespace(List<Token> list) {
         List<Token> new_list = new ArrayList<>();
         for (Token token : list) {
-            if (token.type != TokenType.WHITESPACE) {
+            if (token.getType() != TokenType.WHITESPACE) {
                 new_list.add(token);
             }
         }

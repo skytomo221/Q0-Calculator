@@ -1,19 +1,48 @@
+package skytomo221.q0.token;
+
 /**
- * 字句解析するときにトークンはこの {@code Token} クラスによって格納されます。
+ * 字句解析するときにトークンはこの {@code skytomo221.Q0Calculator.Token} クラスによって格納されます。
  */
 public class Token {
+
     /**
      * トークンの種類
      */
-    public TokenType type;
+    protected TokenType type;
+
     /**
      * トークンの名前
      */
-    public String name;
+    protected String name;
+
     /**
      * トークンの値
      */
-    public Object value;
+    protected Object value;
+
+    public TokenType getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (name != null) {
+            this.name = name;
+        } else {
+            throw new NullPointerException();
+        }
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public int getLength() {
+        return name.length();
+    }
 
     /**
      * トークンを初期化します。
@@ -22,7 +51,7 @@ public class Token {
      * @param type トークンの種類
      * @param name トークンの名前
      */
-    Token(TokenType type, String name) {
+    public Token(TokenType type, String name) {
         this.type = type;
         this.name = name;
     }
@@ -34,7 +63,7 @@ public class Token {
      * @param name  トークンの名前
      * @param value トークンの値
      */
-    Token(TokenType type, String name, Object value) {
+    public Token(TokenType type, String name, Object value) {
         this.type = type;
         this.name = name;
         this.value = value;

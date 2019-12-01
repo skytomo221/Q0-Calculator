@@ -1,5 +1,7 @@
+package skytomo221.q0.expression;
+
 /**
- * Variable
+ * skytomo221.Q0Calculator.Variable
  */
 public class Variable extends Operand {
 

@@ -1,3 +1,5 @@
+package skytomo221.q0.token;
+
 /**
  * トークンの種類を表します。
  */
