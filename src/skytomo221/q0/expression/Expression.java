@@ -3,7 +3,7 @@ package skytomo221.q0.expression;
 /**
  * 式を表します。
  */
-public class Expression {
+public abstract class Expression {
     /**
      * 式の名前
      */
@@ -27,7 +27,5 @@ public class Expression {
         this.name = name;
     }
 
-    public Expression copy() {
-        return copy();
-    }
+    public abstract Expression copy();
 }
