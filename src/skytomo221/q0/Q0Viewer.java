@@ -24,8 +24,11 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -162,11 +165,10 @@ class Q0Viewer extends JFrame {
         setBackground(colors.get("black"));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         try {
-            setIconImage(ImageIO.read(new File("images/icon.png")));
+            setIconImage(createImage((ImageProducer) getClass().getClassLoader().getResource("images/icon.png").getContent()));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         UIManager.put("Button.select", colors.get("selected"));
         UIManager.put("TabbedPane.borderHightlightColor", colors.get("black"));
         UIManager.put("TabbedPane.darkShadow", colors.get("black"));
