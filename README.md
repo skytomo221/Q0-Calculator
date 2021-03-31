@@ -2,8 +2,13 @@
 
 <img src="https://github.com/skytomo221/Q0-Calculator/blob/master/images/icon.png?raw=true" width="200px">
 
-**Q0 Calculator** は Java の課題のために作られた電卓プログラムです。  
-そのため、単位が確定するまでは、このソースコードの利用をお控えください。
+**Q0 Calculator** は Java の課題のために作られた電卓プログラムです。
+
+<img src="https://github.com/skytomo221/Q0-Calculator/blob/master/images/demo.png?raw=true">
+
+## 実行方法
+
+[こちら](https://github.com/skytomo221/Q0-Calculator/releases/)から、Q0.zipファイルをダウンロードし、解凍して、Q0.jarをクリックしてください。
 
 ## 計算例
 
